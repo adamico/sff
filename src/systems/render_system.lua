@@ -1,6 +1,6 @@
 local RenderSystem = Class("RenderSystem")
 
-local DEFAULT_COLOR = {255, 255, 255}
+local DEFAULT_COLOR = Colors.WHITE
 
 function RenderSystem:initialize(pool)
    self.pool = pool
@@ -9,7 +9,11 @@ end
 function RenderSystem:draw()
    for entityIndex, entity in ipairs(self.pool.groups.physics.entities) do
       love.graphics.setColor(entity.color or DEFAULT_COLOR)
-      love.graphics.circle("fill", entity.position.x, entity.position.y, entity.r, entity.segments or 64)
+      if entity.visual == "circle" then
+         love.graphics.circle("fill", entity.position.x, entity.position.y, entity.size)
+      elseif entity.visual == "square" then
+         love.graphics.rectangle("fill", entity.position.x, entity.position.y, entity.size.x, entity.size.y)
+      end
    end
 end
 

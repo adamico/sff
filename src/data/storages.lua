@@ -3,6 +3,7 @@ return {
       class = "Storage",
       color = Colors.GOLD,
       creative = true,
+      interactable = true,
       max_slots = 2,
       name = "Creative Chest",
       size = Vector(32, 32),

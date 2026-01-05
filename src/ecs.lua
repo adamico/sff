@@ -1,5 +1,6 @@
 local nata = require("lib.nata")
 local Player = require("src.entities.player")
+local PLAYER_CONFIG = require("src.data.player_data")
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
@@ -12,8 +13,9 @@ pool = nata.new({
 		that have the specified components.
 	]]
    groups = {
-      physics = {filter = {"position", "velocity", "r"}},
-      render = {filter = {"position", "r", "color"}},
+      physics = {filter = {"position", "size", "velocity"}},
+      render = {filter = {"position", "size", "visual"}},
+      interactable = {filter = {"position", "interactable"}},
    },
    --[[
 		define the systems that should be used. systems receive
@@ -21,6 +23,8 @@ pool = nata.new({
 	]]
    systems = {
       nata.oop(),
+      require("src.systems.input_system")(pool),
+      require("src.systems.interaction_system")(pool),
       require("src.systems.physics_system")(pool),
       require("src.systems.render_system")(pool),
    },
@@ -38,7 +42,7 @@ pool:on("removeFromGroup", function(group, entity)
    end
 end)
 
-local player = pool:queue(Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_CONFIG))
 
 local function shouldRemove(entity)
    return entity.dead

@@ -8,6 +8,7 @@ function Assembler:initialize(x, y, config)
 
    self.color = config.color or Colors.WHITE
    self.creative = config.creative or false
+   self.interactable = config.interactable or false
    self.mana_per_tick = config.mana_per_tick or 0
    self.max_input_slots = config.max_input_slots or 0
    self.max_output_slots = config.max_output_slots or 0

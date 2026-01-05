@@ -7,7 +7,7 @@ Vector = require("lib.brinevector")
 local ecs, pool
 
 function love.load()
-   vudu.initialize()
+   -- vudu.initialize()
    ecs = require("src.ecs")
    pool = ecs.pool
 end
