@@ -1,5 +1,3 @@
-local Class = require("lib.middleclass")
-
 local PhysicsSystem = Class("PhysicsSystem")
 
 local function isCircleColliding(a, b)
@@ -16,7 +14,7 @@ function PhysicsSystem:update(dt)
 end
 
 function PhysicsSystem:move(dt)
-   for entityIndex, entity in ipairs(self.pool.groups.physics.entities) do
+   for _entityIndex, entity in ipairs(self.pool.groups.physics.entities) do
       entity.position = entity.position + entity.velocity * dt
    end
 end

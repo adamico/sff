@@ -1,5 +1,3 @@
-local Class = require("lib.middleclass")
-
 local RenderSystem = Class("RenderSystem")
 
 local DEFAULT_COLOR = {255, 255, 255}
