@@ -2,8 +2,6 @@ local InputSystem = Class("InputSystem")
 
 local lk = love.keyboard
 
-local pool
-
 function InputSystem:initialize(pool)
    self.pool = pool
 end
@@ -23,7 +21,7 @@ function InputSystem:update(dt)
       vector.x = 1
    end
 
-   self.pool:emit("player_input", vector)
+   self.pool:emit("update_input_vector", vector.normalized)
 end
 
 return InputSystem

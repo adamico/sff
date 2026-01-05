@@ -13,9 +13,10 @@ pool = nata.new({
 		that have the specified components.
 	]]
    groups = {
-      physics = {filter = {"position", "size", "velocity"}},
-      render = {filter = {"position", "size", "visual"}},
       interactable = {filter = {"position", "interactable"}},
+      physics = {filter = {"position", "size", "velocity"}},
+      controllable = {filter = {"controllable"}},
+      render = {filter = {"position", "size", "visual"}},
    },
    --[[
 		define the systems that should be used. systems receive
