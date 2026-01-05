@@ -1,33 +1,31 @@
 {
-    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
-    "runtime.version": "LuaJIT",
-    "workspace.checkThirdParty": false,
-    "workspace.library": [
-        "${addons}/busted/module/library",
-        "${3rd}/luassert/library",
-        "${addons}/love2d/module/library"
-    ],
-    "workspace.ignoreDir": [
-        ".vscode",
-        "lib/vudu"
-    ],
-    "diagnostics.disable": [
-        "lowercase-global",
-        "err-esc",
-        "duplicate-set-field"
-    ],
-    "diagnostics.globals": [],
-    "format.defaultConfig": {
-        "class_name_style": "pascal_case",
-        "const_variable_name_style": "upper_snake_case",
-        "function_name_style": "snake_case",
-        "function_param_name_style": "snake_case",
-        "local_name_style": "snake_case",
-        "module_local_name_style": "snake_case",
-        "module_name_style": "snake_case",
-        "require_module_name_style": "snake_case"
-    },
-    "runtime.special": {
-        "love.filesystem.load": "loadfile"
-    }
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "workspace.checkThirdParty": false,
+  "workspace.library": [
+    "lua-ls-addons/busted/module/library",
+    "lua-ls-addons/luassert/module/library",
+    "lua-ls-addons/love2d/module/library"
+  ],
+  "workspace.ignoreDir": [".vscode", "lib", "lib/vudu"],
+  "diagnostics.disable": [
+    "lowercase-global",
+    "err-esc",
+    "duplicate-set-field",
+    "undefined-global"
+  ],
+  "diagnostics.globals": [],
+  "format.defaultConfig": {
+    "class_name_style": "pascal_case",
+    "const_variable_name_style": "upper_snake_case",
+    "function_name_style": "snake_case",
+    "function_param_name_style": "snake_case",
+    "local_name_style": "snake_case",
+    "module_local_name_style": "snake_case",
+    "module_name_style": "snake_case",
+    "require_module_name_style": "snake_case"
+  },
+  "runtime.special": {
+    "love.filesystem.load": "loadfile"
+  }
 }
