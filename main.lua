@@ -1,5 +1,3 @@
-local vudu = require("lib.vudu")
-
 Class = require("lib.middleclass")
 Colors = require("src.data.colors")
 Vector = require("lib.brinevector")
@@ -7,7 +5,6 @@ Vector = require("lib.brinevector")
 local ecs, pool
 
 function love.load()
-   -- vudu.initialize()
    ecs = require("src.ecs")
    pool = ecs.pool
 end
