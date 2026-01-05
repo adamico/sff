@@ -1,6 +1,6 @@
 return {
    color = Colors.BLUE,
-   interactionRange = 48,
+   interactionRange = 128,
    maxSpeed = 300,
    name = "Player",
    size = 16,

@@ -1,6 +1,9 @@
 local Storage = Class("Storage")
+local STORAGES_CONFIG = require("src.data.storages_data")
 
-function Storage:initialize(x, y, config)
+function Storage:initialize(x, y, id)
+   local config = STORAGES_CONFIG[id] or {}
+   self.id = id
    self.position = Vector(x, y)
    self.slots = {}
 

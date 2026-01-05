@@ -2,11 +2,7 @@ local InputSystem = Class("InputSystem")
 
 local lk = love.keyboard
 
-function InputSystem:initialize(pool)
-   self.pool = pool
-end
-
-function InputSystem:update(dt)
+local function update_input_vector(pool)
    local vector = Vector()
 
    if lk.isScancodeDown("w") then
@@ -21,7 +17,15 @@ function InputSystem:update(dt)
       vector.x = 1
    end
 
-   self.pool:emit("update_input_vector", vector.normalized)
+   pool:emit("update_input_vector", vector.normalized)
+end
+
+function InputSystem:initialize(pool)
+   self.pool = pool
+end
+
+function InputSystem:update()
+   update_input_vector(self.pool)
 end
 
 return InputSystem

@@ -1,6 +1,7 @@
 local nata = require("lib.nata")
 local Player = require("src.entities.player")
 local PLAYER_CONFIG = require("src.data.player_data")
+local Storage = require("src.entities.storage")
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
@@ -32,25 +33,21 @@ pool = nata.new({
 })
 
 pool:on("addToGroup", function(group, entity)
-   if entity.isPlayer then
-      print("add", group, entity)
-   end
+   print("add", group, entity)
 end)
 
 pool:on("removeFromGroup", function(group, entity)
-   if entity.isPlayer then
-      print("remove", group, entity)
-   end
+   print("remove", group, entity)
 end)
 
 local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_CONFIG))
+local chest = pool:queue(Storage:new(100, 100, "creative_chest"))
 
 local function shouldRemove(entity)
    return entity.dead
 end
 
 ecs.pool = pool
-ecs.player = player
 ecs.shouldRemove = shouldRemove
 
 return ecs
