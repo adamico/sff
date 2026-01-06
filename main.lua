@@ -1,6 +1,7 @@
 Class = require("lib.middleclass")
 Colors = require("src.data.colors")
 Vector = require("lib.brinevector")
+Log = require("lib.log")
 
 local ecs, pool
 
@@ -10,6 +11,12 @@ function love.load()
 
    pool:on("player:interacted", function(entity)
       -- Handle player interaction with entity
+      Log.trace("Player interacted")
+   end)
+
+   pool:on("inventory:opened", function()
+      -- Handle inventory opened event
+      Log.trace("Inventory opened")
    end)
 end
 
