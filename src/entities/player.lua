@@ -15,12 +15,4 @@ function Player:initialize(x, y, config)
    self.visual = config.visual or "circle"
 end
 
-function Player:update_input_vector(vector)
-   self.velocity = vector * self.maxSpeed
-end
-
-function Player:open_inventory()
-   print("Opening inventory...")
-end
-
 return Player

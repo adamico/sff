@@ -9,14 +9,14 @@ function love.load()
    ecs = require("src.ecs")
    pool = ecs.pool
 
-   pool:on("player:interacted", function(entity)
+   pool:on("entity:interacted", function(entity)
       -- Handle player interaction with entity
-      Log.trace("Player interacted")
+      Log.trace("Player interacted with entity")
    end)
 
-   pool:on("inventory:opened", function()
+   pool:on("input:open_inventory", function()
       -- Handle inventory opened event
-      Log.trace("Inventory opened")
+      Log.trace("Player inventory opened")
    end)
 end
 

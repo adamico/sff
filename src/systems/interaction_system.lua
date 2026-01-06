@@ -1,19 +1,13 @@
-local EntityUtils = require("src.entities.entity_utils")
-local InputHelper = require("src.helpers.input_helper")
+local EntityHelper = require("src.helpers.entity_helper")
 
 local InteractionSystem = {}
 
 local DEBOUNCE_TIME = 0.2 -- Minimum seconds between clicks
 
 function InteractionSystem:init()
-   self.clickDetector = InputHelper.createEdgeDetector({threshold = 0.2})
-end
-
--- REFACTOR: pass dt as argument to edge detector
-function InteractionSystem:update(_dt)
-   if self.clickDetector:check(InputHelper.isActionPressed("interact")) then
+   self.pool:on("input:interact", function()
       self:tryMouseInteract(love.mouse.getPosition())
-   end
+   end)
 end
 
 function InteractionSystem:tryMouseInteract(mouseX, mouseY)
@@ -28,9 +22,9 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    for _, entity in ipairs(self.pool.groups.interactable.entities) do
       -- 1. check if mouse is over entity
-      if EntityUtils.pointIsInsideEntity(mouseX, mouseY, entity) then
+      if EntityHelper.pointIsInsideEntity(mouseX, mouseY, entity) then
          -- 2. check if entity is inside player range interaction circle
-         local playerEntityDistanceSquared = EntityUtils.getDistanceSquared(player, entity)
+         local playerEntityDistanceSquared = EntityHelper.getDistanceSquared(player, entity)
          if playerEntityDistanceSquared <= interactionRangeSquared
             and playerEntityDistanceSquared < closestDistanceSquared then
             closestEntity = entity
@@ -41,7 +35,7 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntity then
-      self.pool:emit("player:interacted", closestEntity)
+      self.pool:emit("entity:interacted", closestEntity)
    end
 end
 
