@@ -1,5 +1,6 @@
 local InputHelper = require("src.helpers.input_helper")
 local Bindings = require("src.config.input_bindings")
+local Events = require("src.config.events")
 
 local InputSystem = {}
 
@@ -19,18 +20,18 @@ local function movementDetection(pool)
    elseif InputHelper.isActionPressed(Bindings.actions.MOVE_RIGHT) then
       vector.x = 1
    end
-   pool:emit("input:move", vector.normalized)
+   pool:emit(Events.INPUT_MOVE, vector.normalized)
 end
 
 function InputSystem:update()
    movementDetection(self.pool)
 
    if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.OPEN_INVENTORY)) then
-      self.pool:emit("input:open_inventory")
+      self.pool:emit(Events.INPUT_OPEN_INVENTORY)
    end
 
    if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.INTERACT)) then
-      self.pool:emit("input:interact")
+      self.pool:emit(Events.INPUT_INTERACT)
    end
 end
 

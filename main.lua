@@ -2,28 +2,21 @@ Class = require("lib.middleclass")
 Colors = require("src.data.colors")
 Vector = require("lib.brinevector")
 Log = require("lib.log")
-
-local ecs, pool
+Events = require("src.config.events")
+Entities = require("src.config.entities")
+Bindings = require("src.config.input_bindings")
 
 function love.load()
    ecs = require("src.ecs")
    pool = ecs.pool
-
-   pool:on("entity:interacted", function(entity)
-      -- Handle player interaction with entity
-      Log.trace("Player interacted with entity")
-   end)
-
-   pool:on("input:open_inventory", function()
-      -- Handle inventory opened event
-      Log.trace("Player inventory opened")
-   end)
 end
 
+local chest_opened = false
 function love.update(dt)
    pool:flush()
    pool:emit("update", dt)
    pool:emit("remove", ecs.shouldRemove)
+   pool:emit(Events.ENTITY_INTERACTED, ecs.creative_chest)
 end
 
 function love.draw()

@@ -2,7 +2,7 @@ local PhysicsSystem = {}
 local EntityHelper = require("src.helpers.entity_helper")
 
 function PhysicsSystem:init()
-   self.pool:on("input:move", function(vector)
+   self.pool:on(Events.INPUT_MOVE, function(vector)
       for _entityIndex, entity in ipairs(self.pool.groups.controllable.entities) do
          entity.velocity = vector * entity.maxSpeed
       end
@@ -25,8 +25,8 @@ function PhysicsSystem:collide()
       for otherEntityIndex, otherEntity in ipairs(self.pool.groups.physics.entities) do
          if entityIndex ~= otherEntityIndex then
             if EntityHelper.areColliding(entity, otherEntity) then
-               self.pool:emit("collide", entity, otherEntity)
-               self.pool:emit("collide", otherEntity, entity)
+               self.pool:emit(Events.ENTITY_COLLIDED, entity, otherEntity)
+               self.pool:emit(Events.ENTITY_COLLIDED, otherEntity, entity)
             end
          end
       end

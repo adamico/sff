@@ -1,5 +1,9 @@
 local InventoryComponent = Class("InventoryComponent")
 
+--- @class InventoryComponent
+--- @field input_slots table
+--- @field output_slots table
+
 --- Initializes input slots with initial items.
 --- @param max_slots number The maximum number of slots.
 --- @param initial_items? table A table of itemId => count.

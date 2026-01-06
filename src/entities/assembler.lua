@@ -1,4 +1,4 @@
-local InventoryComponent = Class("InventoryComponent")
+local InventoryComponent = require("src.components.inventory_component")
 local Assembler = Class("Assembler")
 local ASSEMBLERS_DATA = require("src.data.assemblers_data")
 

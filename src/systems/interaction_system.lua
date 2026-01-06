@@ -1,11 +1,10 @@
 local EntityHelper = require("src.helpers.entity_helper")
-
 local InteractionSystem = {}
 
 local DEBOUNCE_TIME = 0.2 -- Minimum seconds between clicks
 
 function InteractionSystem:init()
-   self.pool:on("input:interact", function()
+   self.pool:on(Events.INPUT_INTERACT, function()
       self:tryMouseInteract(love.mouse.getPosition())
    end)
 end
@@ -35,7 +34,7 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntity then
-      self.pool:emit("entity:interacted", closestEntity)
+      self.pool:emit(Events.ENTITY_INTERACTED, closestEntity)
    end
 end
 

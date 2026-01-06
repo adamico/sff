@@ -23,18 +23,23 @@ pool = nata.new({
       require("src.systems.interaction_system"),
       require("src.systems.physics_system"),
       require("src.systems.render_entities_system"),
+      require("src.systems.ui_system"),
    },
 })
 
-local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 local creative_chest = pool:queue(Storage:new(100, 100, StorageRegistry.CREATIVE_CHEST))
 local skeleton_assembler = pool:queue(Assembler:new(600, 100, AssemblerRegistry.SKELETON_ASSEMBLER))
+local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
 local function shouldRemove(entity)
    return entity.dead
 end
 
 ecs.pool = pool
+ecs.player = player
+ecs.assembler = skeleton_assembler
+ecs.creative_chest = creative_chest
+
 ecs.shouldRemove = shouldRemove
 
 return ecs
