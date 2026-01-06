@@ -1,5 +1,5 @@
 local InputHelper = {}
-local bindings = require("src.config.input_bindings")
+local Bindings = require("src.config.input_bindings")
 local lk = love.keyboard
 
 --- Creates and edge detector for detecting rising edges (press events)
@@ -37,7 +37,7 @@ end
 --- @param action string The action to check
 --- @return boolean Whether the action is currently pressed
 function InputHelper.isActionPressed(action)
-   local binding = bindings[action]
+   local binding = Bindings.actionsToKeys[action]
    if not binding then return false end
 
    if binding.type == "key" then
