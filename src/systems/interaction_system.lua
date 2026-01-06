@@ -1,75 +1,54 @@
-local InteractionSystem = Class("InteractionSystem")
+local EntityUtils = require("src.entities.entity_utils")
 
-function InteractionSystem:initialize(pool)
-   self.pool = pool
+local InteractionSystem = {}
+
+local DEBOUNCE_TIME = 0.2 -- Minimum seconds between clicks
+
+function InteractionSystem:init()
    self.mouseDown = false
-end
-
---- Calculate squared distance between two entities with position components
---- @param a table Entity with position (Vector)
---- @param b table Entity with position (Vector)
---- @return number Squared distance between entity centers
-local function getDistanceSquared(a, b)
-   local dx = a.position.x - b.position.x
-   local dy = a.position.y - b.position.y
-   return dx * dx + dy * dy
+   self.lastClickTime = 0
 end
 
 function InteractionSystem:update(dt)
    local leftMousePressed = love.mouse.isDown(1)
+   local currentTime = love.timer.getTime()
 
    if leftMousePressed and not self.mouseDown then
-      local mouseX, mouseY = love.mouse.getPosition()
-      -- add transform when we add a camera
-      self:tryMouseInteract(mouseX, mouseY)
+      -- Debounce: ignore clicks that happen too quickly after the last one
+      local timeSinceLastClick = currentTime - self.lastClickTime
+      if timeSinceLastClick >= DEBOUNCE_TIME then
+         self.lastClickTime = currentTime
+         self:tryMouseInteract(love.mouse.getPosition())
+      end
    end
 
    self.mouseDown = leftMousePressed
 end
 
 function InteractionSystem:tryMouseInteract(mouseX, mouseY)
-   -- Find the player entity
    local player = self.pool.groups.controllable.entities[1]
-   if not player then return end
+   if not player then
+      return
+   end
 
    local interactionRangeSquared = player.interactionRange ^ 2
    local closestEntity = nil
    local closestDistanceSquared = math.huge
 
-   for _entityIndex, entity in ipairs(self.pool.groups.interactable.entities) do
-      local dx, dy = mouseX - entity.position.x, mouseY - entity.position.y
-      local distSquared = dx * dx + dy * dy
-      -- check if mouse is over entity
-      if distSquared <= entity.size.x ^ 2 then
-         if getDistanceSquared(player, entity) <= interactionRangeSquared then
-            self.pool:emit("player:interacted", entity)
-            break
+   for _, entity in ipairs(self.pool.groups.interactable.entities) do
+      -- 1. check if mouse is over entity
+      if EntityUtils.pointIsInsideEntity(mouseX, mouseY, entity) then
+         -- 2. check if entity is inside player range interaction circle
+         local playerEntityDistanceSquared = EntityUtils.getDistanceSquared(player, entity)
+         if playerEntityDistanceSquared <= interactionRangeSquared
+            and playerEntityDistanceSquared < closestDistanceSquared then
+            closestEntity = entity
+            closestDistanceSquared = playerEntityDistanceSquared
          end
       end
    end
-end
 
---- Attempt to interact with the closest interactable entity in range
-function InteractionSystem:tryInteract()
-   -- Find the player entity
-   local player = self.pool.groups.controllable.entities[1]
-   if not player then return end
-
-   local interactionRangeSquared = player.interactionRange ^ 2
-   local closestEntity = nil
-   local closestDistanceSquared = math.huge
-
-   -- Find the closest interactable entity within range
-   for _, entity in ipairs(self.pool.groups.interactable.entities) do
-      local distSquared = getDistanceSquared(player, entity)
-
-      if distSquared <= interactionRangeSquared and distSquared < closestDistanceSquared then
-         closestEntity = entity
-         closestDistanceSquared = distSquared
-      end
-   end
-
-   -- Emit event if we found an interactable entity in range
+   -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntity then
       self.pool:emit("player:interacted", closestEntity)
    end

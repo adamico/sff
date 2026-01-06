@@ -7,6 +7,10 @@ local ecs, pool
 function love.load()
    ecs = require("src.ecs")
    pool = ecs.pool
+
+   pool:on("player:interacted", function(entity)
+      -- Handle player interaction with entity
+   end)
 end
 
 function love.update(dt)

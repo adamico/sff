@@ -22,23 +22,20 @@ pool = nata.new({
    --[[
 		define the systems that should be used. systems receive
 		events in the order they're listed.
+
+		Pass class definitions, not instances - nata will handle
+		instantiation and automatically set the pool reference.
 	]]
    systems = {
       nata.oop(),
-      require("src.systems.input_system")(pool),
-      require("src.systems.interaction_system")(pool),
-      require("src.systems.physics_system")(pool),
-      require("src.systems.render_system")(pool),
+      require("src.systems.input_system"),
+      require("src.systems.interaction_system"),
+      require("src.systems.physics_system"),
+      require("src.systems.render_system"),
    },
 })
 
-pool:on("addToGroup", function(group, entity)
-   print("add", group, entity)
-end)
 
-pool:on("removeFromGroup", function(group, entity)
-   print("remove", group, entity)
-end)
 
 local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_CONFIG))
 local chest = pool:queue(Storage:new(100, 100, "creative_chest"))

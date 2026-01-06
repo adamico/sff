@@ -1,11 +1,11 @@
-local PhysicsSystem = Class("PhysicsSystem")
+local PhysicsSystem = {}
 
 local function isCircleColliding(a, b)
    return (a.x - b.x) ^ 2 + (a.y - b.y) ^ 2 < (a.r + b.r) ^ 2
 end
 
-function PhysicsSystem:initialize(pool)
-   self.pool = pool
+function PhysicsSystem:init()
+   -- pool is automatically set by nata
 end
 
 function PhysicsSystem:update(dt)

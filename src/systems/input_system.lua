@@ -1,6 +1,6 @@
-local InputSystem = Class("InputSystem")
-
 local lk = love.keyboard
+
+local InputSystem = {}
 
 local function update_input_vector(pool)
    local vector = Vector()
@@ -20,8 +20,8 @@ local function update_input_vector(pool)
    pool:emit("update_input_vector", vector.normalized)
 end
 
-function InputSystem:initialize(pool)
-   self.pool = pool
+function InputSystem:init()
+   -- pool is automatically set by nata
 end
 
 function InputSystem:update()
