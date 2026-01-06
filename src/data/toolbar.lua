@@ -1,9 +1,0 @@
-return {
-   rows = {
-      {
-         "bones",
-         "essence",
-      },
-      {},
-   }
-}

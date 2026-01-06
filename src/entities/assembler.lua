@@ -1,25 +1,25 @@
+local InventoryComponent = Class("InventoryComponent")
 local Assembler = Class("Assembler")
+local ASSEMBLERS_DATA = require("src.data.assemblers_data")
 
-function Assembler:initialize(x, y, config)
+function Assembler:initialize(x, y, id)
+   local data = ASSEMBLERS_DATA[id] or {}
+   self.id = id
    self.currentRecipe = nil
-   self.input_slots = {}
-   self.output_slots = {}
    self.position = Vector(x, y)
 
-   self.color = config.color or Colors.WHITE
-   self.creative = config.creative or false
-   self.interactable = config.interactable or false
-   self.mana_per_tick = config.mana_per_tick or 0
-   self.max_input_slots = config.max_input_slots or 0
-   self.max_output_slots = config.max_output_slots or 0
-   self.name = config.name or "assembler"
-   self.recipes = config.recipes or {}
-   self.size = config.size or Vector(64, 64)
-   self.timers = config.timers or {}
-   self.visual = config.visual or "square"
-end
+   self.color = data.color or Colors.WHITE
+   self.creative = data.creative or false
+   self.interactable = data.interactable or false
+   self.mana_per_tick = data.mana_per_tick or 0
+   self.name = data.name or "assembler"
+   self.recipes = data.recipes or {}
+   self.size = data.size or Vector(64, 64)
+   self.timers = data.timers or {}
+   self.visual = data.visual or "square"
 
--- add function to clear input slots according to max_<>_slots
+   self.inventory = InventoryComponent:new(data.inventory)
+end
 
 -- add utility functions, e.g. output per second, mana per second, etc.
 
