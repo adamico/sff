@@ -9,23 +9,12 @@ local ecs = {}
 local pool
 
 pool = nata.new({
-   --[[
-		define groups. each group contains the entities
-		that have the specified components.
-	]]
    groups = {
       interactable = {filter = {"position", "interactable"}},
       physics = {filter = {"position", "size", "velocity"}},
       controllable = {filter = {"controllable"}},
       render = {filter = {"position", "size", "visual"}},
    },
-   --[[
-		define the systems that should be used. systems receive
-		events in the order they're listed.
-
-		Pass class definitions, not instances - nata will handle
-		instantiation and automatically set the pool reference.
-	]]
    systems = {
       nata.oop(),
       require("src.systems.input_system"),
@@ -35,8 +24,6 @@ pool = nata.new({
       require("src.systems.render_system"),
    },
 })
-
-
 
 local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_CONFIG))
 local chest = pool:queue(Storage:new(100, 100, "creative_chest"))
