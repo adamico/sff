@@ -1,28 +1,19 @@
 local EntityUtils = require("src.entities.entity_utils")
+local InputHelper = require("src.helpers.input_helper")
 
 local InteractionSystem = {}
 
 local DEBOUNCE_TIME = 0.2 -- Minimum seconds between clicks
 
 function InteractionSystem:init()
-   self.mouseDown = false
-   self.lastClickTime = 0
+   self.clickDetector = InputHelper.createEdgeDetector({threshold = 0.2})
 end
 
-function InteractionSystem:update(dt)
-   local leftMousePressed = love.mouse.isDown(1)
-   local currentTime = love.timer.getTime()
-
-   if leftMousePressed and not self.mouseDown then
-      -- Debounce: ignore clicks that happen too quickly after the last one
-      local timeSinceLastClick = currentTime - self.lastClickTime
-      if timeSinceLastClick >= DEBOUNCE_TIME then
-         self.lastClickTime = currentTime
-         self:tryMouseInteract(love.mouse.getPosition())
-      end
+-- REFACTOR: pass dt as argument to edge detector
+function InteractionSystem:update(_dt)
+   if self.clickDetector:check(InputHelper.isActionPressed("interact")) then
+      self:tryMouseInteract(love.mouse.getPosition())
    end
-
-   self.mouseDown = leftMousePressed
 end
 
 function InteractionSystem:tryMouseInteract(mouseX, mouseY)

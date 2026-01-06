@@ -30,6 +30,7 @@ pool = nata.new({
       nata.oop(),
       require("src.systems.input_system"),
       require("src.systems.interaction_system"),
+      require("src.systems.inventory_system"),
       require("src.systems.physics_system"),
       require("src.systems.render_system"),
    },

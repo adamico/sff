@@ -19,4 +19,8 @@ function Player:update_input_vector(vector)
    self.velocity = vector * self.maxSpeed
 end
 
+function Player:open_inventory()
+   print("Opening inventory...")
+end
+
 return Player
