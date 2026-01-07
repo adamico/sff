@@ -7,10 +7,19 @@ function UISystem:init(player)
    self.storageInventoryRenderer = nil
    self.machineInventoryRenderer = nil
 
-   self.pool:on(Events.ENTITY_INTERACTED, function(entity)
-      if entity.interactable then
-         self:openStorageInventory(entity)
+   self.pool:on(Events.ENTITY_INTERACTED, function(interaction)
+      Log.trace("Interaction: ", interaction)
+      if interaction.target_entity.interactable then
+         self:openStorageInventory(interaction.player_entity, interaction.target_entity)
       end
+   end)
+
+   self.pool:on(Events.INPUT_OPEN_INVENTORY, function(player_entity)
+      self:openPlayerInventory(player_entity)
+   end)
+
+   self.pool:on(Events.INPUT_CLOSE_INVENTORY, function()
+      self:closeInventory()
    end)
 end
 
@@ -23,11 +32,24 @@ function UISystem:draw()
    if self.storageInventoryRenderer then
       self.storageInventoryRenderer:draw()
    end
+
+   if self.playerInventoryRenderer then
+      self.playerInventoryRenderer:draw()
+   end
 end
 
-function UISystem:openStorageInventory(storage)
-   self.openStorage = storage
-   self.storageInventoryRenderer = InventoryRenderer:new(storage)
+function UISystem:openStorageInventory(player_entity, target_entity)
+   self.storageInventoryRenderer = InventoryRenderer:new(player_entity, target_entity)
+end
+
+function UISystem:openPlayerInventory(player_entity)
+   self.playerInventoryRenderer = InventoryRenderer:new(player_entity)
+end
+
+function UISystem:closeInventory()
+   self.playerInventoryRenderer = nil
+   self.storageInventoryRenderer = nil
+   self.machineInventoryRenderer = nil
 end
 
 return UISystem

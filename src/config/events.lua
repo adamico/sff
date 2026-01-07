@@ -4,6 +4,7 @@ local Events = {
    INPUT_INTERACT = "input:interact",
    INPUT_MOVE = "input:move",
    INPUT_OPEN_INVENTORY = "input:open_inventory",
+   INPUT_CLOSE_INVENTORY = "input:close_inventory",
 }
 
 return Events

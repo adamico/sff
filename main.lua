@@ -11,12 +11,10 @@ function love.load()
    pool = ecs.pool
 end
 
-local chest_opened = false
 function love.update(dt)
    pool:flush()
    pool:emit("update", dt)
    pool:emit("remove", ecs.shouldRemove)
-   pool:emit(Events.ENTITY_INTERACTED, ecs.creative_chest)
 end
 
 function love.draw()

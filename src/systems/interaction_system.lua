@@ -34,7 +34,7 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntity then
-      self.pool:emit(Events.ENTITY_INTERACTED, closestEntity)
+      self.pool:emit(Events.ENTITY_INTERACTED, {player_entity = player, target_entity = closestEntity})
    end
 end
 

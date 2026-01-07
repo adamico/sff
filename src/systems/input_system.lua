@@ -27,7 +27,11 @@ function InputSystem:update()
    movementDetection(self.pool)
 
    if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.OPEN_INVENTORY)) then
-      self.pool:emit(Events.INPUT_OPEN_INVENTORY)
+      self.pool:emit(Events.INPUT_OPEN_INVENTORY, self.pool.groups.controllable.entities[1])
+   end
+
+   if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.CLOSE_INVENTORY)) then
+      self.pool:emit(Events.INPUT_CLOSE_INVENTORY)
    end
 
    if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.INTERACT)) then
