@@ -1,6 +1,7 @@
 local InputHelper = require("src.helpers.input_helper")
 local Bindings = require("src.config.input_bindings")
 local Events = require("src.config.events")
+local InventoryStateManager = require("src.ui.inventory_state_manager")
 
 local InputSystem = {}
 
@@ -35,7 +36,11 @@ function InputSystem:update()
    end
 
    if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.INTERACT)) then
-      self.pool:emit(Events.INPUT_INTERACT)
+      if InventoryStateManager.isOpen then
+         self.pool:emit(Events.INPUT_INVENTORY_CLICK)
+      else
+         self.pool:emit(Events.INPUT_INTERACT)
+      end
    end
 end
 

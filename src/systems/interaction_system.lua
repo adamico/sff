@@ -1,8 +1,6 @@
 local EntityHelper = require("src.helpers.entity_helper")
 local InteractionSystem = {}
 
-local DEBOUNCE_TIME = 0.2 -- Minimum seconds between clicks
-
 function InteractionSystem:init()
    self.pool:on(Events.INPUT_INTERACT, function()
       self:tryMouseInteract(love.mouse.getPosition())

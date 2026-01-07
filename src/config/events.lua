@@ -5,6 +5,7 @@ local Events = {
    INPUT_MOVE = "input:move",
    INPUT_OPEN_INVENTORY = "input:open_inventory",
    INPUT_CLOSE_INVENTORY = "input:close_inventory",
+   INPUT_INVENTORY_CLICK = "input:inventory_click",
 }
 
 return Events
