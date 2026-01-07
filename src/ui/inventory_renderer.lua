@@ -1,93 +1,138 @@
+local InventoryLayout = require("src.config.inventory_layout")
+local InventoryStateManager = require("src.ui.inventory_state_manager")
+
 local InventoryRenderer = Class("InventoryRenderer")
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 local lg = love.graphics
 
 --- Renders the inventory UI of an interactable entity
 --- @class InventoryRenderer
---- @field draw_x number
---- @field draw_y number
---- @field slot_size number
---- @field padding number
---- @field columns number
---- @field selected_slot number
+--- @field player_inventory table
+--- @field target_inventory table|nil
+--- @field layout table
+--- @field positions table
 
 --- Initialize the inventory renderer with the given inventory and options.
 --- @param player_entity table
 --- @param target_entity? table Optional target entity for side-by-side view
---- @param options? table
-function InventoryRenderer:initialize(player_entity, target_entity, options)
-   options = options or {}
+function InventoryRenderer:initialize(player_entity, target_entity)
    self.player_inventory = player_entity.inventory
    self.target_inventory = target_entity and target_entity.inventory or nil
-
-   self.columns = options.columns or 10
-   self.slot_size = options.slot_size or 32
-
-   self.draw_x = options.draw_x or SCREEN_WIDTH / 2 - self.columns * self.slot_size / 2
-   self.draw_y = options.draw_y or SCREEN_HEIGHT / 2 - 400 / 2
-   self.padding = options.padding or 4
-   self.selected_slot = nil
+   self.layout = InventoryLayout
+   self.positions = self.layout:getInventoryPositions(target_entity ~= nil)
 end
 
+--- Draw a box background for an inventory
+--- @param x number X position
+--- @param y number Y position
 function InventoryRenderer:drawBox(x, y)
-   local padding = self.padding
+   local padding = self.layout.padding
    local border_color = {1, 1, 1}
    local bg_color = {0.5, 0.45, 0.5}
-   local width = self.columns * self.slot_size
-   local rows = 4
-   local height = rows * self.slot_size + padding * 2 + 4
+   local width = self.layout:getInventoryWidth()
+   local height = self.layout:getInventoryHeight()
+
    lg.setColor(unpack(border_color))
    lg.rectangle("fill", x, y, width, height)
    lg.setColor(unpack(bg_color))
    lg.rectangle("fill", x + padding, y + padding, width - padding * 2, height - padding * 2)
 end
 
-function InventoryRenderer:drawSlots(x, y, slots)
-   local number_of_slots = #slots
-   local slot_size = self.slot_size
-   local border_width = 2
-   local padding = self.padding * 2 + 1
-   for i = 1, number_of_slots do
-      local col = (i - 1) % self.columns
-      local row = math.floor((i - 1) / self.columns)
-      local slot_x = x + padding + col * (slot_size - border_width)
-      local slot_y = y + padding + row * (slot_size - border_width)
+--- Draw an item icon with quantity
+--- @param item_id string The item ID
+--- @param quantity number The item quantity
+--- @param x number X position to draw at
+--- @param y number Y position to draw at
+--- @param alpha number Optional alpha transparency (default 1.0)
+function InventoryRenderer:drawItemIcon(item_id, quantity, x, y, alpha)
+   alpha = alpha or 1.0
+   local slot_size = self.layout.slot_size
+
+   -- Draw item icon
+   lg.setColor(1, 1, 1, alpha)
+   lg.print(string.sub(item_id, 1, 1), x, y)
+
+   -- Draw quantity if more than 1
+   if quantity and quantity > 1 then
+      lg.print(tostring(quantity), x + slot_size - 24, y + slot_size - 22)
+   end
+end
+
+--- Draw inventory slots
+--- @param base_x number Base X position of inventory
+--- @param base_y number Base Y position of inventory
+--- @param slots table Array of slots to draw
+function InventoryRenderer:drawSlots(base_x, base_y, slots)
+   local slot_size = self.layout.slot_size
+   local border_width = self.layout.border_width
+
+   for i = 1, #slots do
+      local slot_x, slot_y = self.layout:getSlotPosition(i, base_x, base_y)
       local slot = slots[i]
+
+      -- Draw slot border
       lg.setColor(1, 1, 1)
       lg.rectangle("fill", slot_x, slot_y, slot_size, slot_size)
+
+      -- Draw slot background
       lg.setColor(0.5, 0.45, 0.5)
       lg.rectangle("fill",
          slot_x + border_width, slot_y + border_width,
          slot_size - border_width * 2, slot_size - border_width * 2)
+
+      -- Draw item if slot has one
       if slot.item_id then
-         lg.setColor(1, 1, 1)
-         lg.print(string.sub(slot.item_id, 1, 1), slot_x + border_width + 2, slot_y + border_width + 2)
+         self:drawItemIcon(slot.item_id, slot.quantity, slot_x + border_width + 2, slot_y + border_width + 2, 1.0)
       end
    end
 end
 
+--- Draw the held item following the cursor
+function InventoryRenderer:drawHeldItem()
+   if not InventoryStateManager.heldStack then return end
+
+   local mouse_x, mouse_y = love.mouse.getPosition()
+   local slot_size = self.layout.slot_size
+   local border_width = self.layout.border_width
+   local offset = slot_size / 2
+
+   -- Draw semi-transparent slot background
+   lg.setColor(1, 1, 1, 0.8)
+   lg.rectangle("fill", mouse_x - offset, mouse_y - offset, slot_size, slot_size)
+
+   lg.setColor(0.5, 0.45, 0.5, 0.8)
+   lg.rectangle("fill",
+      mouse_x - offset + border_width,
+      mouse_y - offset + border_width,
+      slot_size - border_width * 2,
+      slot_size - border_width * 2)
+
+   -- Draw the item
+   local held = InventoryStateManager.heldStack
+   if not held or not held.item_id then return end
+
+   self:drawItemIcon(held.item_id, held.quantity,
+      mouse_x - offset + border_width + 2,
+      mouse_y - offset + border_width + 2,
+      0.9)
+end
+
+--- Main draw function
 function InventoryRenderer:draw()
-   local gap = 20
-   local single_width = self.columns * self.slot_size
-
-   if self.target_inventory then
+   if self.target_inventory and self.target_inventory.input_slots then
       -- Side-by-side mode: player left, target right
-      local total_width = single_width * 2 + gap
-      local left_x = SCREEN_WIDTH / 2 - total_width / 2
-      local right_x = left_x + single_width + gap
+      self:drawBox(self.positions.player.x, self.positions.player.y)
+      self:drawSlots(self.positions.player.x, self.positions.player.y, self.player_inventory.input_slots)
 
-      self:drawBox(left_x, self.draw_y)
-      self:drawSlots(left_x, self.draw_y, self.player_inventory.input_slots)
-
-      self:drawBox(right_x, self.draw_y)
-      self:drawSlots(right_x, self.draw_y, self.target_inventory.input_slots)
+      self:drawBox(self.positions.target.x, self.positions.target.y)
+      self:drawSlots(self.positions.target.x, self.positions.target.y, self.target_inventory.input_slots)
    else
       -- Single inventory mode: player only, centered
-      local center_x = SCREEN_WIDTH / 2 - single_width / 2
-
-      self:drawBox(center_x, self.draw_y)
-      self:drawSlots(center_x, self.draw_y, self.player_inventory.input_slots)
+      self:drawBox(self.positions.player.x, self.positions.player.y)
+      self:drawSlots(self.positions.player.x, self.positions.player.y, self.player_inventory.input_slots)
    end
+
+   -- Draw held item on top of everything
+   self:drawHeldItem()
 end
 
 return InventoryRenderer

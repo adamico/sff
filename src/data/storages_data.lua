@@ -8,7 +8,7 @@ return {
          max_input_slots = 32,
          max_output_slots = 0,
          initial_items = {
-            bones = 1
+            bone = 1
          }
       },
       name = "Creative Chest",

@@ -7,7 +7,7 @@ local A = Bindings.actions
 local InputSystem = {}
 
 function InputSystem:init()
-   self.input = InputHelper.createEdgeDetector()
+   self.input = InputHelper.createActionDetector()
 end
 
 local function movementDetection(pool)
@@ -26,23 +26,25 @@ local function movementDetection(pool)
 end
 
 function InputSystem:update()
-   local input = self.input
    local pool = self.pool
    local player = pool.groups.controllable.entities[1]
 
    movementDetection(pool)
 
-   if input:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
+   if self.input:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
       pool:emit(Events.INPUT_OPEN_INVENTORY, player)
    end
 
-   if input:pressed(A.CLOSE_INVENTORY) then
+   if self.input:pressed(A.CLOSE_INVENTORY) then
       pool:emit(Events.INPUT_CLOSE_INVENTORY)
    end
 
-   if input:pressed(A.INTERACT) then
+   if self.input:pressed(A.INTERACT) then
       if InventoryStateManager.isOpen then
-         pool:emit(Events.INPUT_INVENTORY_CLICK, Bindings.actionsToKeys[A.INTERACT].button)
+         pool:emit(
+            Events.INPUT_INVENTORY_CLICK,
+            {mouse_x = love.mouse.getX(), mouse_y = love.mouse.getY()}
+         )
       else
          pool:emit(Events.INPUT_INTERACT)
       end

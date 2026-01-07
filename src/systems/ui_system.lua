@@ -4,23 +4,28 @@ local InventoryStateManager = require("src.ui.inventory_state_manager")
 local UISystem = {}
 
 function UISystem:init(player)
+   local pool = self.pool
    self.toolbarRenderer = nil
    self.playerInventoryRenderer = nil
    self.storageInventoryRenderer = nil
    self.machineInventoryRenderer = nil
 
-   self.pool:on(Events.ENTITY_INTERACTED, function(interaction)
+   pool:on(Events.ENTITY_INTERACTED, function(interaction)
       if interaction.target_entity.interactable then
          self:openStorageInventory(interaction.player_entity, interaction.target_entity)
       end
    end)
 
-   self.pool:on(Events.INPUT_OPEN_INVENTORY, function(player_entity)
+   pool:on(Events.INPUT_OPEN_INVENTORY, function(player_entity)
       self:openPlayerInventory(player_entity)
    end)
 
-   self.pool:on(Events.INPUT_CLOSE_INVENTORY, function()
+   pool:on(Events.INPUT_CLOSE_INVENTORY, function()
       self:closeInventory()
+   end)
+
+   pool:on(Events.INPUT_INVENTORY_CLICK, function(coords)
+      self:handleInventoryClick(coords.mouse_x, coords.mouse_y)
    end)
 end
 
@@ -40,20 +45,32 @@ function UISystem:draw()
 end
 
 function UISystem:openStorageInventory(player_entity, target_entity)
+   InventoryStateManager:open(player_entity.inventory, target_entity.inventory)
    self.storageInventoryRenderer = InventoryRenderer:new(player_entity, target_entity)
-   InventoryStateManager:open(player_entity.inventory, target_entity.inventory, layoutConfig)
 end
 
 function UISystem:openPlayerInventory(player_entity)
+   InventoryStateManager:open(player_entity.inventory, nil)
    self.playerInventoryRenderer = InventoryRenderer:new(player_entity)
-   InventoryStateManager:open(player_entity.inventory, nil, layoutConfig)
 end
 
 function UISystem:closeInventory()
+   InventoryStateManager:close()
    self.playerInventoryRenderer = nil
    self.storageInventoryRenderer = nil
    self.machineInventoryRenderer = nil
-   InventoryStateManager:close()
+end
+
+function UISystem:handleInventoryClick(mouse_x, mouse_y)
+   if not InventoryStateManager.isOpen then return end
+
+   local slot_info = InventoryStateManager:getSlotAt(mouse_x, mouse_y)
+
+   -- If no slot was clicked, do nothing
+   if not slot_info then return end
+
+   -- Delegate all click logic to the state manager
+   InventoryStateManager:handleSlotClick(slot_info.slot_index, slot_info.inventory_type)
 end
 
 return UISystem
