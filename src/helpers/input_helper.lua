@@ -28,6 +28,10 @@ function InputHelper.createEdgeDetector(options)
 
          self.wasPressed = isPressed
          return triggered
+      end,
+
+      pressed = function(self, action)
+         return self:check(InputHelper.isActionPressed(action))
       end
    }
 end

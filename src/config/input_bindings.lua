@@ -8,7 +8,6 @@ Bindings.actions = {
    INTERACT        = "interact",
    OPEN_INVENTORY  = "open_inventory",
    CLOSE_INVENTORY = "close_inventory",
-   INVENTORY_CLICK = "inventory_click",
 }
 
 Bindings.actionsToKeys = {
@@ -19,7 +18,6 @@ Bindings.actionsToKeys = {
    interact        = {type = "mouse", button = 1},
    open_inventory  = {type = "key", scancode = "e"},
    close_inventory = {type = "key", scancode = "q"},
-   inventory_click = {type = "mouse", button = 1},
 }
 
 return Bindings

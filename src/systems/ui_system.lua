@@ -10,7 +10,6 @@ function UISystem:init(player)
    self.machineInventoryRenderer = nil
 
    self.pool:on(Events.ENTITY_INTERACTED, function(interaction)
-      Log.trace("Interaction: ", interaction)
       if interaction.target_entity.interactable then
          self:openStorageInventory(interaction.player_entity, interaction.target_entity)
       end

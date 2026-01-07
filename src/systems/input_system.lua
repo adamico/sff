@@ -2,44 +2,49 @@ local InputHelper = require("src.helpers.input_helper")
 local Bindings = require("src.config.input_bindings")
 local Events = require("src.config.events")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
+local A = Bindings.actions
 
 local InputSystem = {}
 
 function InputSystem:init()
-   self.edgeDetector = InputHelper.createEdgeDetector()
+   self.input = InputHelper.createEdgeDetector()
 end
 
 local function movementDetection(pool)
    local vector = Vector()
-   if InputHelper.isActionPressed(Bindings.actions.MOVE_UP) then
+   if InputHelper.isActionPressed(A.MOVE_UP) then
       vector.y = -1
-   elseif InputHelper.isActionPressed(Bindings.actions.MOVE_DOWN) then
+   elseif InputHelper.isActionPressed(A.MOVE_DOWN) then
       vector.y = 1
    end
-   if InputHelper.isActionPressed(Bindings.actions.MOVE_LEFT) then
+   if InputHelper.isActionPressed(A.MOVE_LEFT) then
       vector.x = -1
-   elseif InputHelper.isActionPressed(Bindings.actions.MOVE_RIGHT) then
+   elseif InputHelper.isActionPressed(A.MOVE_RIGHT) then
       vector.x = 1
    end
    pool:emit(Events.INPUT_MOVE, vector.normalized)
 end
 
 function InputSystem:update()
-   movementDetection(self.pool)
+   local input = self.input
+   local pool = self.pool
+   local player = pool.groups.controllable.entities[1]
 
-   if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.OPEN_INVENTORY)) then
-      self.pool:emit(Events.INPUT_OPEN_INVENTORY, self.pool.groups.controllable.entities[1])
+   movementDetection(pool)
+
+   if input:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
+      pool:emit(Events.INPUT_OPEN_INVENTORY, player)
    end
 
-   if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.CLOSE_INVENTORY)) then
-      self.pool:emit(Events.INPUT_CLOSE_INVENTORY)
+   if input:pressed(A.CLOSE_INVENTORY) then
+      pool:emit(Events.INPUT_CLOSE_INVENTORY)
    end
 
-   if self.edgeDetector:check(InputHelper.isActionPressed(Bindings.actions.INTERACT)) then
+   if input:pressed(A.INTERACT) then
       if InventoryStateManager.isOpen then
-         self.pool:emit(Events.INPUT_INVENTORY_CLICK)
+         pool:emit(Events.INPUT_INVENTORY_CLICK, Bindings.actionsToKeys[A.INTERACT].button)
       else
-         self.pool:emit(Events.INPUT_INTERACT)
+         pool:emit(Events.INPUT_INTERACT)
       end
    end
 end
