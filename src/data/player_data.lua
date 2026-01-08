@@ -10,8 +10,9 @@ return {
       max_input_slots = 10,
       max_output_slots = 0,
       initial_items = {
-         bone = 10,
-         essence = 10,
+         {item_id = "bone",    quantity = 10},
+         {item_id = "bone",    quantity = 10},
+         {item_id = "essence", quantity = 10},
       },
    },
    mana_regen_rate = 1,

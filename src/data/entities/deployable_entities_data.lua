@@ -25,7 +25,8 @@ return {
          max_input_slots = 32,
          max_output_slots = 0,
          initial_items = {
-            bone = 1
+            {item_id = "bone",    quantity = 63},
+            {item_id = "essence", quantity = 15}
          }
       },
       name = "Creative Chest",

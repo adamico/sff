@@ -16,11 +16,8 @@ local function initializeSlots(max_slots, initial_items)
    end
 
    local item_index = 1
-   for item_id, quantity in pairs(initial_items) do
-      slots[item_index] = {
-         item_id = item_id,
-         quantity = quantity
-      }
+   for _, item in ipairs(initial_items) do
+      slots[item_index] = item
       item_index = item_index + 1
    end
 
