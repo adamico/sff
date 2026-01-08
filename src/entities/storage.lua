@@ -1,9 +1,9 @@
 local InventoryComponent = require("src.components.inventory_component")
+local EntityRegistry = require("src.registries.entity_registry")
 local Storage = Class("Storage")
-local STORAGES_DATA = require("src.data.storages_data")
 
 function Storage:initialize(x, y, id)
-   local data = STORAGES_DATA[id] or {}
+   local data = EntityRegistry.getEntity(id) or {}
    self.id = id
    self.position = Vector(x, y)
    self.slots = {}

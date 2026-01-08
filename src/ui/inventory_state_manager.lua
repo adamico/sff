@@ -1,4 +1,5 @@
 local DrawHelper = require("src.helpers.draw_helper")
+local InventoryHelper = require("src.helpers.inventory_helper")
 
 local InventoryStateManager = {
    isOpen = false,
@@ -105,13 +106,34 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory)
       return true
    end
 
-   -- Slot has same item - stack them
+   -- Slot has same item - try stack them
    if slot.item_id == self.heldStack.item_id then
-      -- TODO: Add max stack size logic here
-      slot.quantity = slot.quantity + self.heldStack.quantity
-      self.heldStack = nil
-      love.mouse.setVisible(true)
-      return true
+      local max_stack_size = InventoryHelper.getMaxStackQuantity(slot.item_id)
+      -- we need to check if the held stack can be stacked with the slot
+      -- if the slot can hold more items, we stack them
+      -- for this we check if held_stack quantity + slot_size is less
+      -- than or equal to the max_stack_size for the item
+      if slot.quantity + self.heldStack.quantity <= max_stack_size then
+         slot.quantity = slot.quantity + self.heldStack.quantity
+         self.heldStack = nil
+         love.mouse.setVisible(true)
+         return true
+      else
+         -- if the slot is already full
+         if slot.quantity >= max_stack_size then return false end
+         -- else subtract the slot item quantity from the max_slot_size
+         local remaining_space = max_stack_size - slot.quantity
+         -- then subtract the result from the held stack quantity
+         self.heldStack.quantity = self.heldStack.quantity - remaining_space
+         -- if the result is less than or equal to zero
+         if self.heldStack.quantity <= 0 then
+            self.heldStack = nil
+            -- the slot quantity to max_slot_size
+            slot.quantity = max_stack_size
+            love.mouse.setVisible(true)
+            return true
+         end
+      end
    end
 
    -- Slot has different item - swap them

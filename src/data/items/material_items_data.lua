@@ -1,12 +1,14 @@
 return {
    bone = {
       name = "Bone",
-      category = "structural",
+      category = "material",
+      max_stack_size = 64,
       synthesis_cost = 5,
    },
    essence = {
       name = "Unlife Essence",
-      category = "catalyst",
+      category = "material",
+      max_stack_size = 16,
       synthesis_cost = 12,
    },
 }

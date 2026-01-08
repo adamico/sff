@@ -1,9 +1,9 @@
 local InventoryComponent = require("src.components.inventory_component")
+local EntityRegistry = require("src.registries.entity_registry")
 local Assembler = Class("Assembler")
-local ASSEMBLERS_DATA = require("src.data.assemblers_data")
 
 function Assembler:initialize(x, y, id)
-   local data = ASSEMBLERS_DATA[id] or {}
+   local data = EntityRegistry.getEntity(id) or {}
    self.id = id
    self.currentRecipe = nil
    self.position = Vector(x, y)
