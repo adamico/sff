@@ -1,8 +1,6 @@
-local InventoryView = Class("InventoryView")
-
-local lg = love.graphics
-local BACKGROUND_COLOR = {1, 1, 1}
-local BORDER_COLOR = {0.5, 0.45, 0.5}
+local DrawHelper = require("src.helpers.draw_helper")
+local InventoryView = Class("InventoryView"):include(DrawHelper)
+local BORDER_WIDTH = 2
 
 --- @class InventoryView
 --- @field x number
@@ -15,7 +13,6 @@ local BORDER_COLOR = {0.5, 0.45, 0.5}
 --- @param options table
 function InventoryView:initialize(inventory, options)
    self.inventory = inventory
-
    options = options or {}
    self.id = options.id or "inventory_view"
    self.x = options.x or 0
@@ -24,64 +21,25 @@ function InventoryView:initialize(inventory, options)
    self.rows = options.rows or 4
    self.slot_size = options.slot_size or 32
    self.padding = options.padding or 4
-   self.border_width = options.border_width or 2
+   self.border_width = BORDER_WIDTH
 end
 
 function InventoryView:draw()
-   self:drawBox()
+   self:drawBox(self.x, self.y,
+      self.columns * (self.slot_size - self.border_width) + self.padding * 2 + self.border_width,
+      self.rows * (self.slot_size - self.border_width) + self.padding * 2 + self.border_width
+   )
    self:drawSlots()
-end
-
-function InventoryView:drawBox()
-   local padding = self.padding
-   local x = self.x + padding
-   local y = self.y + padding
-   local width = self:getWidth()
-   local height = self:getHeight()
-   lg.setColor(unpack(BORDER_COLOR))
-   lg.rectangle("fill", x, y, width, height)
-   lg.setColor(unpack(BACKGROUND_COLOR))
-   lg.rectangle("fill", x + padding, y + padding, width - padding * 2, height - padding * 2)
 end
 
 function InventoryView:drawSlots()
    local slots = self.inventory.input_slots
    local slot_size = self.slot_size
-   local border_width = self.border_width
    for slotIndex = 1, #slots do
       local slot_x, slot_y = self:getSlotPosition(slotIndex)
       local slot = slots[slotIndex]
-
-      -- Draw slot border
-      lg.setColor(unpack(BORDER_COLOR))
-      lg.rectangle("fill", slot_x, slot_y, slot_size, slot_size)
-
-      -- Draw slot background
-      lg.setColor(unpack(BACKGROUND_COLOR))
-      lg.rectangle("fill",
-         slot_x + border_width, slot_y + border_width,
-         slot_size - border_width * 2, slot_size - border_width * 2)
-
-      -- Draw item if slot has one
-      if slot.item_id then
-         lg.setColor(0.2, 0.2, 0.2)
-         lg.print(string.sub(slot.item_id, 1, 1),
-            slot_x + border_width + 2,
-            slot_y + border_width + 2
-         )
-         if slot.quantity and slot.quantity > 1 then
-            lg.print(tostring(slot.quantity), slot_x + slot_size - 18, slot_y + slot_size - 16)
-         end
-      end
+      self:drawSlot(slot_x, slot_y, slot_size, slot_size, slot)
    end
-end
-
-function InventoryView:getWidth()
-   return self.columns * (self.slot_size - self.border_width) + self.padding * 2 + self.border_width
-end
-
-function InventoryView:getHeight()
-   return self.rows * (self.slot_size - self.border_width) + self.padding * 2 + self.border_width
 end
 
 function InventoryView:getSlotPosition(slot_index)

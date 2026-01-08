@@ -1,6 +1,4 @@
-local SLOT_SIZE = 32
-local BORDER_COLOR = {1, 1, 1, 0.8}
-local BACKGROUND_COLOR = {0.5, 0.45, 0.5, 0.8}
+local DrawHelper = require("src.helpers.draw_helper")
 
 local InventoryStateManager = {
    isOpen = false,
@@ -131,24 +129,8 @@ function InventoryStateManager:draw()
    for _, view in ipairs(self.views) do
       view:draw()
    end
-   self:drawHeldStack()
-end
-
-function InventoryStateManager:drawHeldStack()
-   if not self.heldStack then return end
-
-   local lg = love.graphics
-   local mx, my = love.mouse.getPosition()
-   local size = SLOT_SIZE
-   local offset = size / 2
-   lg.setColor(BORDER_COLOR)
-   lg.rectangle("fill", mx - offset, my - offset, size, size)
-   lg.setColor(BACKGROUND_COLOR)
-   lg.rectangle("fill", mx - offset + 2, my - offset + 2, size - 4, size - 4)
-   lg.setColor(1, 1, 1)
-   lg.print(string.sub(self.heldStack.item_id, 1, 1), mx - offset + 2, my - offset + 2)
-   if self.heldStack.quantity and self.heldStack.quantity > 1 then
-      lg.print(tostring(self.heldStack.quantity), mx, my)
+   if self.heldStack then
+      DrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
    end
 end
 
