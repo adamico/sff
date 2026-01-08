@@ -1,26 +1,37 @@
-local InventoryComponent = require("src.components.inventory_component")
-local EntityRegistry = require("src.registries.entity_registry")
-local Assembler = Class("Assembler")
+--- Assembler Class
+--- A machine that uses mana and rituals to process recipes
+--- Extends the Machine base class
 
+local Machine = require("src.entities.machine")
+local Assembler = Class("Assembler", Machine)
+
+--- Initialize a new assembler
+--- @param x number X position
+--- @param y number Y position
+--- @param id string Entity registry ID
 function Assembler:initialize(x, y, id)
-   local data = EntityRegistry.getEntity(id) or {}
-   self.id = id
-   self.currentRecipe = nil
-   self.position = Vector(x, y)
+   -- Call parent constructor
+   Machine.initialize(self, x, y, id)
 
-   self.color = data.color or Colors.WHITE
-   self.creative = data.creative or false
-   self.interactable = data.interactable or false
-   self.mana_per_tick = data.mana_per_tick or 0
-   self.name = data.name or "assembler"
-   self.recipes = data.recipes or {}
-   self.size = data.size or Vector(64, 64)
-   self.timers = data.timers or {}
-   self.visual = data.visual or "square"
-
-   self.inventory = InventoryComponent:new(data.inventory)
+   -- Assembler-specific: no additional properties needed
+   -- Mana is already set in Machine base class from data.mana
 end
 
--- add utility functions, e.g. output per second, mana per second, etc.
+--- Get FSM events for assembler
+--- Assembler has ritual-based start and mana-related states
+--- @return table Array of FSM event definitions
+function Assembler:getFSMEvents()
+   return {
+      {name = "set_recipe",   from = "blank",   to = "idle"},
+      {name = "prepare",      from = "idle",    to = "ready"},
+      {name = "start_ritual", from = "ready",   to = "working"},
+      {name = "complete",     from = "working", to = "idle"},
+      {name = "stop",         from = "working", to = "idle"},
+      {name = "block",        from = "working", to = "blocked"},
+      {name = "unblock",      from = "blocked", to = "idle"},
+      {name = "starve",       from = "working", to = "no_mana"},
+      {name = "refuel",       from = "no_mana", to = "working"},
+   }
+end
 
 return Assembler

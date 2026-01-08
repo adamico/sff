@@ -1,6 +1,6 @@
-local Recipe = Class("Recipe")
+local RecipeComponent = Class("RecipeComponent")
 
-function Recipe:initialize(config)
+function RecipeComponent:initialize(config)
    self.category = config.category or ""
    self.inputs = config.inputs or {}
    self.mana_cost = config.mana_cost or 0
@@ -9,4 +9,4 @@ function Recipe:initialize(config)
    self.processing_time = config.processing_time or 0
 end
 
-return Recipe
+return RecipeComponent

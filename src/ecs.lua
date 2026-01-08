@@ -10,18 +10,26 @@ local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 local ecs = {}
 local pool
 
+--- Filter function for processing group
+--- Machines need fsm and inventory, but currentRecipe can be nil initially
+local function isProcessingMachine(entity)
+   return entity.fsm ~= nil and entity.inventory ~= nil and entity.processingTimer ~= nil
+end
+
 pool = nata.new({
    groups = {
       interactable = {filter = {"position", "interactable"}},
       physics = {filter = {"position", "size", "velocity"}},
       controllable = {filter = {"controllable"}},
       render = {filter = {"position", "size", "visual"}},
+      processing = {filter = isProcessingMachine},
    },
    systems = {
       nata.oop(),
       require("src.systems.input_system"),
       require("src.systems.interaction_system"),
       require("src.systems.physics_system"),
+      require("src.systems.processing_system"),
       require("src.systems.render_entities_system"),
       require("src.systems.ui_system"),
    },

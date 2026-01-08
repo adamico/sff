@@ -17,7 +17,10 @@ local function initializeSlots(max_slots, initial_items)
 
    local item_index = 1
    for _, item in ipairs(initial_items) do
-      slots[item_index] = item
+      slots[item_index] = {
+         item_id = item.item_id,
+         quantity = item.quantity or 1
+      }
       item_index = item_index + 1
    end
 
@@ -30,8 +33,8 @@ function InventoryComponent:initialize(data)
    data = data or {}
    local initial_items = data.initial_items or {}
 
-   self.input_slots = initializeSlots(data.max_input_slots, initial_items)
-   self.output_slots = initializeSlots(data.max_output_slots)
+   self.input_slots = initializeSlots(data.max_input_slots or 0, initial_items)
+   self.output_slots = initializeSlots(data.max_output_slots or 0)
 end
 
 --- Adds an item to the inventory.
@@ -44,13 +47,11 @@ function InventoryComponent:addItem(item_id, count)
    for slotIndex, slot in ipairs(self.input_slots) do
       -- Find existing stack
       if slot.item_id == item_id then
-         slot.count = slot.count + 1
-
+         slot.quantity = (slot.quantity or 1) + count
          return true
          -- Find empty slot
       elseif not slot.item_id then
-         slot = {item_id = item_id, count = count}
-
+         self.input_slots[slotIndex] = {item_id = item_id, quantity = count}
          return true
       end
    end
@@ -58,14 +59,19 @@ function InventoryComponent:addItem(item_id, count)
    return false
 end
 
+--- Removes an item from the specified slots
+--- @param slots table The slots to remove from
+--- @param item_id string The ID of the item to remove
+--- @param count number The number of items to remove
+--- @return boolean True if the item was removed successfully
 function InventoryComponent:removeItem(slots, item_id, count)
    count = count or 1
 
    for slotIndex, slot in ipairs(slots) do
-      if slot.item_id == item_id then
-         slot.count = slot.count - 1
-         if slot.count <= 0 then
-            slot = {}
+      if slot.item_id == item_id and (slot.quantity or 0) >= count then
+         slot.quantity = slot.quantity - count
+         if slot.quantity <= 0 then
+            slots[slotIndex] = {}
          end
          return true
       end

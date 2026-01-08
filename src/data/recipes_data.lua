@@ -1,15 +1,16 @@
 return {
    create_skeleton = {
+      name = "Create Skeleton",
       category = "creature_creation",
       inputs = {
          bone = 2,
          essence = 1,
       },
-      mana_cost = 10,
-      name = "Create Skeleton",
       outputs = {
          skeleton = 1,
       },
-      processing_time = 3,
+      mana_per_tick = 2,
+      processing_time = 5,
+      requires_ritual = true,
    },
 }

@@ -5,7 +5,7 @@
 
 ## 1. Inventory & Item Systems (High Priority)
 
-- [ ] **Max Stack Size Enforcement**: Integrate `InventoryHelper.getMaxStackQuantity()` into `InventoryComponent:addItem()` to prevent over-stacking during automated transfers.
+- [x] **Max Stack Size Enforcement**: Integrate `InventoryHelper.getMaxStackQuantity()` into `InventoryComponent:addItem()` to prevent over-stacking during automated transfers.
 - [ ] **Item Registry Expansion**:
     - [ ] Add `icon` sprites to `item_data` files.
 - [ ] **Advanced Interactions**:
