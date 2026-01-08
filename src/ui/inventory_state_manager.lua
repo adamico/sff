@@ -17,11 +17,16 @@ function InventoryStateManager:open(player_inventory, target_inventory)
 end
 
 function InventoryStateManager:close()
+   if self.heldStack then
+      self:placeItemInSlot(self.heldStack.source_slot, self.heldStack.source_inventory)
+      love.mouse.setVisible(true)
+   end
+
+   self.heldStack = nil
    self.isOpen = false
    self.playerInventory = nil
    self.targetInventory = nil
    self.positions = nil
-   self.heldStack = nil
 end
 
 --- Detect which slot was clicked based on mouse coordinates
@@ -29,9 +34,7 @@ end
 --- @param mouse_y number Mouse y position
 --- @return table|nil Slot info {inventory_type = "player"|"target", slot_index = number, item = table|nil}
 function InventoryStateManager:getSlotAt(mouse_x, mouse_y)
-   if not self.isOpen or not self.positions then
-      return nil
-   end
+   if not self.positions then return nil end
 
    -- Check player inventory
    local player_slot = self:checkInventorySlots(
@@ -141,6 +144,7 @@ function InventoryStateManager:pickItemFromSlot(slot_index, inventory_type)
 
    -- Hide the mouse cursor
    love.mouse.setVisible(false)
+   self.lastSlotClicked = slot_index
    return self.heldStack
 end
 
@@ -149,8 +153,6 @@ end
 --- @param inventory_type string "player" or "target"
 --- @return boolean Success
 function InventoryStateManager:placeItemInSlot(slot_index, inventory_type)
-   if not self.heldStack then return false end
-
    local inventory = inventory_type == "player" and self.playerInventory or self.targetInventory
    if not inventory then return false end
 

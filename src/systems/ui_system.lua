@@ -67,14 +67,9 @@ function UISystem:closeInventory()
 end
 
 function UISystem:handleInventoryClick(mouse_x, mouse_y)
-   if not InventoryStateManager.isOpen then return end
-
    local slot_info = InventoryStateManager:getSlotAt(mouse_x, mouse_y)
-
-   -- If no slot was clicked, do nothing
    if not slot_info then return end
 
-   -- Delegate all click logic to the state manager
    InventoryStateManager:handleSlotClick(slot_info.slot_index, slot_info.inventory_type)
 end
 

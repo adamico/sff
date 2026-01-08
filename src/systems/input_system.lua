@@ -30,7 +30,7 @@ end
 function InputSystem:update()
    local pool = self.pool
    local player = pool.groups.controllable.entities[1]
-
+   local mouse_x, mouse_y = love.mouse.getX(), love.mouse.getY()
    movementDetection(pool)
 
    if self.input:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
@@ -43,12 +43,9 @@ function InputSystem:update()
 
    if self.input:pressed(A.INTERACT) then
       if InventoryStateManager.isOpen then
-         pool:emit(
-            Events.INPUT_INVENTORY_CLICK,
-            {mouse_x = love.mouse.getX(), mouse_y = love.mouse.getY()}
-         )
+         pool:emit(Events.INPUT_INVENTORY_CLICK, {mouse_x = mouse_x, mouse_y = mouse_y})
       else
-         pool:emit(Events.INPUT_INTERACT)
+         pool:emit(Events.INPUT_INTERACT, {mouse_x = mouse_x, mouse_y = mouse_y})
       end
    end
 end

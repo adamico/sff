@@ -2,16 +2,14 @@ local EntityHelper = require("src.helpers.entity_helper")
 local InteractionSystem = {}
 
 function InteractionSystem:init()
-   self.pool:on(Events.INPUT_INTERACT, function()
-      self:tryMouseInteract(love.mouse.getPosition())
+   self.pool:on(Events.INPUT_INTERACT, function(interaction)
+      self:tryMouseInteract(interaction.mouse_x, interaction.mouse_y)
    end)
 end
 
-function InteractionSystem:tryMouseInteract(mouseX, mouseY)
+function InteractionSystem:tryMouseInteract(mouse_x, mouse_y)
    local player = self.pool.groups.controllable.entities[1]
-   if not player then
-      return
-   end
+   if not player then return end
 
    local interactionRangeSquared = player.interactionRange ^ 2
    local closestEntity = nil
@@ -19,7 +17,7 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    for _, entity in ipairs(self.pool.groups.interactable.entities) do
       -- 1. check if mouse is over entity
-      if EntityHelper.pointIsInsideEntity(mouseX, mouseY, entity) then
+      if EntityHelper.pointIsInsideEntity(mouse_x, mouse_y, entity) then
          -- 2. check if entity is inside player range interaction circle
          local playerEntityDistanceSquared = EntityHelper.getDistanceSquared(player, entity)
          if playerEntityDistanceSquared <= interactionRangeSquared
@@ -32,7 +30,10 @@ function InteractionSystem:tryMouseInteract(mouseX, mouseY)
 
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntity then
-      self.pool:emit(Events.ENTITY_INTERACTED, {player_entity = player, target_entity = closestEntity})
+      self.pool:emit(
+         Events.ENTITY_INTERACTED,
+         {player_entity = player, target_entity = closestEntity}
+      )
    end
 end
 
