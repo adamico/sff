@@ -1,5 +1,8 @@
 # Inventory Click System Documentation
 
+> **Last Updated:** 2026-01-08  
+> **Status:** ✅ Core Implementation Complete
+
 ## Overview
 
 This document describes the implementation of the inventory item picking system, which allows players to click on inventory slots to pick up and move items between slots and inventories.
@@ -10,31 +13,39 @@ The system is built with clear separation of concerns across multiple components
 
 ### Components
 
-1. **InventoryLayout** (`src/config/inventory_layout.lua`)
-   - Centralized configuration for inventory UI dimensions
-   - Provides utility functions for slot positioning and hit detection
-   - Shared between renderer and state manager
+| Component | File | Status |
+|:----------|:-----|:------:|
+| InventoryStateManager | `src/ui/inventory_state_manager.lua` | ✅ |
+| InventoryView | `src/ui/inventory_view.lua` | ✅ |
+| DrawHelper | `src/helpers/draw_helper.lua` | ✅ |
+| UISystem | `src/systems/ui_system.lua` | ✅ |
 
-2. **InventoryStateManager** (`src/ui/inventory_state_manager.lua`)
+1. **InventoryStateManager** (`src/ui/inventory_state_manager.lua`)
    - Manages inventory state (open/closed, which inventories are active)
-   - Handles click detection (which slot was clicked)
-   - Manages held item state
+   - Handles click detection via `handleSlotClick(mouse_x, mouse_y)`
+   - Manages held item state (`heldStack`)
    - Implements pick/place/swap/stack logic
+   - Returns held items to source slot when inventory closes
 
-3. **InventoryRenderer** (`src/ui/inventory_renderer.lua`)
-   - Pure rendering component
-   - Draws inventory boxes, slots, and items
-   - Draws held item following cursor
-   - Uses InventoryLayout for positioning
+2. **InventoryView** (`src/ui/inventory_view.lua`)
+   - Represents a single inventory panel (toolbar, player inventory, or target)
+   - Handles slot positioning and hit detection (`getSlotUnderMouse`)
+   - Draws inventory box and slots using `DrawHelper`
+   - Supports multiple instances for side-by-side inventory display
+
+3. **DrawHelper** (`src/helpers/draw_helper.lua`)
+   - Shared drawing utilities (boxes, slots, held items)
+   - Mixed into `InventoryView` class
 
 4. **UISystem** (`src/systems/ui_system.lua`)
    - Coordinates between input events and state manager
-   - Manages renderer lifecycle
+   - Creates and manages `InventoryView` instances
    - Handles inventory open/close events
+   - Always renders toolbar; conditionally renders inventory popups
 
 ## Data Flow
 
-```
+```raw
 User Clicks
     ↓
 InputSystem detects mouse click while inventory is open
@@ -171,28 +182,29 @@ Edit `src/config/inventory_layout.lua` to customize:
 
 ## Future Enhancements
 
-### TODO Items in Code
+### Completed
 
-1. **Max Stack Size:** Currently items stack without limit. Need to add max stack size logic in `placeItemInSlot()` and `swapOrStackItems()`.
+- ✅ **Pick/Place Items**: Click to pick up, click to place
+- ✅ **Stack Merging**: Same item types combine quantities
+- ✅ **Item Swapping**: Different items swap positions
+- ✅ **Held Item Rendering**: Item follows cursor when held
+- ✅ **Multi-Inventory Support**: Side-by-side player + target inventories
+- ✅ **Toolbar Integration**: Always-visible toolbar, interactable during inventory screens
+- ✅ **Return on Close**: Held items return to source slot when inventory closes
 
-2. **Drop Handling:** Add implementation for:
-   - Finding an empty slot
-   - Emitting a drop event to spawn item in world
-   - Handling full inventories
+### TODO Items
 
-3. **Right-Click Split:** Add ability to split stacks by right-clicking.
-
-4. **Shift-Click Transfer:** Quick transfer between player and target inventory.
-
-5. **Slot Highlighting:** Visual feedback when hovering over slots.
-
-6. **Item Tooltips:** Show item details on hover.
-
-7. **Wheel-scrolling:**
-   - Scroll up to move hovered item to the target inventory
-   - Scroll down to move hovered item to the player toolbar
-
-8. **Number keys:** Pressing number keys (1-9) to move the hovered item to the player toolbar
+| Priority | Feature | Description |
+| :--------: | :--------: | :------------ |
+| High | **Max Stack Size** | Items stack without limit. Add max logic in `placeItemInSlot()`. |
+| Medium | **Right-Click Split** | Split stacks by right-clicking. |
+| Medium | **Shift-Click Transfer** | Quick transfer between player and target inventory. |
+| Low | **Drop Handling** | Emit drop event to spawn item in world when clicking outside. |
+| Low | **Deploy Handlling** | Emit deploy event to deploy structure in world when clicking on terrain with a deployable item in hand. |
+| Low | **Slot Highlighting** | Visual feedback when hovering over slots. |
+| Low | **Item Tooltips** | Show item details on hover. |
+| Low | **Wheel-scrolling** | Scroll up/down to move items between inventories. |
+| Low | **Number Keys** | Press 1-9 to move hovered item to toolbar slot. |
 
 ## Testing
 
@@ -203,25 +215,3 @@ To test the system:
 3. Click on another slot to place it
 4. Click on different items to swap them
 5. Click on same item types to stack them
-
-## Troubleshooting
-
-**Items not picking up:**
-
-- Check that inventory has `input_slots` array
-- Verify slots have `item_id` and `quantity` fields
-
-**Click not registering:**
-
-- Ensure `INPUT_INVENTORY_CLICK` event passes `{mouse_x, mouse_y}` table
-- Check that positions are calculated correctly
-
-**Held item not visible:**
-
-- Verify `InventoryRenderer:drawHeldItem()` is called
-- Check that `heldStack.item_id` is set
-
-**Items disappearing:**
-
-- Check slot clearing logic in `pickItemFromSlot()`
-- Verify `placeItemInSlot()` is properly setting slot values

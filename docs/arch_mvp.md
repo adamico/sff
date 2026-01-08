@@ -1,6 +1,31 @@
 # Super Fantasy Factory - MVP High-Level Architecture
 
+> **Last Updated:** 2026-01-08
+
 This document outlines the architecture for testing the core gameplay loop of Super Fantasy Factory: **Player → Creative Chest → Toolbar → Assembly Station → Ritual → Skeleton Spawn**.
+
+---
+
+## Implementation Status
+
+| Step | Task | Status | Notes |
+| :--: | :--- | :----: | :---- |
+| 1 | **Foundation**: Define materials, recipes, and global mana state | ✅ Done | `src/data/materials.lua`, `src/data/recipes.lua`, `src/entities/mana_pool.lua` |
+| 2 | **Toolbar**: Implement the player toolbar and selection logic | ✅ Done | `src/entities/toolbar.lua`, `src/ui/inventory_view.lua`, `src/systems/ui_system.lua` |
+| 3 | **Chest**: Create the Creative Chest for infinite bone supply | ✅ Done | `src/entities/storage.lua`, `src/data/storages_data.lua` |
+| 4 | **Station**: Implement the Assembly Station entity and its modal UI | ✅ Done | `src/entities/assembler.lua`, `src/data/assemblers_data.lua`, `src/ui/inventory_state_manager.lua` |
+| 5 | **Logic**: Implement processing timers, mana deduction, and creature spawning | 🔄 In Progress | Next: state machine for station processing |
+
+### Additional Progress
+
+- ✅ **ECS Architecture**: Nata-based entity pool (`src/ecs.lua`)
+- ✅ **Interaction System**: Proximity detection + mouse-based interaction (`src/systems/interaction_system.lua`)
+- ✅ **Input System**: Player input handling (`src/systems/input_system.lua`)
+- ✅ **UI System**: Toolbar rendering, inventory popups, item transfer (`src/systems/ui_system.lua`)
+- ✅ **Inventory Component**: Reusable inventory logic (`src/components/inventory_component.lua`)
+- ⬜ **Station State Machine**: Idle → Processing → Complete flow (pending)
+- ⬜ **Mana Integration**: Deducting mana when starting rituals (pending)
+- ⬜ **Creature Spawning**: Spawning skeletons on ritual completion (pending)
 
 ## Core Gameplay Flow
 
