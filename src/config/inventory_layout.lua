@@ -46,6 +46,13 @@ function InventoryLayout:getSlotPosition(slot_index, base_x, base_y)
    return x, y
 end
 
+function InventoryLayout:getToolbarDimensions()
+   return {
+      width = self:getInventoryWidth(),
+      height = self:getInventoryHeight() + self.padding
+   }
+end
+
 --- Calculate the base positions for player and target inventories
 --- @param has_target boolean Whether a target inventory exists
 --- @return table Positions {player = {x, y}, target = {x, y} or nil}
@@ -54,6 +61,11 @@ function InventoryLayout:getInventoryPositions(has_target)
    local height = self.rows * self.slot_size + self.padding * 2 + 4
 
    local positions = {}
+
+   positions.toolbar = {
+      x = SCREEN_WIDTH / 2 - self:getToolbarDimensions().width / 2,
+      y = SCREEN_HEIGHT - self:getToolbarDimensions().height
+   }
 
    if has_target then
       -- Side-by-side mode
@@ -83,6 +95,7 @@ end
 --- @param slot_y number Slot y position
 --- @return boolean Whether the point is inside the slot
 function InventoryLayout:isPointInSlot(mouse_x, mouse_y, slot_x, slot_y)
+   Log.trace("Checking point in slot:", mouse_x, mouse_y, slot_x, slot_y)
    return mouse_x >= slot_x and mouse_x <= slot_x + self.slot_size
       and mouse_y >= slot_y and mouse_y <= slot_y + self.slot_size
 end

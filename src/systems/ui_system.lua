@@ -1,14 +1,20 @@
-local InventoryRenderer = require("src.ui.inventory_renderer")
+local InventoryView = require("src.ui.inventory_view")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
-local ToolbarRenderer = require("src.ui.toolbar_renderer")
 
 local UISystem = {}
 
+local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+local SLOT_SIZE = 32
+local COLUMNS = 10
+local INV_ROWS = 4
+local INV_GAP = 20
+local TOOLBAR_ROWS = 1
+local WIDTH = COLUMNS * SLOT_SIZE
+local INV_HEIGHT = INV_ROWS * SLOT_SIZE
+local TOOLBAR_HEIGHT = TOOLBAR_ROWS * SLOT_SIZE + 8
+
 function UISystem:init()
    local pool = self.pool
-   self.playerInventoryRenderer = nil
-   self.storageInventoryRenderer = nil
-   self.machineInventoryRenderer = nil -- TODO: implement machine inventory renderer
 
    pool:on(Events.ENTITY_INTERACTED, function(interaction)
       if interaction.target_entity.interactable then
@@ -21,56 +27,69 @@ function UISystem:init()
    end)
 
    pool:on(Events.INPUT_CLOSE_INVENTORY, function()
-      self:closeInventory()
+      InventoryStateManager:close()
    end)
 
    pool:on(Events.INPUT_INVENTORY_CLICK, function(coords)
-      self:handleInventoryClick(coords.mouse_x, coords.mouse_y)
+      InventoryStateManager:handleSlotClick(coords.mouse_x, coords.mouse_y)
    end)
 end
 
-function UISystem:update(dt)
-   -- Update UI elements here
-   -- animations can go here
-end
+function UISystem:openPlayerInventory(player_entity)
+   local views = {
+      InventoryView:new(player_entity.toolbar, {
+         id = "toolbar",
+         columns = COLUMNS,
+         rows = TOOLBAR_ROWS,
+         x = (SCREEN_WIDTH - WIDTH) / 2,
+         y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
+      }),
+      InventoryView:new(player_entity.inventory, {
+         id = "player_inventory",
+         columns = COLUMNS,
+         rows = INV_ROWS,
+         x = (SCREEN_WIDTH - WIDTH) / 2,
+         y = (SCREEN_HEIGHT - INV_HEIGHT) / 2
+      })
+   }
 
-function UISystem:draw()
-   local player_toolbar = self.pool.groups.controllable.entities[1].toolbar
-   local toolbarRenderer = ToolbarRenderer:new(player_toolbar)
-   toolbarRenderer:draw()
-
-   if self.storageInventoryRenderer then
-      self.storageInventoryRenderer:draw()
-   end
-
-   if self.playerInventoryRenderer then
-      self.playerInventoryRenderer:draw()
-   end
+   InventoryStateManager:open(views)
 end
 
 function UISystem:openStorageInventory(player_entity, target_entity)
-   InventoryStateManager:open(player_entity.inventory, target_entity.inventory)
-   self.storageInventoryRenderer = InventoryRenderer:new(player_entity, target_entity)
+   local total_width = WIDTH * 2 + INV_GAP
+
+   local views = {
+      InventoryView:new(player_entity.toolbar, {
+         id = "toolbar",
+         columns = COLUMNS,
+         rows = TOOLBAR_ROWS,
+         x = (SCREEN_WIDTH - WIDTH) / 2,
+         y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
+      }),
+      InventoryView:new(player_entity.inventory, {
+         id = "player_inventory",
+         columns = COLUMNS,
+         rows = INV_ROWS,
+         x = (SCREEN_WIDTH - total_width) / 2,
+         y = (SCREEN_HEIGHT - INV_HEIGHT) / 2
+      }),
+      InventoryView:new(target_entity.inventory, {
+         id = "target_inventory",
+         columns = COLUMNS,
+         rows = INV_ROWS,
+         x = (SCREEN_WIDTH - total_width) / 2 + WIDTH + INV_GAP,
+         y = (SCREEN_HEIGHT - INV_HEIGHT) / 2
+      })
+   }
+
+   InventoryStateManager:open(views)
 end
 
-function UISystem:openPlayerInventory(player_entity)
-   InventoryStateManager:open(player_entity.inventory, nil)
-   self.playerInventoryRenderer = InventoryRenderer:new(player_entity)
-end
-
-function UISystem:closeInventory()
-   InventoryStateManager:close()
-   self.playerInventoryRenderer = nil
-   self.storageInventoryRenderer = nil
-   self.machineInventoryRenderer = nil
-   self.toolbarRenderer = nil
-end
-
-function UISystem:handleInventoryClick(mouse_x, mouse_y)
-   local slot_info = InventoryStateManager:getSlotAt(mouse_x, mouse_y)
-   if not slot_info then return end
-
-   InventoryStateManager:handleSlotClick(slot_info.slot_index, slot_info.inventory_type)
+function UISystem:draw()
+   if InventoryStateManager.isOpen then
+      InventoryStateManager:draw()
+   end
 end
 
 return UISystem
