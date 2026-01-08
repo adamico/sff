@@ -11,8 +11,6 @@ function InputSystem:init()
 end
 
 local function movementDetection(pool)
-   if InventoryStateManager.isOpen then return end
-
    local vector = Vector()
    if InputHelper.isActionPressed(A.MOVE_UP) then
       vector.y = -1
@@ -23,6 +21,10 @@ local function movementDetection(pool)
       vector.x = -1
    elseif InputHelper.isActionPressed(A.MOVE_RIGHT) then
       vector.x = 1
+   end
+   if InventoryStateManager.isOpen then
+      vector.y = 0
+      vector.x = 0
    end
    pool:emit(Events.INPUT_MOVE, vector.normalized)
 end
