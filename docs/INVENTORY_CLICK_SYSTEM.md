@@ -58,6 +58,7 @@ InventoryRenderer:draw() → reflects new state
 ### 1. Click Detection
 
 The system determines which slot was clicked by:
+
 - Getting inventory base positions from layout
 - Calculating each slot's position using `InventoryLayout:getSlotPosition()`
 - Checking if mouse coordinates fall within any slot bounds
@@ -68,11 +69,13 @@ The system determines which slot was clicked by:
 When clicking on a slot:
 
 **If NOT holding an item:**
+
 - Pick up the entire stack from the slot
 - Store in `InventoryStateManager.heldStack`
 - Clear the source slot
 
 **If ALREADY holding an item:**
+
 - **Same item type:** Stack items together (combines quantities)
 - **Different item type:** Swap the held item with the slot's item
 - Empty slot: Place the held item
@@ -80,6 +83,7 @@ When clicking on a slot:
 ### 3. Held Item Tracking
 
 The `heldStack` object contains:
+
 ```lua
 {
    item_id = "stone",
@@ -90,6 +94,7 @@ The `heldStack` object contains:
 ```
 
 This allows the system to:
+
 - Know what item is being held
 - Track where it came from
 - Return it to source if needed
@@ -97,6 +102,7 @@ This allows the system to:
 ### 4. Visual Feedback
 
 The renderer draws the held item:
+
 - Semi-transparent slot background
 - Following the mouse cursor
 - Offset by half slot size (centered on cursor)
@@ -107,13 +113,17 @@ The renderer draws the held item:
 ### InventoryStateManager
 
 #### `open(player_inventory, target_inventory)`
+
 Opens an inventory view with player inventory and optionally a target inventory.
 
 #### `close()`
+
 Closes the inventory and clears all state including held items.
 
 #### `getSlotAt(mouse_x, mouse_y)`
+
 Returns slot info for the slot at the given coordinates, or nil.
+
 ```lua
 {
    inventory_type = "player" | "target",
@@ -123,23 +133,25 @@ Returns slot info for the slot at the given coordinates, or nil.
 ```
 
 #### `pickItemFromSlot(slot_index, inventory_type)`
+
 Picks up an item from the specified slot. Returns the held stack.
 
 #### `placeItemInSlot(slot_index, inventory_type)`
-Places the held item into the specified slot. Handles stacking and swapping.
 
-#### `dropHeldItem()`
-Attempts to return the held item to its source or discard it.
+Places the held item into the specified slot. Handles stacking and swapping.
 
 ### InventoryLayout
 
 #### `getSlotPosition(slot_index, base_x, base_y)`
+
 Returns the x, y pixel coordinates of a slot.
 
 #### `getInventoryPositions(has_target)`
+
 Returns base positions for player and target inventories.
 
 #### `isPointInSlot(mouse_x, mouse_y, slot_x, slot_y)`
+
 Returns true if the point is inside the slot bounds.
 
 ## Configuration
@@ -163,7 +175,7 @@ Edit `src/config/inventory_layout.lua` to customize:
 
 1. **Max Stack Size:** Currently items stack without limit. Need to add max stack size logic in `placeItemInSlot()` and `swapOrStackItems()`.
 
-2. **Drop Handling:** `dropHeldItem()` needs proper implementation for:
+2. **Drop Handling:** Add implementation for:
    - Finding an empty slot
    - Emitting a drop event to spawn item in world
    - Handling full inventories
@@ -175,6 +187,12 @@ Edit `src/config/inventory_layout.lua` to customize:
 5. **Slot Highlighting:** Visual feedback when hovering over slots.
 
 6. **Item Tooltips:** Show item details on hover.
+
+7. **Wheel-scrolling:**
+   - Scroll up to move hovered item to the target inventory
+   - Scroll down to move hovered item to the player toolbar
+
+8. **Number keys:** Pressing number keys (1-9) to move the hovered item to the player toolbar
 
 ## Testing
 
@@ -189,17 +207,21 @@ To test the system:
 ## Troubleshooting
 
 **Items not picking up:**
+
 - Check that inventory has `input_slots` array
 - Verify slots have `item_id` and `quantity` fields
 
 **Click not registering:**
+
 - Ensure `INPUT_INVENTORY_CLICK` event passes `{mouse_x, mouse_y}` table
 - Check that positions are calculated correctly
 
 **Held item not visible:**
+
 - Verify `InventoryRenderer:drawHeldItem()` is called
 - Check that `heldStack.item_id` is set
 
 **Items disappearing:**
+
 - Check slot clearing logic in `pickItemFromSlot()`
 - Verify `placeItemInSlot()` is properly setting slot values

@@ -171,6 +171,7 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory_type)
       -- TODO: Add max stack size logic here
       slot.quantity = slot.quantity + self.heldStack.quantity
       self.heldStack = nil
+      love.mouse.setVisible(true)
       return true
    end
 
@@ -189,23 +190,6 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory_type)
    self.heldStack.source_slot = slot_index
 
    return true
-end
-
---- Drop the held item (return it to its source or discard it)
-function InventoryStateManager:dropHeldItem()
-   if not self.heldStack then return end
-
-   -- Try to return to source slot if it exists
-   if self.heldStack.source_inventory and self.heldStack.source_slot then
-      local success = self:placeItemInSlot(
-         self.heldStack.source_slot,
-         self.heldStack.source_inventory
-      )
-      if success then return end
-   end
-
-   -- TODO: Handle dropping item (maybe emit an event or find empty slot)
-   self.heldStack = nil
 end
 
 return InventoryStateManager
