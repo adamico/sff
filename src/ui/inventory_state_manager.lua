@@ -1,4 +1,4 @@
-local InventoryLayout = require("src.config.inventory_layout")
+local InventoryLayout = require("src.config.inventory_layout"):new()
 
 local InventoryStateManager = {
    isOpen = false,

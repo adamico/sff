@@ -4,6 +4,11 @@ return {
    inventory = {
       max_input_slots = 40,
       max_output_slots = 0,
+
+   },
+   toolbar = {
+      max_input_slots = 10,
+      max_output_slots = 0,
       initial_items = {
          bone = 10,
          essence = 10,

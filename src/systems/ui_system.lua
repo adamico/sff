@@ -1,14 +1,14 @@
 local InventoryRenderer = require("src.ui.inventory_renderer")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
+local ToolbarRenderer = require("src.ui.toolbar_renderer")
 
 local UISystem = {}
 
-function UISystem:init(player)
+function UISystem:init()
    local pool = self.pool
-   self.toolbarRenderer = nil
    self.playerInventoryRenderer = nil
    self.storageInventoryRenderer = nil
-   self.machineInventoryRenderer = nil
+   self.machineInventoryRenderer = nil -- TODO: implement machine inventory renderer
 
    pool:on(Events.ENTITY_INTERACTED, function(interaction)
       if interaction.target_entity.interactable then
@@ -35,6 +35,10 @@ function UISystem:update(dt)
 end
 
 function UISystem:draw()
+   local player_toolbar = self.pool.groups.controllable.entities[1].toolbar
+   local toolbarRenderer = ToolbarRenderer:new(player_toolbar)
+   toolbarRenderer:draw()
+
    if self.storageInventoryRenderer then
       self.storageInventoryRenderer:draw()
    end
@@ -59,6 +63,7 @@ function UISystem:closeInventory()
    self.playerInventoryRenderer = nil
    self.storageInventoryRenderer = nil
    self.machineInventoryRenderer = nil
+   self.toolbarRenderer = nil
 end
 
 function UISystem:handleInventoryClick(mouse_x, mouse_y)

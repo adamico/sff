@@ -1,11 +1,34 @@
-local InventoryLayout = {
-   slot_size = 32,
-   padding = 4,
-   border_width = 2,
-   columns = 10,
-   rows = 4,
-   gap_between_inventories = 20,
-}
+local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+
+local InventoryLayout = Class("InventoryLayout")
+
+--- @class InventoryLayout
+--- @field slot_size number
+--- @field padding number
+--- @field border_width number
+--- @field columns number
+--- @field rows number
+--- @field gap_between_inventories number
+
+--- Initialize the inventory layout with the given options.
+--- @param options table
+function InventoryLayout:initialize(options)
+   options = options or {
+      slot_size = 32,
+      padding = 4,
+      border_width = 2,
+      columns = 10,                 -- Number of columns in the inventory grid
+      rows = 4,                     -- Number of rows in the inventory grid
+      gap_between_inventories = 20, -- Gap between player and target inventories
+   }
+
+   self.slot_size = options.slot_size
+   self.padding = options.padding
+   self.border_width = options.border_width
+   self.columns = options.columns
+   self.rows = options.rows
+   self.gap_between_inventories = options.gap_between_inventories
+end
 
 --- Calculate the position of a slot in the grid
 --- @param slot_index number The slot index (1-based)
@@ -27,8 +50,6 @@ end
 --- @param has_target boolean Whether a target inventory exists
 --- @return table Positions {player = {x, y}, target = {x, y} or nil}
 function InventoryLayout:getInventoryPositions(has_target)
-   local SCREEN_WIDTH = love.graphics.getWidth()
-   local SCREEN_HEIGHT = love.graphics.getHeight()
    local single_width = self.columns * self.slot_size
    local height = self.rows * self.slot_size + self.padding * 2 + 4
 

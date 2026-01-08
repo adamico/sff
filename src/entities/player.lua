@@ -20,6 +20,7 @@ function Player:initialize(x, y)
    self.visual = data.visual or "circle"
 
    self.inventory = InventoryComponent:new(data.inventory)
+   self.toolbar = InventoryComponent:new(data.toolbar)
 end
 
 return Player
