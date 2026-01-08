@@ -15,6 +15,7 @@ local TOOLBAR_HEIGHT = TOOLBAR_ROWS * SLOT_SIZE + 8
 
 function UISystem:init()
    local pool = self.pool
+   self.toolbarView = nil -- Created lazily
 
    pool:on(Events.ENTITY_INTERACTED, function(interaction)
       if interaction.target_entity.interactable then
@@ -35,15 +36,26 @@ function UISystem:init()
    end)
 end
 
-function UISystem:openPlayerInventory(player_entity)
-   local views = {
-      InventoryView:new(player_entity.toolbar, {
+--- Get or create the persistent toolbar view
+function UISystem:getToolbarView()
+   if not self.toolbarView then
+      local player = self.pool.groups.controllable.entities[1]
+      if not player then return nil end
+
+      self.toolbarView = InventoryView:new(player.toolbar, {
          id = "toolbar",
          columns = COLUMNS,
          rows = TOOLBAR_ROWS,
          x = (SCREEN_WIDTH - WIDTH) / 2,
          y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
-      }),
+      })
+   end
+   return self.toolbarView
+end
+
+function UISystem:openPlayerInventory(player_entity)
+   local views = {
+      self:getToolbarView(),
       InventoryView:new(player_entity.inventory, {
          id = "player_inventory",
          columns = COLUMNS,
@@ -60,13 +72,7 @@ function UISystem:openStorageInventory(player_entity, target_entity)
    local total_width = WIDTH * 2 + INV_GAP
 
    local views = {
-      InventoryView:new(player_entity.toolbar, {
-         id = "toolbar",
-         columns = COLUMNS,
-         rows = TOOLBAR_ROWS,
-         x = (SCREEN_WIDTH - WIDTH) / 2,
-         y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
-      }),
+      self:getToolbarView(),
       InventoryView:new(player_entity.inventory, {
          id = "player_inventory",
          columns = COLUMNS,
@@ -87,6 +93,13 @@ function UISystem:openStorageInventory(player_entity, target_entity)
 end
 
 function UISystem:draw()
+   -- Toolbar is always visible
+   local toolbarView = self:getToolbarView()
+   if toolbarView then
+      toolbarView:draw()
+   end
+
+   -- Draw inventory views + held item when open
    if InventoryStateManager.isOpen then
       InventoryStateManager:draw()
    end
