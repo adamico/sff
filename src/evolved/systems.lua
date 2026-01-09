@@ -1,3 +1,6 @@
+local InputHelper = require("src.helpers.input_helper")
+local A = require("src.config.input_bindings").actions
+
 local builder = Evolved.builder
 local set = Evolved.set
 local lg = love.graphics
@@ -6,7 +9,7 @@ local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
 builder()
    :name("SYSTEMS.Startup")
-   :group(STAGES.ON_SETUP)
+   :group(STAGES.OnSetup)
    :prologue(function()
       set(ENTITIES.Player,
          FRAGMENTS.Position,
@@ -15,31 +18,48 @@ builder()
 
 builder()
    :name("SYSTEMS.PlayerInput")
-   :group(STAGES.ON_UPDATE)
-   :include()
+   :group(STAGES.OnUpdate)
+   :include(FRAGMENTS.Input)
+   :execute(function(chunk, _, entityCount)
+      local vector = Vector()
+      if InputHelper.isActionPressed(A.MOVE_UP) then
+         vector.y = -1
+      elseif InputHelper.isActionPressed(A.MOVE_DOWN) then
+         vector.y = 1
+      end
+      if InputHelper.isActionPressed(A.MOVE_LEFT) then
+         vector.x = -1
+      elseif InputHelper.isActionPressed(A.MOVE_RIGHT) then
+         vector.x = 1
+      end
+
+      local inputVectors = chunk:components(FRAGMENTS.Input)
+
+      for i = 1, entityCount do
+         local inputVector = inputVectors[i]
+         inputVector = Vector(vector.x, vector.y).normalized
+         inputVectors[i] = inputVector
+      end
+   end):build()
 
 builder()
    :name("SYSTEMS.Movement")
-   :group(STAGES.ON_UPDATE)
-   :include(TAGS.Physical)
+   :group(STAGES.OnUpdate)
+   :include(TAGS.Physical, TAGS.Controllable)
    :execute(function(chunk, _, entityCount)
       local deltaTime = UNIFORMS.DeltaTime
-
-      --- @type table[], table[]
       local positions, velocities = chunk:components(FRAGMENTS.Position, FRAGMENTS.Velocity)
-
-      --- @type number[]
       local maxSpeeds = chunk:components(FRAGMENTS.MaxSpeed)
+      local inputVectors = chunk:components(FRAGMENTS.Input)
 
       for i = 1, entityCount do
-         local px, py = positions[i]:split()
-         local vx, vy = velocities[i]:split()
+         local position = positions[i]
+         local velocity = velocities[i]
+         local inputVector = inputVectors[i]
          local maxSpeed = maxSpeeds[i]
-
-         px = px + vx * maxSpeed * deltaTime
-         py = py + vy * maxSpeed * deltaTime
-
-         positions[i].set(px, py)
+         velocity = inputVector * maxSpeed
+         position = position + velocity * deltaTime
+         positions[i] = position
       end
    end):build()
 
@@ -62,7 +82,7 @@ builder()
          if visual == "circle" then
             lg.circle("fill", px, py, size.x)
          elseif visual == "rectangle" then
-            lg.rectangle("fill", px, py2, size.x, size.y)
+            lg.rectangle("fill", px, py, size.x, size.y)
          end
       end
    end):build()

@@ -1,6 +1,6 @@
 Vector = require("lib.brinevector")
 Colors = require("src.config.colors")
-
+Log = require("lib.log")
 Evolved = require("lib.evolved")
 local process = Evolved.process
 local evolved_config = require("src.evolved.evolved_config")

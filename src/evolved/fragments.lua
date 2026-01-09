@@ -7,9 +7,31 @@ local function vector_duplicate(vector)
 end
 
 evolved_config.FRAGMENTS = {
+   Color = builder()
+      :name("FRAGMENTS.Color")
+      :default(Colors.WHITE)
+      :build(),
+   Input = builder()
+      :name("FRAGMENTS.Input")
+      :default(Vector(0, 0))
+      :duplicate(vector_duplicate)
+      :build(),
+   MaxSpeed = builder()
+      :name("FRAGMENTS.MaxSpeed")
+      :default(300)
+      :build(),
    Position = builder()
       :name("FRAGMENTS.Position")
-      :default(Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+      :default(Vector(0, 0))
+      :duplicate(vector_duplicate)
+      :build(),
+   Shape = builder()
+      :name("FRAGMENTS.Shape")
+      :default("circle")
+      :build(),
+   Size = builder()
+      :name("FRAGMENTS.Size")
+      :default(Vector(16, 16))
       :duplicate(vector_duplicate)
       :build(),
    Velocity = builder()
@@ -17,23 +39,6 @@ evolved_config.FRAGMENTS = {
       :default(Vector(0, 0))
       :duplicate(vector_duplicate)
       :build(),
-   Color = builder()
-      :name("FRAGMENTS.Color")
-      :default(Colors.WHITE)
-      :build(),
-   MaxSpeed = builder()
-      :name("FRAGMENTS.MaxSpeed")
-      :default(300)
-      :build(),
-   Size = builder()
-      :name("FRAGMENTS.Size")
-      :default(Vector(16, 16))
-      :duplicate(vector_duplicate)
-      :build(),
-   Shape = builder()
-      :name("FRAGMENTS.Shape")
-      :default("circle")
-      :build()
 }
 
 local FRAGMENTS = evolved_config.FRAGMENTS
@@ -42,6 +47,7 @@ evolved_config.TAGS = {
    Controllable = builder()
       :name("TAGS.Controllable")
       :tag()
+      :require(FRAGMENTS.Input)
       :build(),
    Player = builder()
       :name("TAGS.Player")
