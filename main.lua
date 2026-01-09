@@ -1,26 +1,23 @@
-require("lib.lovedebug")
+local evolved_config = require("src.evolved.evolved_config")
+require("src.evolved.fragments")
+require("src.evolved.prefabs")
+require("src.evolved.systems")
+local UNIFORMS = evolved_config.UNIFORMS
 
-Class = require("lib.middleclass")
-Colors = require("src.config.colors")
-Vector = require("lib.brinevector")
-Log = require("lib.log")
-Events = require("src.config.events")
-Entities = require("src.config.entities")
-Bindings = require("src.config.input_bindings")
+local evolved = require("lib.evolved")
+local process = evolved.process
 
 function love.load()
-   ecs = require("src.ecs")
-   pool = ecs.pool
+   process(evolved_config.STAGES.OnSetup)
 end
 
 function love.update(dt)
-   pool:flush()
-   pool:emit("update", dt)
-   pool:emit("remove", ecs.shouldRemove)
+   UNIFORMS.DELTA_TIME = dt
+   process(evolved_config.STAGES.OnUpdate)
 end
 
 function love.draw()
-   pool:emit("draw")
+   process(evolved_config.STAGES.OnRender)
 end
 
 function love.keypressed(key)
