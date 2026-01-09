@@ -1,9 +1,8 @@
 local nata = require("lib.nata")
 local Player = require("src.entities.player")
 local Storage = require("src.entities.storage")
-local StorageRegistry = require("src.registries.storage_registry")
 local Assembler = require("src.entities.assembler")
-local AssemblerRegistry = require("src.registries.assembler_registry")
+local DeployableRegistry = require("src.registries.deployable_registry")
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
@@ -35,8 +34,8 @@ pool = nata.new({
    },
 })
 
-local creative_chest = pool:queue(Storage:new(100, 100, StorageRegistry.CREATIVE_CHEST))
-local skeleton_assembler = pool:queue(Assembler:new(600, 100, AssemblerRegistry.SKELETON_ASSEMBLER))
+local creative_chest = pool:queue(Storage:new(100, 100, DeployableRegistry.CREATIVE_CHEST))
+local skeleton_assembler = pool:queue(Assembler:new(600, 100, DeployableRegistry.SKELETON_ASSEMBLER))
 local player = pool:queue(Player:new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
 local function shouldRemove(entity)
