@@ -16,6 +16,10 @@ evolved_config.FRAGMENTS = {
       :default(Vector(0, 0))
       :duplicate(vector_duplicate)
       :build(),
+   Inventory = builder()
+      :name("FRAGMENTS.Inventory")
+      :default(nil)
+      :build(),
    MaxSpeed = builder()
       :name("FRAGMENTS.MaxSpeed")
       :default(300)
@@ -33,6 +37,10 @@ evolved_config.FRAGMENTS = {
       :name("FRAGMENTS.Size")
       :default(Vector(16, 16))
       :duplicate(vector_duplicate)
+      :build(),
+   Toolbar = builder()
+      :name("FRAGMENTS.Toolbar")
+      :default(nil)
       :build(),
    Velocity = builder()
       :name("FRAGMENTS.Velocity")

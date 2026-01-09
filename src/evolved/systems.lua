@@ -11,9 +11,7 @@ builder()
    :name("SYSTEMS.Startup")
    :group(STAGES.OnSetup)
    :prologue(function()
-      set(ENTITIES.Player,
-         FRAGMENTS.Position,
-         Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+      set(ENTITIES.Player, FRAGMENTS.Position, Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
    end):build()
 
 builder()
@@ -86,6 +84,8 @@ builder()
          end
       end
    end):build()
+
+require("src.evolved.systems.ui_system")
 
 builder()
    :name("SYSTEMS.Debugging")
