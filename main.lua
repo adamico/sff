@@ -10,12 +10,11 @@ require("src.evolved.fragments")
 FRAGMENTS = evolved_config.FRAGMENTS
 TAGS = evolved_config.TAGS
 require("src.evolved.entities")
+ENTITIES = evolved_config.ENTITIES
 
+UNIFORMS = evolved_config.UNIFORMS
 STAGES = evolved_config.STAGES
 require("src.evolved.systems")
-
-ENTITIES = evolved_config.ENTITIES
-UNIFORMS = evolved_config.UNIFORMS
 
 function love.load()
    process(STAGES.OnSetup)
