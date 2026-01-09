@@ -54,13 +54,14 @@ function InventoryStateManager:handleSlotClick(mouse_x, mouse_y)
 
    local inventory = slot_info.view.inventory
    local slot_index = slot_info.slotIndex
+   local slotType = slot_info.slotType
    local slot = slot_info.slot
 
    -- If holding an item, try to place/swap/stack
    if self.heldStack then
-      return self:placeItemInSlot(slot_index, inventory)
+      return self:placeItemInSlot(slot_index, slotType, inventory)
    elseif slot.item_id then
-      return self:pickItemFromSlot(slot_index, inventory)
+      return self:pickItemFromSlot(slot_index, slotType, inventory)
    end
 
    return false
@@ -70,8 +71,8 @@ end
 --- @param slot_index number The slot index to pick from
 --- @param inventory InventoryComponent The inventory to pick from
 --- @return boolean Success
-function InventoryStateManager:pickItemFromSlot(slot_index, inventory)
-   local slot = inventory.input_slots[slot_index]
+function InventoryStateManager:pickItemFromSlot(slot_index, slotType, inventory)
+   local slot = inventory[slotType.."_slots"][slot_index]
    if not slot or not slot.item_id then return false end
 
    -- Pick up the entire stack
@@ -79,7 +80,8 @@ function InventoryStateManager:pickItemFromSlot(slot_index, inventory)
       item_id = slot.item_id,
       quantity = slot.quantity,
       source_inventory = inventory,
-      source_slot = slot_index
+      source_slot = slot_index,
+      source_slot_type = slotType,
    }
 
    -- Clear the slot
@@ -93,8 +95,8 @@ end
 --- @param inventory InventoryComponent The inventory to place into
 --- @param slot_index number The slot index to place into
 --- @return boolean Success
-function InventoryStateManager:placeItemInSlot(slot_index, inventory)
-   local slot = inventory.input_slots[slot_index]
+function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
+   local slot = inventory[slotType.."_slots"][slot_index]
    if not slot then return false end
 
    -- Empty slot - place the item
@@ -120,7 +122,13 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory)
          local remaining_space = max_stack_size - slot.quantity
          local new_held_quantity = self.heldStack.quantity - remaining_space
          self.heldStack = new_held_quantity <= 0 and nil or
-         {item_id = self.heldStack.item_id, quantity = new_held_quantity}
+            {
+               item_id = self.heldStack.item_id,
+               quantity = new_held_quantity,
+               source_inventory = inventory,
+               source_slot = slot_index,
+               source_slot_type = slotType
+            }
          slot.quantity = max_stack_size
          love.mouse.setVisible(true)
          return true
@@ -135,6 +143,7 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory)
    self.heldStack.quantity = temp.quantity
    self.heldStack.source_inventory = inventory
    self.heldStack.source_slot = slot_index
+   self.heldStack.source_slot_type = slotType
    return true
 end
 
