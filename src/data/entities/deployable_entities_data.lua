@@ -9,8 +9,11 @@ return {
          max_input_slots = 2,
          max_output_slots = 1,
       },
-      mana = 10,
-      mana_per_tick = 1,
+      mana = {
+         current = 10,
+         max = 100,
+         consume_rate = 1,
+      },
       name = "Skeleton Assembler",
       recipes = {Recipes.create_skeleton},
       size = Vector(64, 64),

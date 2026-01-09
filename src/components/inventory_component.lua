@@ -3,6 +3,10 @@ local InventoryComponent = Class("InventoryComponent")
 --- @class InventoryComponent
 --- @field input_slots table
 --- @field output_slots table
+--- @method initialize
+--- @method initializeSlots
+--- @method addItem
+--- @method removeItem
 
 --- Initializes input slots with initial items.
 --- @param max_slots number The maximum number of slots.

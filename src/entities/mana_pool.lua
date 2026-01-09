@@ -1,8 +1,9 @@
+local data = require("src/data/mana_pool_data")
 local ManaPool = Class("ManaPool")
 
-function ManaPool:initialize(config)
-   self.max_mana = config.max_mana or 0
-   self.regen_rate = config.regen_rate or 0
+function ManaPool:initialize()
+   self.max_mana = data.max_mana
+   self.regen_rate = data.regen_rate
 
    self.mana = self.max_mana
 end

@@ -4,6 +4,8 @@
 
 local statemachine = require("lib.statemachine")
 local InventoryComponent = require("src.components.inventory_component")
+local ManaComponent = require("src.components.mana_component")
+
 local EntityRegistry = require("src.registries.entity_registry")
 
 local Machine = Class("Machine")
@@ -28,9 +30,6 @@ function Machine:initialize(x, y, id)
    self.processingTimer = 0
    self.savedTimer = 0 -- For resuming after NO_MANA
 
-   -- Resources
-   self.mana = data.mana or 0
-
    -- Configuration from data
    self.name = data.name or "Machine"
    self.valid_recipes = data.recipes or {}
@@ -42,6 +41,7 @@ function Machine:initialize(x, y, id)
 
    -- Components
    self.inventory = InventoryComponent:new(data.inventory)
+   self.mana = ManaComponent:new(data.mana)
 
    -- FSM - subclasses override getFSMEvents()
    self.fsm = statemachine.create({
