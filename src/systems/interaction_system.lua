@@ -2,7 +2,7 @@ local EntityHelper = require("src.helpers.entity_helper")
 local InteractionSystem = {}
 
 function InteractionSystem:init()
-   self.pool:on(Events.INPUT_INTERACT, function(interaction)
+   self.pool:on(Events.INPUT_INTERACTED, function(interaction)
       self:tryMouseInteract(interaction.mouse_x, interaction.mouse_y)
    end)
 end

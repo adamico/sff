@@ -26,7 +26,7 @@ local function movementDetection(pool)
       vector.y = 0
       vector.x = 0
    end
-   pool:emit(Events.INPUT_MOVE, vector.normalized)
+   pool:emit(Events.INPUT_MOVED, vector.normalized)
 end
 
 function InputSystem:update()
@@ -36,18 +36,18 @@ function InputSystem:update()
    movementDetection(pool)
 
    if self.input:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
-      pool:emit(Events.INPUT_OPEN_INVENTORY, player)
+      pool:emit(Events.INPUT_INVENTORY_OPENED, player)
    end
 
    if self.input:pressed(A.CLOSE_INVENTORY) then
-      pool:emit(Events.INPUT_CLOSE_INVENTORY)
+      pool:emit(Events.INPUT_INVENTORY_CLOSED)
    end
 
    if self.input:pressed(A.INTERACT) then
       if InventoryStateManager.isOpen then
-         pool:emit(Events.INPUT_INVENTORY_CLICK, {mouse_x = mouse_x, mouse_y = mouse_y})
+         pool:emit(Events.INPUT_INVENTORY_CLICKED, {mouse_x = mouse_x, mouse_y = mouse_y})
       else
-         pool:emit(Events.INPUT_INTERACT, {mouse_x = mouse_x, mouse_y = mouse_y})
+         pool:emit(Events.INPUT_INTERACTED, {mouse_x = mouse_x, mouse_y = mouse_y})
       end
    end
 end

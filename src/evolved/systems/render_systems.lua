@@ -1,6 +1,8 @@
 local lg = love.graphics
 local InventoryView = require("src.ui.inventory_view")
 local builder = Evolved.builder
+local observe = Beholder.observe
+local group = Beholder.group
 
 local SLOT_SIZE = 32
 local COLUMNS = 10
@@ -36,8 +38,6 @@ builder()
       end
    end):build()
 
-
-
 local toolbarView
 
 local function getToolbarView(toolbar)
@@ -56,10 +56,36 @@ local function getToolbarView(toolbar)
    return toolbarView
 end
 
+local UI_OBSERVERS = {}
+local observersRegistered = false
+
+local function registerObservers()
+   if observersRegistered then return end
+   observersRegistered = true
+
+   group(UI_OBSERVERS, function()
+      observe(Events.ENTITY_INTERACTED, function()
+         Log.trace("Entity interacted")
+      end)
+      observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory)
+         Log.trace("Inventory "..tostring(playerInventory).." opened")
+      end)
+      observe(Events.INPUT_INVENTORY_CLOSED, function()
+         Log.trace("Inventory closed")
+      end)
+      observe(Events.INPUT_INVENTORY_CLICKED, function()
+         Log.trace("Inventory clicked")
+      end)
+   end)
+end
+
 builder()
    :name("SYSTEMS.UI")
    :group(STAGES.OnRender)
    :include(FRAGMENTS.Toolbar)
+   :prologue(function()
+      registerObservers()
+   end)
    :execute(function(chunk, _, entityCount)
       local toolbars = chunk:components(FRAGMENTS.Toolbar)
 

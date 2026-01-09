@@ -1,10 +1,13 @@
+Beholder = require("lib.beholder")
 Class = require("lib.middleclass")
 Colors = require("src.config.colors")
+Events = require("src.config.events")
 Evolved = require("lib.evolved")
 Log = require("lib.log")
 Vector = require("lib.brinevector")
 local process = Evolved.process
 local evolved_config = require("src.evolved.evolved_config")
+local observe = Beholder.observe
 
 require("src.evolved.fragments")
 FRAGMENTS = evolved_config.FRAGMENTS
@@ -21,7 +24,7 @@ function love.load()
 end
 
 function love.update(dt)
-   UNIFORMS.DELTA_TIME = dt
+   UNIFORMS.DeltaTime = dt
    process(STAGES.OnUpdate)
 end
 

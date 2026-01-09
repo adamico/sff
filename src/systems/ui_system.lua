@@ -24,15 +24,15 @@ function UISystem:init()
       end
    end)
 
-   pool:on(Events.INPUT_OPEN_INVENTORY, function(player_entity)
+   pool:on(Events.INPUT_INVENTORY_OPENED, function(player_entity)
       self:openPlayerInventory(player_entity)
    end)
 
-   pool:on(Events.INPUT_CLOSE_INVENTORY, function()
+   pool:on(Events.INPUT_INVENTORY_CLOSED, function()
       InventoryStateManager:close()
    end)
 
-   pool:on(Events.INPUT_INVENTORY_CLICK, function(coords)
+   pool:on(Events.INPUT_INVENTORY_CLICKED, function(coords)
       InventoryStateManager:handleSlotClick(coords.mouse_x, coords.mouse_y)
    end)
 end
