@@ -13,6 +13,7 @@ local ItemRegistry = require("src.registries.item_registry")
 local ProcessingSystem = {}
 
 ProcessingSystem.DEBUG = true -- Set to false to disable debug logging
+ProcessingSystem.MANA_RESUME_THRESHOLD_SECONDS = 1.0
 
 --- Initialize the system
 function ProcessingSystem:init()
@@ -22,8 +23,8 @@ end
 --- Update all processing machines
 --- @param dt number Delta time
 function ProcessingSystem:update(dt)
-   for _, machine in ipairs(self.pool:getGroup("processing")) do
-      ProcessingSystem.updateMachine(machine, dt)
+   for _, entity in ipairs(self.pool.groups.processing.entities) do
+      ProcessingSystem.updateMachine(entity, dt)
    end
 end
 
@@ -112,8 +113,8 @@ local function consumeManaTick(machine, dt)
    if manaPerTick == 0 then return true end
 
    local manaCost = manaPerTick * dt
-
-   if (machine.mana or 0) >= manaCost then
+   local manaEpsilon = 0.01
+   if (machine.mana or 0) >= -manaEpsilon and (machine.mana or 0) >= manaCost - manaEpsilon then
       machine.mana = machine.mana - manaCost
       return true
    end
@@ -123,18 +124,16 @@ end
 
 --- Check if machine has enough mana for at least one tick
 --- @param machine table The machine entity
---- @param dt number Delta time (optional, defaults to small value for check)
 --- @return boolean hasEnoughMana
-local function hasEnoughManaForTick(machine, dt)
+local function hasEnoughManaForTick(machine)
    if not machine.currentRecipe then return true end
 
    local manaPerTick = machine.currentRecipe.mana_per_tick or 0
    if manaPerTick == 0 then return true end
 
-   dt = dt or 0.016 -- ~60fps default
-   local manaCost = manaPerTick * dt
+   local requiredMana = manaPerTick * ProcessingSystem.MANA_RESUME_THRESHOLD_SECONDS
 
-   return (machine.mana or 0) >= manaCost
+   return (machine.mana or 0) >= requiredMana
 end
 
 --------------------------------------------------------------------------------
@@ -385,19 +384,18 @@ local function handleBlockedState(machine)
 end
 
 --- Handle NO_MANA state (mana depleted during processing)
---- @param machine table The machine entity
---- @param dt number Delta time
-local function handleNoManaState(machine, dt)
-   if hasEnoughManaForTick(machine, dt) then
-      -- Restore saved timer and resume
-      machine.processingTimer = machine.savedTimer or 0
-      machine.savedTimer = 0
+--- @param machine Machine The machine entity
+local function handleNoManaState(machine)
+   -- Require meaningful amount of mana before resuming (prevents oscillation)
+   if not hasEnoughManaForTick(machine) then return end
+   -- Restore saved timer and resume
+   machine.processingTimer = machine.savedTimer or 0
+   machine.savedTimer = 0
 
-      machine.fsm:refuel()
-      if ProcessingSystem.DEBUG then
-         Log.info("ProcessingSystem: "..machine.name.." - Mana restored, resuming WORKING")
-         Log.info("  Remaining time: "..machine.processingTimer.."s")
-      end
+   machine.fsm:refuel()
+   if ProcessingSystem.DEBUG then
+      Log.info("ProcessingSystem: "..machine.name.." - Mana restored, resuming WORKING")
+      Log.info("  Remaining time: "..machine.processingTimer.."s")
    end
 end
 

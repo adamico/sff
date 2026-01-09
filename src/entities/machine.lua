@@ -8,6 +8,10 @@ local EntityRegistry = require("src.registries.entity_registry")
 
 local Machine = Class("Machine")
 
+--- @class Machine
+--- Abstract base class for all processing machines (Assembler, Generator, etc.)
+--- Provides common properties, inventory, and FSM infrastructure
+
 --- Initialize a new machine
 --- @param x number X position
 --- @param y number Y position

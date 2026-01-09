@@ -5,6 +5,25 @@
 local Machine = require("src.entities.machine")
 local Assembler = Class("Assembler", Machine)
 
+--- @class Assembler
+--- @field id string Entity registry ID
+--- @field position table Position vector
+--- @field currentRecipe RecipeComponent Current recipe being processed
+--- @field processingTimer number Timer for processing time
+--- @field savedTimer number Timer for saved processing time
+--- @field mana number Mana resource
+--- @field name string Name of the machine
+--- @field valid_recipes table Valid recipes for this machine
+--- @field size table Size of the machine
+--- @field color table Color of the machine
+--- @field creative boolean Whether the machine is creative
+--- @field interactable boolean Whether the machine is interactable
+--- @field visual string Visual representation of the machine
+--- @method getFSMEvents() Get the FSM events for the machine
+--- @method getState() Get the current state of the machine
+--- @method getProgress() Get the progress of the current recipe
+--- @method isValidRecipe(recipe Recipe) Check if a recipe is valid for this machine
+
 --- Initialize a new assembler
 --- @param x number X position
 --- @param y number Y position
