@@ -1,5 +1,4 @@
-local evolved = require("lib.evolved")
-local builder = evolved.builder
+local builder = Evolved.builder
 local FPS = 60
 
 local evolved_config = {}

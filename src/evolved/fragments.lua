@@ -1,28 +1,21 @@
 local evolved_config = require("src.evolved.evolved_config")
-local Colors = require("src.config.colors")
-local evolved = require("lib.evolved")
-local builder = evolved.builder
+local builder = Evolved.builder
+local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+
+local function vector_duplicate(vector)
+   return Vector(vector.x, vector.y)
+end
 
 evolved_config.FRAGMENTS = {
-   PositionX = builder()
-      :name("FRAGMENTS.PositionX")
-      :default(0)
+   Position = builder()
+      :name("FRAGMENTS.Position")
+      :default(Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+      :duplicate(vector_duplicate)
       :build(),
-   PositionY = builder()
-      :name("FRAGMENTS.PositionY")
-      :default(0)
-      :build(),
-   VelocityX = builder()
-      :name("FRAGMENTS.VelocityX")
-      :default(0)
-      :build(),
-   VelocityY = builder()
-      :name("FRAGMENTS.VelocityY")
-      :default(0)
-      :build(),
-   Controllable = builder()
-      :name("FRAGMENTS.Controllable")
-      :default(false)
+   Velocity = builder()
+      :name("FRAGMENTS.Velocity")
+      :default(Vector(0, 0))
+      :duplicate(vector_duplicate)
       :build(),
    Color = builder()
       :name("FRAGMENTS.Color")
@@ -34,10 +27,34 @@ evolved_config.FRAGMENTS = {
       :build(),
    Size = builder()
       :name("FRAGMENTS.Size")
-      :default(16)
+      :default(Vector(16, 16))
+      :duplicate(vector_duplicate)
+      :build(),
+   Shape = builder()
+      :name("FRAGMENTS.Shape")
+      :default("circle")
+      :build()
+}
+
+local FRAGMENTS = evolved_config.FRAGMENTS
+
+evolved_config.TAGS = {
+   Controllable = builder()
+      :name("TAGS.Controllable")
+      :tag()
+      :build(),
+   Player = builder()
+      :name("TAGS.Player")
+      :tag()
+      :build(),
+   Physical = builder()
+      :name("TAGS.Physical")
+      :tag()
+      :require(FRAGMENTS.Position, FRAGMENTS.Velocity, FRAGMENTS.Size)
       :build(),
    Visual = builder()
-      :name("FRAGMENTS.Visual")
-      :default("circle")
+      :name("TAGS.Visual")
+      :tag()
+      :require(FRAGMENTS.Shape, FRAGMENTS.Color)
       :build()
 }

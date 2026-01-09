@@ -5,11 +5,11 @@ local PLAYER_DATA = require "src.data.player_data"
 local Player = Class("Player")
 
 --- @class Player
---- @field position Vector
---- @field velocity Vector
+--- @field position table
+--- @field velocity table
 --- @field isPlayer boolean
 --- @field controllable boolean
---- @field color Color
+--- @field color table
 --- @field interactionRange number
 --- @field maxSpeed number
 --- @field name string

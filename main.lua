@@ -1,23 +1,32 @@
-local evolved_config = require("src.evolved.evolved_config")
-require("src.evolved.fragments")
-require("src.evolved.prefabs")
-require("src.evolved.systems")
-local UNIFORMS = evolved_config.UNIFORMS
+Vector = require("lib.brinevector")
+Colors = require("src.config.colors")
 
-local evolved = require("lib.evolved")
-local process = evolved.process
+Evolved = require("lib.evolved")
+local process = Evolved.process
+local evolved_config = require("src.evolved.evolved_config")
+
+require("src.evolved.fragments")
+FRAGMENTS = evolved_config.FRAGMENTS
+TAGS = evolved_config.TAGS
+require("src.evolved.entities")
+
+STAGES = evolved_config.STAGES
+require("src.evolved.systems")
+
+ENTITIES = evolved_config.ENTITIES
+UNIFORMS = evolved_config.UNIFORMS
 
 function love.load()
-   process(evolved_config.STAGES.OnSetup)
+   process(STAGES.OnSetup)
 end
 
 function love.update(dt)
    UNIFORMS.DELTA_TIME = dt
-   process(evolved_config.STAGES.OnUpdate)
+   process(STAGES.OnUpdate)
 end
 
 function love.draw()
-   process(evolved_config.STAGES.OnRender)
+   process(STAGES.OnRender)
 end
 
 function love.keypressed(key)
