@@ -1,7 +1,7 @@
 require("lib.lovedebug")
 
 Class = require("lib.middleclass")
-Colors = require("src.data.colors")
+Colors = require("src.config.colors")
 Vector = require("lib.brinevector")
 Log = require("lib.log")
 Events = require("src.config.events")
