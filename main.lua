@@ -1,3 +1,5 @@
+require("lib.lovedebug")
+
 Class = require("lib.middleclass")
 Colors = require("src.data.colors")
 Vector = require("lib.brinevector")
