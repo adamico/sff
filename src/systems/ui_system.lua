@@ -1,3 +1,4 @@
+local Vector = require("lib.brinevector")
 local InventoryView = require("src.ui.inventory_view")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
 
@@ -19,7 +20,7 @@ function UISystem:init()
 
    pool:on(Events.ENTITY_INTERACTED, function(interaction)
       if interaction.target_entity.interactable then
-         self:openStorageInventory(interaction.player_entity, interaction.target_entity)
+         self:openTargetInventory(interaction.player_entity, interaction.target_entity)
       end
    end)
 
@@ -68,8 +69,8 @@ function UISystem:openPlayerInventory(player_entity)
    InventoryStateManager:open(views)
 end
 
-function UISystem:openStorageInventory(player_entity, target_entity)
-   local total_width = WIDTH * 2 + INV_GAP
+function UISystem:openTargetInventory(player_entity, target_entity)
+   local screen_center = Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
    local views = {
       self:getToolbarView(),
@@ -77,15 +78,17 @@ function UISystem:openStorageInventory(player_entity, target_entity)
          id = "player_inventory",
          columns = COLUMNS,
          rows = INV_ROWS,
-         x = (SCREEN_WIDTH - total_width) / 2,
-         y = (SCREEN_HEIGHT - INV_HEIGHT) / 2
+         x = screen_center.x - WIDTH - INV_GAP / 2,
+         y = screen_center.y - INV_HEIGHT / 2,
+         draggable = true
       }),
       InventoryView:new(target_entity.inventory, {
          id = "target_inventory",
          columns = COLUMNS,
          rows = INV_ROWS,
-         x = (SCREEN_WIDTH - total_width) / 2 + WIDTH + INV_GAP,
-         y = (SCREEN_HEIGHT - INV_HEIGHT) / 2
+         x = screen_center.x + INV_GAP / 2,
+         y = screen_center.y - INV_HEIGHT / 2,
+         draggable = true
       })
    }
 
