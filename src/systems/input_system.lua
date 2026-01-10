@@ -26,7 +26,7 @@ local function movementDetection(pool)
       vector.y = 0
       vector.x = 0
    end
-   pool:emit(Events.INPUT_MOVED, vector.normalized)
+   pool:emit(Events.INPUT_VECTOR_CHANGED, vector.normalized)
 end
 
 function InputSystem:update()

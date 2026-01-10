@@ -1,19 +1,22 @@
 local EntityHelper = require("src.helpers.entity_helper")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
+local trigger = Beholder.trigger
 local observe = Beholder.observe
 local execute = Evolved.execute
+local builder = Evolved.builder
+local get = Evolved.get
 
 -- Create a query for interactable entities (registered once)
-local interactableQuery = Evolved.builder()
+local interactableQuery = builder()
    :name("QUERIES.Interactable")
    :include(TAGS.Interactable)
    :build()
 
 local function tryMouseInteract(mouseX, mouseY)
    local playerId = ENTITIES.Player
-   local playerInventory = Evolved.get(playerId, FRAGMENTS.Inventory)
-   local playerToolbar = Evolved.get(playerId, FRAGMENTS.Toolbar)
-   local playerInteractionRange = Evolved.get(playerId, FRAGMENTS.InteractionRange)
+   local playerInventory = get(playerId, FRAGMENTS.Inventory)
+   local playerToolbar = get(playerId, FRAGMENTS.Toolbar)
+   local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
    local interactionRangeSquared = playerInteractionRange ^ 2
 
    local closestEntityId = nil
@@ -21,8 +24,8 @@ local function tryMouseInteract(mouseX, mouseY)
 
    -- Use Evolved.execute() to iterate over interactable entities on-demand
    for chunk, entityIds, entityCount in execute(interactableQuery) do
-      for entityIndex = 1, entityCount do
-         local entityId = entityIds[entityIndex]
+      for i = 1, entityCount do
+         local entityId = entityIds[i]
 
          -- 1. Check if mouse is over entity
          local isMouseOverEntity = EntityHelper.pointIsInsideEntity(mouseX, mouseY, entityId)
@@ -40,7 +43,7 @@ local function tryMouseInteract(mouseX, mouseY)
 
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntityId then
-      local targetInventory = Evolved.get(closestEntityId, FRAGMENTS.Inventory)
+      local targetInventory = get(closestEntityId, FRAGMENTS.Inventory)
       trigger(Events.ENTITY_INTERACTED, playerInventory, targetInventory, playerToolbar)
    end
 end

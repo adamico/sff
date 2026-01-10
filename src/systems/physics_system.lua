@@ -2,7 +2,7 @@ local PhysicsSystem = {}
 local EntityHelper = require("src.helpers.entity_helper")
 
 function PhysicsSystem:init()
-   self.pool:on(Events.INPUT_MOVED, function(vector)
+   self.pool:on(Events.INPUT_VECTOR_CHANGED, function(vector)
       for _entityIndex, entity in ipairs(self.pool.groups.controllable.entities) do
          entity.velocity = vector * entity.maxSpeed
       end

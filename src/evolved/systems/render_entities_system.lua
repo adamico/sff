@@ -4,7 +4,7 @@ local builder = Evolved.builder
 builder()
    :name("SYSTEMS.RenderEntities")
    :group(STAGES.OnRender)
-   :include(TAGS.Visual, TAGS.Physical)
+   :include(TAGS.Visual)
    :execute(function(chunk, _, entityCount)
       local positions, sizes = chunk:components(FRAGMENTS.Position, FRAGMENTS.Size)
       local visuals = chunk:components(FRAGMENTS.Shape)
