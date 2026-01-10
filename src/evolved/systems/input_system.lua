@@ -1,7 +1,7 @@
 local InputHelper = require("src.helpers.input_helper")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
-local A = require("src.config.input_bindings").actions
 local builder = Evolved.builder
+local A = require("src.config.input_bindings").actions
 trigger = Beholder.trigger
 
 local function movementDetection(chunk, entityCount)
@@ -69,26 +69,5 @@ builder()
       local playerInventories = chunk:components(FRAGMENTS.Inventory)
       for i = 1, entityCount do
          actionDetection(playerInventories[i])
-      end
-   end):build()
-
-builder()
-   :name("SYSTEMS.Movement")
-   :group(STAGES.OnUpdate)
-   :include(TAGS.Physical, TAGS.Controllable)
-   :execute(function(chunk, _, entityCount)
-      local deltaTime = UNIFORMS.DeltaTime
-      local positions, velocities = chunk:components(FRAGMENTS.Position, FRAGMENTS.Velocity)
-      local maxSpeeds = chunk:components(FRAGMENTS.MaxSpeed)
-      local inputVectors = chunk:components(FRAGMENTS.Input)
-
-      for i = 1, entityCount do
-         local position = positions[i]
-         local velocity = velocities[i]
-         local inputVector = inputVectors[i]
-         local maxSpeed = maxSpeeds[i]
-         velocity = inputVector * maxSpeed
-         position = position + velocity * deltaTime
-         positions[i] = position
       end
    end):build()
