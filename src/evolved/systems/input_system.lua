@@ -53,9 +53,9 @@ local function actionDetection(playerInventory)
 
    if actionDetector:pressed(A.INTERACT) then
       if InventoryStateManager.isOpen then
-         trigger(Events.INPUT_INVENTORY_CLICKED, {mouse_x = mx, mouse_y = my})
+         trigger(Events.INPUT_INVENTORY_CLICKED, mx, my)
       else
-         trigger(Events.INPUT_INTERACTED, {mouse_x = mx, mouse_y = my})
+         trigger(Events.INPUT_INTERACTED, mx, my)
       end
    end
 end
