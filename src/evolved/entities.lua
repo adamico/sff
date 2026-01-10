@@ -28,6 +28,7 @@ evolved_config.PREFABS = {
       :set(TAGS.Interactable)
       :set(TAGS.Physical)
       :set(TAGS.Visual)
+      :set(TAGS.Processing)
       :build(),
    Storage = builder()
       :name("PREFABS.Storage")

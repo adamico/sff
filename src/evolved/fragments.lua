@@ -81,5 +81,9 @@ evolved_config.TAGS = {
       :name("TAGS.Visual")
       :tag()
       :require(FRAGMENTS.Shape, FRAGMENTS.Color)
-      :build()
+      :build(),
+   Processing = builder()
+      :name("TAGS.Processing")
+      :tag()
+      :build(),
 }
