@@ -1,4 +1,4 @@
-local InventoryComponent = require "src.components.inventory_component"
+local Inventory = require "src.components.inventory"
 local evolved_config = require("src.evolved.evolved_config")
 local builder = Evolved.builder
 
@@ -9,8 +9,8 @@ evolved_config.ENTITIES = {
       :name("ENTITIES.Player")
       :set(FRAGMENTS.Color, Colors.BLUE)
       :set(FRAGMENTS.MaxSpeed, 300)
-      :set(FRAGMENTS.Inventory, InventoryComponent:new(PLAYER_DATA.inventory))
-      :set(FRAGMENTS.Toolbar, InventoryComponent:new(PLAYER_DATA.toolbar))
+      :set(FRAGMENTS.Inventory, Inventory.new(PLAYER_DATA.inventory))
+      :set(FRAGMENTS.Toolbar, Inventory.new(PLAYER_DATA.toolbar))
       :set(FRAGMENTS.InteractionRange, 128)
       :set(TAGS.Controllable)
       :set(TAGS.Physical)
@@ -24,7 +24,7 @@ evolved_config.PREFABS = {
       :name("PREFABS.Assembler")
       :prefab()
       :set(FRAGMENTS.Color, Colors.PURPLE)
-      :set(FRAGMENTS.Inventory, InventoryComponent:new())
+      :set(FRAGMENTS.Inventory, Inventory.new())
       :set(TAGS.Interactable)
       :set(TAGS.Physical)
       :set(TAGS.Visual)
@@ -33,7 +33,7 @@ evolved_config.PREFABS = {
       :name("PREFABS.Storage")
       :prefab()
       :set(FRAGMENTS.Color, Colors.WHITE)
-      :set(FRAGMENTS.Inventory, InventoryComponent:new())
+      :set(FRAGMENTS.Inventory, Inventory.new())
       :set(TAGS.Interactable)
       :set(TAGS.Physical)
       :set(TAGS.Visual)

@@ -7,9 +7,9 @@ local BORDER_WIDTH = 2
 --- @field y number
 --- @field width number
 --- @field height number
---- @field inventory InventoryComponent
+--- @field inventory table
 
---- @param inventory InventoryComponent
+--- @param inventory table
 --- @param options table
 function InventoryView:initialize(inventory, options)
    self.inventory = inventory
@@ -42,15 +42,13 @@ end
 function InventoryView:getExistingSlots()
    local slotData = {}
    for slotType in pairs(self.inventory) do
-      if type(slotType) == "string" and slotType:find("_slots") then
+      if slotType:find("_slots") then
          local slots = self.inventory[slotType]
-         if type(slots) == "table" then
-            local typeName = slotType:gsub("_slots", "")
-            table.insert(slotData, {
-               type = typeName,
-               slots = slots
-            })
-         end
+         local typeName = slotType:gsub("_slots", "")
+         table.insert(slotData, {
+            type = typeName,
+            slots = slots
+         })
       end
    end
    return slotData
