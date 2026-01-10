@@ -1,10 +1,10 @@
-local evolved_config = require("src.evolved.evolved_config")
+-- Systems are registered at module load time via builder():build()
+-- This file just ensures all system modules are loaded
 
-evolved_config.SYSTEMS = {
-   SetupSystems = require("src.evolved.systems.setup_systems"),
-   InputSystem = require("src.evolved.systems.input_system"),
-   PhysicsSystem = require("src.evolved.systems.physics_system"),
-   RenderEntitiesSystem = require("src.evolved.systems.render_entities_system"),
-   RenderDebugSystem = require("src.evolved.systems.render_debug_system"),
-   RenderUISystem = require("src.evolved.systems.render_ui_system"),
-}
+require("src.evolved.systems.setup_systems")
+require("src.evolved.systems.interaction_system")
+require("src.evolved.systems.input_system")
+require("src.evolved.systems.physics_system")
+require("src.evolved.systems.render_entities_system")
+require("src.evolved.systems.render_debug_system")
+require("src.evolved.systems.render_ui_system")

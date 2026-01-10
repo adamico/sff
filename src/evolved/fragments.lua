@@ -1,3 +1,4 @@
+local InventoryComponent = require("src.components.inventory_component")
 local evolved_config = require("src.evolved.evolved_config")
 local builder = Evolved.builder
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
@@ -6,10 +7,41 @@ local function vector_duplicate(vector)
    return Vector(vector.x, vector.y)
 end
 
+local function inventory_duplicate(inventory)
+   if not inventory then return nil end
+   -- Create a new InventoryComponent with the same configuration
+   local new_inventory = InventoryComponent:new({
+      max_input_slots = #inventory.input_slots,
+      max_output_slots = #inventory.output_slots,
+   })
+   -- Copy slot contents
+   for i, slot in ipairs(inventory.input_slots) do
+      if slot.item_id then
+         new_inventory.input_slots[i] = {
+            item_id = slot.item_id,
+            quantity = slot.quantity
+         }
+      end
+   end
+   for i, slot in ipairs(inventory.output_slots) do
+      if slot.item_id then
+         new_inventory.output_slots[i] = {
+            item_id = slot.item_id,
+            quantity = slot.quantity
+         }
+      end
+   end
+   return new_inventory
+end
+
 evolved_config.FRAGMENTS = {
    Color = builder()
       :name("FRAGMENTS.Color")
       :default(Colors.WHITE)
+      :build(),
+   InteractionRange = builder()
+      :name("FRAGMENTS.InteractionRange")
+      :default(128)
       :build(),
    Input = builder()
       :name("FRAGMENTS.Input")
@@ -19,6 +51,7 @@ evolved_config.FRAGMENTS = {
    Inventory = builder()
       :name("FRAGMENTS.Inventory")
       :default(nil)
+      :duplicate(inventory_duplicate)
       :build(),
    MaxSpeed = builder()
       :name("FRAGMENTS.MaxSpeed")
@@ -41,6 +74,7 @@ evolved_config.FRAGMENTS = {
    Toolbar = builder()
       :name("FRAGMENTS.Toolbar")
       :default(nil)
+      :duplicate(inventory_duplicate)
       :build(),
    Velocity = builder()
       :name("FRAGMENTS.Velocity")
@@ -56,6 +90,10 @@ evolved_config.TAGS = {
       :name("TAGS.Controllable")
       :tag()
       :require(FRAGMENTS.Input)
+      :build(),
+   Interactable = builder()
+      :name("TAGS.Interactable")
+      :tag()
       :build(),
    Player = builder()
       :name("TAGS.Player")

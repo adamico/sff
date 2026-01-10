@@ -42,12 +42,15 @@ end
 function InventoryView:getExistingSlots()
    local slotData = {}
    for slotType in pairs(self.inventory) do
-      if slotType:find("_slots") then
-         local typeName = slotType:gsub("_slots", "")
-         table.insert(slotData, {
-            type = typeName,
-            slots = self.inventory[slotType]
-         })
+      if type(slotType) == "string" and slotType:find("_slots") then
+         local slots = self.inventory[slotType]
+         if type(slots) == "table" then
+            local typeName = slotType:gsub("_slots", "")
+            table.insert(slotData, {
+               type = typeName,
+               slots = slots
+            })
+         end
       end
    end
    return slotData
@@ -90,6 +93,11 @@ function InventoryView:calculateBoxDimensions()
    local height = max_y - min_y + self.padding * 2
 
    return x, y, width, height
+end
+
+function InventoryView:getWidth()
+   local _x, _y, width, _height = self:calculateBoxDimensions()
+   return width
 end
 
 function InventoryView:drawSlots(slotType)

@@ -1,7 +1,7 @@
 local Recipes = require("src.data.recipes_data")
 
 return {
-   skeleton_assembler = {
+   SkeletonAssembler = {
       class = "Assembler",
       color = Colors.PURPLE,
       interactable = true,
@@ -22,7 +22,7 @@ return {
       },
       visual = "rectangle",
    },
-   creative_chest = {
+   CreativeChest = {
       class = "Storage",
       color = Colors.GOLD,
       creative = true,

@@ -3,7 +3,7 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 
 local InventoryStateManager = {
    isOpen = false,
-   views = {}, -- Array of active InventoryView instances
+   views = {},
    heldStack = nil,
 }
 
@@ -148,8 +148,11 @@ function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
 end
 
 function InventoryStateManager:draw()
-   for _, view in ipairs(self.views) do
-      view:draw()
+   for i = 1, #self.views do
+      local view = self.views[i]
+      if view then
+         view:draw()
+      end
    end
    if self.heldStack then
       DrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())

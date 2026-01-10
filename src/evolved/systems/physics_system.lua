@@ -5,7 +5,7 @@ builder()
    :group(STAGES.OnUpdate)
    :include(TAGS.Physical, TAGS.Controllable)
    :execute(function(chunk, _, entityCount)
-      local deltaTime = UNIFORMS.DeltaTime
+      local deltaTime = UNIFORMS.getDeltaTime()
       local positions, velocities = chunk:components(FRAGMENTS.Position, FRAGMENTS.Velocity)
       local maxSpeeds = chunk:components(FRAGMENTS.MaxSpeed)
       local inputVectors = chunk:components(FRAGMENTS.Input)

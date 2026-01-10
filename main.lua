@@ -5,6 +5,10 @@ Events = require("src.config.events")
 Evolved = require("lib.evolved")
 Log = require("lib.log")
 Vector = require("lib.brinevector")
+
+-- Enable debug mode for development (catches incorrect API usage)
+Evolved.debug_mode(true)
+
 local process = Evolved.process
 local evolved_config = require("src.evolved.evolved_config")
 local observe = Beholder.observe
@@ -14,6 +18,7 @@ FRAGMENTS = evolved_config.FRAGMENTS
 TAGS = evolved_config.TAGS
 require("src.evolved.entities")
 ENTITIES = evolved_config.ENTITIES
+PREFABS = evolved_config.PREFABS
 
 UNIFORMS = evolved_config.UNIFORMS
 STAGES = evolved_config.STAGES
@@ -24,7 +29,7 @@ function love.load()
 end
 
 function love.update(dt)
-   UNIFORMS.DeltaTime = dt
+   UNIFORMS.setDeltaTime(dt)
    process(STAGES.OnUpdate)
 end
 
