@@ -1,5 +1,6 @@
 local EntityHelper = require("src.helpers.entity_helper")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
+local MachineStateManager = require("src.ui.machine_state_manager")
 local trigger = Beholder.trigger
 local observe = Beholder.observe
 local execute = Evolved.execute
@@ -40,17 +41,25 @@ local function tryMouseInteract(mouseX, mouseY)
       end
    end
 
-   -- 3. Emit interaction event if we found an interactable entity in range
+   -- 3. Emit appropriate event based on entity type
    if closestEntityId then
-      local targetInventory = get(closestEntityId, FRAGMENTS.Inventory)
-      trigger(Events.ENTITY_INTERACTED, playerInventory, targetInventory, playerToolbar, closestEntityId)
+      local machineClass = get(closestEntityId, FRAGMENTS.MachineClass)
+
+      if machineClass then
+         -- This is a machine - use machine screen
+         trigger(Events.MACHINE_INTERACTED, closestEntityId)
+      else
+         -- This is a storage or other entity - use inventory view
+         local targetInventory = get(closestEntityId, FRAGMENTS.Inventory)
+         trigger(Events.ENTITY_INTERACTED, playerInventory, targetInventory, playerToolbar, closestEntityId)
+      end
    end
 end
 
 -- Register observer for input interaction events
 observe(Events.INPUT_INTERACTED, function(mouseX, mouseY)
-   -- Don't process mouse interactions when inventory is open
-   if not InventoryStateManager.isOpen then
+   -- Don't process mouse interactions when inventory or machine screen is open
+   if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
       tryMouseInteract(mouseX, mouseY)
    end
 end)

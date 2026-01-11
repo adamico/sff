@@ -1,5 +1,6 @@
 local InputHelper = require("src.helpers.input_helper")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
+local MachineStateManager = require("src.ui.machine_state_manager")
 local builder = Evolved.builder
 local execute = Evolved.execute
 local get = Evolved.get
@@ -58,7 +59,7 @@ local function actionDetection(playerInventory, playerToolbar)
    end
 
    if actionDetector:pressed(A.INTERACT) then
-      if InventoryStateManager.isOpen then
+      if InventoryStateManager.isOpen or MachineStateManager.isOpen then
          trigger(Events.INPUT_INVENTORY_CLICKED, mx, my)
       else
          trigger(Events.INPUT_INTERACTED, mx, my)

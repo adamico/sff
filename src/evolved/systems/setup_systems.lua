@@ -15,7 +15,7 @@ builder()
    :prologue(function()
       set(ENTITIES.Player, FRAGMENTS.Position, Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
       clone(PREFABS.Assembler, {
-         [Evolved.NAME] = "SkeletonAssembler",
+         [Evolved.NAME] = "Skeleton Assembler",
          [FRAGMENTS.Inventory] = Inventory.new(skeletonAssemblerData.inventory),
          [FRAGMENTS.Mana] = {
             current = skeletonAssemblerData.mana.current,

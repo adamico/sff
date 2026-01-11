@@ -25,6 +25,8 @@ UNIFORMS = evolved_config.UNIFORMS
 STAGES = evolved_config.STAGES
 require("src.evolved.systems")
 
+local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+
 function love.load()
    process(STAGES.OnSetup)
 end
@@ -35,6 +37,8 @@ function love.update(dt)
 end
 
 function love.draw()
+   love.graphics.setColor(1, 0, 0)
+   love.graphics.line(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT)
    process(STAGES.OnRender)
 end
 
