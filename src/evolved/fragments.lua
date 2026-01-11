@@ -32,6 +32,15 @@ evolved_config.FRAGMENTS = {
       :name("FRAGMENTS.Color")
       :default(Colors.WHITE)
       :build(),
+   Mana = builder()
+      :name("FRAGMENTS.Mana")
+      :default({current = 0, max = 100, regen_rate = 0})
+      :duplicate(deepClone)
+      :build(),
+   MachineClass = builder()
+      :name("FRAGMENTS.MachineClass")
+      :default(nil)
+      :build(),
    CurrentRecipe = builder()
       :name("FRAGMENTS.CurrentRecipe")
       :default(Recipe.new("empty"))
@@ -59,6 +68,11 @@ evolved_config.FRAGMENTS = {
       :name("FRAGMENTS.Position")
       :default(Vector(0, 0))
       :duplicate(duplicateVector)
+      :build(),
+   ProcessingTimer = builder()
+      :name("FRAGMENTS.ProcessingTimer")
+      :default({current = 0, saved = 0})
+      :duplicate(deepClone)
       :build(),
    Shape = builder()
       :name("FRAGMENTS.Shape")
@@ -130,6 +144,8 @@ evolved_config.TAGS = {
       :name("TAGS.Processing")
       :require(
          FRAGMENTS.CurrentRecipe,
+         FRAGMENTS.Mana,
+         FRAGMENTS.ProcessingTimer,
          FRAGMENTS.StateMachine,
          FRAGMENTS.ValidRecipes
       )

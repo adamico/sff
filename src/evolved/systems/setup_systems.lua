@@ -17,7 +17,13 @@ builder()
       clone(PREFABS.Assembler, {
          [Evolved.NAME] = "SkeletonAssembler",
          [FRAGMENTS.Inventory] = Inventory.new(skeletonAssemblerData.inventory),
+         [FRAGMENTS.Mana] = {
+            current = skeletonAssemblerData.mana.current,
+            max = skeletonAssemblerData.mana.max,
+            regen_rate = skeletonAssemblerData.mana.regen_rate or 1,
+         },
          [FRAGMENTS.Position] = Vector(600, 100),
+         [FRAGMENTS.ProcessingTimer] = {current = 0, saved = 0},
          [FRAGMENTS.Shape] = "rectangle",
          [FRAGMENTS.Size] = Vector(64, 64),
          [FRAGMENTS.StateMachine] = StateMachine.new({events = skeletonAssemblerData.events}),

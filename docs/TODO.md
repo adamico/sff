@@ -78,3 +78,7 @@
 - [ ] **Multiple Creature Types**: Test recipe variety after core loop validated
 - [ ] **Automation Buildings**: Conveyors, pipes (only if manual loop is fun)
 - [ ] **Global Mana Pool**: Currently machines use local mana; extend system if needed
+
+
+## to process:
+- machines should have a more complex visual representation. Minecraft modding does this by using an entity screen which can contain more detailed information about the machine's state, progress, inventory slots etc.

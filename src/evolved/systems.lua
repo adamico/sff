@@ -4,6 +4,7 @@
 require("src.evolved.systems.setup_systems")
 require("src.evolved.systems.interaction_system")
 require("src.evolved.systems.input_system")
+require("src.evolved.systems.mana_system")
 require("src.evolved.systems.physics_system")
 require("src.evolved.systems.processing_system")
 require("src.evolved.systems.render_entities_system")
