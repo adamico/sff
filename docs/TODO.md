@@ -42,14 +42,14 @@
 ## 🟡 HIGH: Processing System UI (Players Can't See Working Systems)
 
 - [ ] **Progress Visualization**:
-    - [ ] Add progress bar to `Assembler` UI showing `processingTimer` progress
+    - [x] Add progress bar to `Assembler` UI showing `processingTimer` progress
     - [ ] Color-code by state (WORKING, NO_MANA, BLOCKED)
-    - [ ] Display current FSM state label
+    - [x] Display current FSM state label
 - [ ] **Resource Displays**:
     - [ ] Show mana consumption rate in station UI
-    - [ ] Show current/max mana in machine inventory view
-    - [ ] Show ingredient requirements vs current amounts
+    - [x] Show current/max mana in machine inventory view
 - [ ] **Recipe Preview**:
+    - [ ] Show ingredient requirements vs current amounts
     - [ ] Display expected outputs before starting processing
     - [ ] Show total mana cost (mana_per_tick × processing_time)
 - [ ] **Ritual Visualization**:
@@ -60,9 +60,6 @@
 - [x] **Machine State Display**:
     - [x] InventoryView queries entity state via entityId
     - [x] State displayed in machine inventory UI
-- [ ] **Draggable Windows**:
-    - [ ] Make `InventoryView` instances independently draggable
-    - [ ] Remove `total_width` constraint from layout
 - [ ] **Advanced Interactions**:
     - [ ] Right-click split stack (pick up half)
     - [ ] Shift-click transfer between inventories
