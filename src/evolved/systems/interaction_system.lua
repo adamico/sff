@@ -26,7 +26,6 @@ local function tryMouseInteract(mouseX, mouseY)
    for chunk, entityIds, entityCount in execute(interactableQuery) do
       for i = 1, entityCount do
          local entityId = entityIds[i]
-
          -- 1. Check if mouse is over entity
          local isMouseOverEntity = EntityHelper.pointIsInsideEntity(mouseX, mouseY, entityId)
          if isMouseOverEntity then
@@ -44,7 +43,7 @@ local function tryMouseInteract(mouseX, mouseY)
    -- 3. Emit interaction event if we found an interactable entity in range
    if closestEntityId then
       local targetInventory = get(closestEntityId, FRAGMENTS.Inventory)
-      trigger(Events.ENTITY_INTERACTED, playerInventory, targetInventory, playerToolbar)
+      trigger(Events.ENTITY_INTERACTED, playerInventory, targetInventory, playerToolbar, closestEntityId)
    end
 end
 

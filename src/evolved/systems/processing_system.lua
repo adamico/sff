@@ -34,59 +34,59 @@ local function hasRequiredIngredients(recipe, inventory)
 end
 
 local blankNotify = false
-local function handleBlankState(machineId, fsm, recipe)
+local function handleBlankState(machineName, fsm, recipe)
    if not recipe or recipe.name == "empty" or recipe.name == "Empty Recipe" then
       if not blankNotify and PROCESSING_DEBUG then
-         Log.warn("ProcessingSystem: "..machineId.." waiting for recipe to be set.")
+         Log.warn("ProcessingSystem: "..machineName.." waiting for recipe to be set.")
          blankNotify = true
       end
       return
    end
 
    if PROCESSING_DEBUG then
-      Log.info("ProcessingSystem: "..machineId.." - Recipe "..inspect(recipe).." set, transitioning to IDLE")
+      Log.info("ProcessingSystem: "..machineName.." - Recipe "..inspect(recipe).." set, transitioning to IDLE")
       blankNotify = false
    end
    fsm:set_recipe()
 end
 
-local function handleIdleState(machineId, fsm, recipe, inventory)
+local function handleIdleState(machineName, fsm, recipe, inventory)
    if hasRequiredIngredients(recipe, inventory) then
       fsm:prepare()
       if PROCESSING_DEBUG then
-         Log.info("ProcessingSystem: "..machineId.." - Prepared, transitioning to READY")
+         Log.info("ProcessingSystem: "..machineName.." - Prepared, transitioning to READY")
       end
    end
 end
 
 local readyNotify = false
-local function handleReadyState(machineId)
+local function handleReadyState(machineName)
    if not readyNotify and PROCESSING_DEBUG then
-      Log.info("ProcessingSystem: "..machineId.." - Ready")
+      Log.info("ProcessingSystem: "..machineName.." - Ready")
       readyNotify = true
    end
 end
 
 local workingNotify = false
-local function handleWorkingState(machineId)
+local function handleWorkingState(machineName)
    if not workingNotify and PROCESSING_DEBUG then
-      Log.info("ProcessingSystem: "..machineId.." - Working")
+      Log.info("ProcessingSystem: "..machineName.." - Working")
       workingNotify = true
    end
 end
 
 local blockedNotify = false
-local function handleBlockedState(machineId)
+local function handleBlockedState(machineName)
    if not blockedNotify and PROCESSING_DEBUG then
-      Log.info("ProcessingSystem: "..machineId.." - Blocked")
+      Log.info("ProcessingSystem: "..machineName.." - Blocked")
       blockedNotify = true
    end
 end
 
 local noManaNotify = false
-local function handleNoManaState(machineId)
+local function handleNoManaState(machineName)
    if not noManaNotify and PROCESSING_DEBUG then
-      Log.info("ProcessingSystem: "..machineId.." - No Mana")
+      Log.info("ProcessingSystem: "..machineName.." - No Mana")
       noManaNotify = true
    end
 end
@@ -99,8 +99,7 @@ builder()
       for i = 1, entityCount do
          local state = chunk:components(FRAGMENTS.StateMachine)[i].current
          local machineId = entityIds[i]
-         local name = chunk:components(Evolved.NAME)[i]
-         local machineName = name.." - "..machineId
+         local machineName = chunk:components(Evolved.NAME)[i]..machineId
          local fsm = chunk:components(FRAGMENTS.StateMachine)[i]
          local recipe = chunk:components(FRAGMENTS.CurrentRecipe)[i]
          local inventory = chunk:components(FRAGMENTS.Inventory)[i]

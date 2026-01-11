@@ -5,7 +5,7 @@ builder()
    :name("SYSTEMS.RenderEntities")
    :group(STAGES.OnRender)
    :include(TAGS.Visual)
-   :execute(function(chunk, _, entityCount)
+   :execute(function(chunk, entityIds, entityCount)
       local positions, sizes = chunk:components(FRAGMENTS.Position, FRAGMENTS.Size)
       local visuals = chunk:components(FRAGMENTS.Shape)
       local colors = chunk:components(FRAGMENTS.Color)
@@ -16,6 +16,7 @@ builder()
          local size = sizes[i]
          local visual = visuals[i]
          local color = colors[i]
+         local id = entityIds[i]
          local name = names[i]
 
          lg.setColor(color)
@@ -26,7 +27,7 @@ builder()
          elseif visual == "rectangle" then
             lg.rectangle("fill", px, py, size.x, size.y)
          end
-         local entityInfo = string.format("%s (%d, %d)", name, px, py)
+         local entityInfo = string.format("%s%d", name, id)
          lg.print(entityInfo, labelX, labelY - 16)
       end
    end):build()

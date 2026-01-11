@@ -71,17 +71,20 @@ local function openPlayerInventory(playerInventory, playerToolbar)
    InventoryStateManager:open(views)
 end
 
-local function openTargetInventory(playerInventory, targetInventory, playerToolbar)
+local function openTargetInventory(playerInventory, targetInventory, playerToolbar, entityId)
    if not playerInventory or not targetInventory then return end
 
-   local targetInventoryView = InventoryView:new(targetInventory, {
+   local options = {
       id = "target_inventory",
       columns = COLUMNS,
       rows = INV_ROWS,
       x = SCREEN_CENTER.x + INV_GAP / 2,
       y = SCREEN_CENTER.y - INV_HEIGHT / 2,
-      draggable = true
-   })
+      draggable = true,
+      entityId = entityId or nil
+   }
+
+   local targetInventoryView = InventoryView:new(targetInventory, options)
 
    local views = {
       getToolbarView(playerToolbar),
@@ -93,8 +96,8 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
 end
 
 -- Register event observers
-observe(Events.ENTITY_INTERACTED, function(playerInventory, targetInventory, playerToolbar)
-   openTargetInventory(playerInventory, targetInventory, playerToolbar)
+observe(Events.ENTITY_INTERACTED, function(playerInventory, targetInventory, playerToolbar, entityId)
+   openTargetInventory(playerInventory, targetInventory, playerToolbar, entityId)
 end)
 
 observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar)
