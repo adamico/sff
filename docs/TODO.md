@@ -1,20 +1,27 @@
 # Project Roadmap & TODO
 
-> **Last Updated:** 2025-01-08  
-> **Current Focus:** Complete MVP Gameplay Loop
+> **Last Updated:** 2025-01-11  
+> **Current Focus:** Complete MVP Gameplay Loop  
+> **Architecture:** Evolved ECS (migrated from Nata)
 
 ## 🔴 CRITICAL: MVP Completion (Blocks Viability Testing)
 
 **Goal:** Test if "creature production → deploy → harvest → recycle" is engaging.
 
+- [x] **Processing System**:
+    - [x] Behavior-based architecture (`src/evolved/behaviors/`)
+    - [x] Assembler behavior with full state machine (blank → idle → ready → working → complete)
+    - [x] Ingredient detection, consumption on completion
+    - [x] Output production with stacking support
+    - [x] Mana consumption per tick during working state
+    - [x] NO_MANA and BLOCKED state handling
+- [x] **Mana System**:
+    - [x] Mana fragment with current/max/regen_rate
+    - [x] Mana regeneration system (`src/evolved/systems/mana_system.lua`)
+    - [x] Mana consumption during processing
 - [ ] **Ritual System**:
-    - [ ] A ritual component needs to be implemented (name, mana cost, duration)
-    - [ ] For the MVP the ritual system will be simplified (Start Ritual button in the machine UI, player must stay in range of the machine)
-- [ ] **Mana System**:
-    - [ ] Implement mana pool manager:
-        - [ ] Initialize mana pool with a certain amount of mana (from data)
-        - [ ] Implement slow mana pool regeneration (will be replaced or improved by more complex mana generation systems)
-        - [ ] Implement mana consumption for starting rituals
+    - [ ] Start Ritual button in the machine UI
+    - [ ] Player must stay in range of the machine (optional for MVP)
 - [ ] **Creature Spawning**:
     - [ ] Manually deploy (spawn) assembled creature items using `EntityRegistry` to spawn `Skeleton`
 - [ ] **Deployment System**:
@@ -50,6 +57,9 @@
 
 ## 🟢 MEDIUM: Inventory & UX Polish
 
+- [x] **Machine State Display**:
+    - [x] InventoryView queries entity state via entityId
+    - [x] State displayed in machine inventory UI
 - [ ] **Draggable Windows**:
     - [ ] Make `InventoryView` instances independently draggable
     - [ ] Remove `total_width` constraint from layout
@@ -62,6 +72,10 @@
 
 ## 🔵 LOWER: Technical Debt & Refactoring
 
+- [x] **ECS Migration**:
+    - [x] Migrated from Nata to Evolved ECS
+    - [x] Removed old entities, components, systems folders
+    - [x] Simplified registries (removed deployable_registry, registry aggregator)
 - [ ] **Asset Loading**:
     - [ ] Replace `string.sub(item_id, 1, 1)` rendering with sprite system
     - [ ] Add proper icon support to item registry
@@ -80,5 +94,34 @@
 - [ ] **Global Mana Pool**: Currently machines use local mana; extend system if needed
 
 
-## to process:
-- machines should have a more complex visual representation. Minecraft modding does this by using an entity screen which can contain more detailed information about the machine's state, progress, inventory slots etc.
+## Architecture Notes
+
+### Evolved ECS Structure
+```
+src/evolved/
+├── behaviors/           # Machine behavior modules (per class)
+│   ├── init.lua         # Behavior registry
+│   └── assembler_behavior.lua
+├── fragments/           # Reusable fragment modules
+│   ├── inventory.lua
+│   ├── recipe.lua
+│   └── state_machine.lua
+├── systems/             # ECS systems
+│   ├── setup_systems.lua
+│   ├── input_system.lua
+│   ├── interaction_system.lua
+│   ├── mana_system.lua
+│   ├── physics_system.lua
+│   ├── processing_system.lua
+│   ├── render_entities_system.lua
+│   ├── render_debug_system.lua
+│   └── render_ui_system.lua
+├── entities.lua         # ENTITIES and PREFABS definitions
+├── fragments.lua        # FRAGMENTS and TAGS definitions
+└── systems.lua          # System loader
+```
+
+## To Process
+
+- Machines should have a more complex visual representation. Minecraft modding does this by using an entity screen which can contain more detailed information about the machine's state, progress, inventory slots etc.
+- Initial recipe assignment is currently hardcoded in assembler behavior - should be set via UI or entity data

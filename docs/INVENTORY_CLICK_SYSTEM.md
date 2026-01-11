@@ -1,7 +1,7 @@
 # Inventory Click System Documentation
 
-> **Last Updated:** 2025-01-08  
-> **Status:** ✅ Core Implementation Complete
+> **Last Updated:** 2025-01-11  
+> **Status:** ✅ Core Implementation Complete (Evolved ECS)
 
 ## Overview
 
@@ -18,9 +18,9 @@ The system is built with clear separation of concerns across multiple components
 | InventoryStateManager | `src/ui/inventory_state_manager.lua` | ✅ |
 | InventoryView | `src/ui/inventory_view.lua` | ✅ |
 | DrawHelper | `src/helpers/draw_helper.lua` | ✅ |
-| UISystem | `src/systems/ui_system.lua` | ✅ |
-| InputSystem | `src/systems/input_system.lua` | ✅ |
-| InventoryComponent | `src/components/inventory_component.lua` | ✅ |
+| RenderUISystem | `src/evolved/systems/render_ui_system.lua` | ✅ |
+| InputSystem | `src/evolved/systems/input_system.lua` | ✅ |
+| Inventory Fragment | `src/evolved/fragments/inventory.lua` | ✅ |
 
 ### Component Responsibilities
 
@@ -45,38 +45,38 @@ The system is built with clear separation of concerns across multiple components
    - Mixed into `InventoryView` class for reusable rendering
    - Handles borders, backgrounds, item icons, and quantity text
 
-4. **UISystem** (`src/systems/ui_system.lua`)
+4. **RenderUISystem** (`src/evolved/systems/render_ui_system.lua`)
    - Coordinates between input events and state manager
    - Creates and manages `InventoryView` instances
-   - Handles inventory open/close events via event pool
+   - Handles inventory open/close events via Beholder observers
    - Maintains persistent toolbar view
    - Always renders toolbar; conditionally renders inventory popups
    - Supports both player-only and player+storage inventory modes
 
-5. **InputSystem** (`src/systems/input_system.lua`)
+5. **InputSystem** (`src/evolved/systems/input_system.lua`)
    - Detects mouse clicks and keyboard input
-   - Emits `INPUT_INVENTORY_CLICK` event when clicking while inventory is open
-   - Emits `INPUT_INTERACT` event when clicking while inventory is closed
+   - Emits `INPUT_INVENTORY_CLICKED` event when clicking while inventory is open
+   - Emits `INPUT_INTERACTED` event when clicking while inventory is closed
    - Handles movement input (blocked when inventory is open)
    - Manages open/close inventory key bindings
 
-6. **InventoryComponent** (`src/components/inventory_component.lua`)
-   - ECS component attached to entities
+6. **Inventory Fragment** (`src/evolved/fragments/inventory.lua`)
+   - ECS fragment attached to entities
    - Contains `input_slots` and `output_slots` arrays
    - Each slot: `{item_id: string, quantity: number}`
-   - Provides `addItem()` and `removeItem()` methods
+   - Provides `new()` and `duplicate()` functions
 
 ## Data Flow
 
 ```
 User Clicks Mouse
     ↓
-InputSystem:update() detects click
+InputSystem detects click (via action detector)
     ↓
-If inventory open: emit INPUT_INVENTORY_CLICK event {mouse_x, mouse_y}
-If inventory closed: emit INPUT_INTERACT event
+If inventory open: trigger INPUT_INVENTORY_CLICKED event (mouse_x, mouse_y)
+If inventory closed: trigger INPUT_INTERACTED event (mouse_x, mouse_y)
     ↓
-UISystem receives INPUT_INVENTORY_CLICK → calls handler
+RenderUISystem observer receives event → calls handler
     ↓
 InventoryStateManager:handleSlotClick(mouse_x, mouse_y)
     ↓
@@ -318,10 +318,10 @@ TEXT_COLOR = {1, 1, 1}
 
 | Event | Emitter | Payload | Description |
 |:------|:--------|:--------|:------------|
-| `INPUT_INVENTORY_CLICK` | InputSystem | `{mouse_x, mouse_y}` | Mouse clicked while inventory is open |
-| `INPUT_OPEN_INVENTORY` | InputSystem | `player_entity` | Player pressed inventory key |
-| `INPUT_CLOSE_INVENTORY` | InputSystem | none | Player pressed close/escape key |
-| `ENTITY_INTERACTED` | InteractionSystem | `{player_entity, target_entity}` | Player interacted with entity |
+| `INPUT_INVENTORY_CLICKED` | InputSystem | `mouse_x, mouse_y` | Mouse clicked while inventory is open |
+| `INPUT_INVENTORY_OPENED` | InputSystem | `playerInventory, playerToolbar` | Player pressed inventory key |
+| `INPUT_INVENTORY_CLOSED` | InputSystem | none | Player pressed close/escape key |
+| `ENTITY_INTERACTED` | InteractionSystem | `playerInventory, targetInventory, playerToolbar, entityId` | Player interacted with entity |
 
 ## Testing
 
@@ -388,7 +388,7 @@ The view-based architecture allows:
 - Multiple inventory panels on screen simultaneously
 - Each panel can represent different inventory sources
 - Easy to add new panel types (crafting, equipment, etc.)
-- Clean separation between data (InventoryComponent) and presentation (InventoryView)
+- Clean separation between data (Inventory Fragment) and presentation (InventoryView)
 
 ### Why Track Source?
 
@@ -403,3 +403,11 @@ Hiding the mouse cursor when holding an item:
 - Prevents visual clutter (cursor overlapping held item sprite)
 - Makes it clearer that an item is being moved
 - Common UX pattern in inventory systems
+
+### Integration with Evolved ECS
+
+The inventory system integrates with the Evolved ECS architecture:
+- **Inventory Fragment**: Stores slot data on entities
+- **InventoryView**: Queries entity state directly (e.g., machine state via `entityId`)
+- **Events**: Uses Beholder for event triggers and observers
+- **No polling**: Views update reactively when state changes
