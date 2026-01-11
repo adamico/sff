@@ -3,7 +3,7 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 
 local InventoryStateManager = {
    isOpen = false,
-   views = {}, -- Array of active InventoryView instances
+   views = {},
    heldStack = nil,
 }
 
@@ -69,7 +69,7 @@ end
 
 --- Pick up an item from a slot (internal method - assumes heldStack is nil)
 --- @param slot_index number The slot index to pick from
---- @param inventory InventoryComponent The inventory to pick from
+--- @param inventory table The inventory to pick from
 --- @return boolean Success
 function InventoryStateManager:pickItemFromSlot(slot_index, slotType, inventory)
    local slot = inventory[slotType.."_slots"][slot_index]
@@ -92,7 +92,7 @@ function InventoryStateManager:pickItemFromSlot(slot_index, slotType, inventory)
 end
 
 --- Place the held item into a slot (handles empty slots, stacking, and swapping)
---- @param inventory InventoryComponent The inventory to place into
+--- @param inventory table The inventory to place into
 --- @param slot_index number The slot index to place into
 --- @return boolean Success
 function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
@@ -148,8 +148,11 @@ function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
 end
 
 function InventoryStateManager:draw()
-   for _, view in ipairs(self.views) do
-      view:draw()
+   for i = 1, #self.views do
+      local view = self.views[i]
+      if view then
+         view:draw()
+      end
    end
    if self.heldStack then
       DrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())

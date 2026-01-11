@@ -1,5 +1,6 @@
 local DrawHelper = require("src.helpers.draw_helper")
 local InventoryView = Class("InventoryView"):include(DrawHelper)
+local get = Evolved.get
 local BORDER_WIDTH = 2
 
 --- @class InventoryView
@@ -7,9 +8,9 @@ local BORDER_WIDTH = 2
 --- @field y number
 --- @field width number
 --- @field height number
---- @field inventory InventoryComponent
+--- @field inventory table
 
---- @param inventory InventoryComponent
+--- @param inventory table
 --- @param options table
 function InventoryView:initialize(inventory, options)
    self.inventory = inventory
@@ -22,6 +23,7 @@ function InventoryView:initialize(inventory, options)
    self.slot_size = options.slot_size or 32
    self.padding = options.padding or 4
    self.border_width = BORDER_WIDTH
+   self.entityId = options.entityId or nil
 
    -- Format: {{x = 200, y = 10}, {x = 300, y = 10}, ...}
    -- positions are relative to the inventory view's origin
@@ -29,24 +31,40 @@ function InventoryView:initialize(inventory, options)
 end
 
 function InventoryView:draw()
-   local box_x, box_y, box_width, box_height = self:calculateBoxDimensions()
-   self:drawBox(box_x, box_y, box_width, box_height)
+   local boxX, boxY, boxWidth, boxHeight = self:calculateBoxDimensions()
+   self:drawBox(boxX, boxY, boxWidth, boxHeight)
 
    -- Draw all existing slot types dynamically
    local existingSlots = self:getExistingSlots()
    for _, slotData in ipairs(existingSlots) do
       self:drawSlots(slotData.type)
    end
+
+   -- Query current state from entity if available
+   local state = self:getCurrentState()
+   if state then self:drawState(state, boxX, boxY) end
+end
+
+function InventoryView:getCurrentState()
+   if not self.entityId then return nil end
+
+   local stateMachine = get(self.entityId, FRAGMENTS.StateMachine)
+   if stateMachine then
+      return stateMachine.current
+   end
+
+   return nil
 end
 
 function InventoryView:getExistingSlots()
    local slotData = {}
    for slotType in pairs(self.inventory) do
       if slotType:find("_slots") then
+         local slots = self.inventory[slotType]
          local typeName = slotType:gsub("_slots", "")
          table.insert(slotData, {
             type = typeName,
-            slots = self.inventory[slotType]
+            slots = slots
          })
       end
    end
@@ -90,6 +108,11 @@ function InventoryView:calculateBoxDimensions()
    local height = max_y - min_y + self.padding * 2
 
    return x, y, width, height
+end
+
+function InventoryView:getWidth()
+   local _x, _y, width, _height = self:calculateBoxDimensions()
+   return width
 end
 
 function InventoryView:drawSlots(slotType)

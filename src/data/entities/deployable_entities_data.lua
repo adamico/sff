@@ -1,25 +1,45 @@
 local Recipes = require("src.data.recipes_data")
 
 return {
-   skeleton_assembler = {
+   SkeletonAssembler = {
       class = "Assembler",
       color = Colors.PURPLE,
+      events = {
+         {name = "set_recipe",         from = "blank",   to = "idle"},
+         {name = "prepare",            from = "idle",    to = "ready"},
+         {name = "remove_ingredients", from = "ready",   to = "idle"},
+         {name = "start_ritual",       from = "ready",   to = "working"},
+         {name = "stop_ritual",        from = "working", to = "idle"},
+         {name = "complete",           from = "working", to = "idle"},
+         {name = "stop",               from = "working", to = "idle"},
+         {name = "block",              from = "working", to = "blocked"},
+         {name = "unblock",            from = "blocked", to = "idle"},
+         {name = "starve",             from = "working", to = "no_mana"},
+         {name = "refuel",             from = "no_mana", to = "working"},
+      },
       interactable = true,
       inventory = {
          max_input_slots = 2,
          max_output_slots = 1,
+         initial_items = {
+            {item_id = "bone", quantity = 1},
+         }
       },
-      mana = 10,
-      mana_per_tick = 1,
+      mana = {
+         current = 10,
+         max = 100,
+         regen_rate = 0,
+         consume_rate = 1,
+      },
       name = "Skeleton Assembler",
-      recipes = {Recipes.create_skeleton},
+      valid_recipes = {Recipes.create_skeleton},
       size = Vector(64, 64),
       timers = {
          processing = 5 -- seconds
       },
       visual = "rectangle",
    },
-   creative_chest = {
+   CreativeChest = {
       class = "Storage",
       color = Colors.GOLD,
       creative = true,

@@ -1,3 +1,4 @@
+local Bindings = require("src.config.input_bindings")
 local InputHelper = {}
 local lk = love.keyboard
 

@@ -1,26 +1,41 @@
-require("lib.lovedebug")
-
+Beholder = require("lib.beholder")
 Class = require("lib.middleclass")
-Colors = require("src.data.colors")
-Vector = require("lib.brinevector")
-Log = require("lib.log")
+Colors = require("src.config.colors")
 Events = require("src.config.events")
-Entities = require("src.config.entities")
-Bindings = require("src.config.input_bindings")
+Evolved = require("lib.evolved")
+Log = require("lib.log")
+Vector = require("lib.brinevector")
+require("src.helpers.text_helper")
+
+-- Enable debug mode for development (catches incorrect API usage)
+Evolved.debug_mode(true)
+
+local process = Evolved.process
+local evolved_config = require("src.evolved.evolved_config")
+local observe = Beholder.observe
+
+require("src.evolved.fragments")
+FRAGMENTS = evolved_config.FRAGMENTS
+TAGS = evolved_config.TAGS
+require("src.evolved.entities")
+ENTITIES = evolved_config.ENTITIES
+PREFABS = evolved_config.PREFABS
+
+UNIFORMS = evolved_config.UNIFORMS
+STAGES = evolved_config.STAGES
+require("src.evolved.systems")
 
 function love.load()
-   ecs = require("src.ecs")
-   pool = ecs.pool
+   process(STAGES.OnSetup)
 end
 
 function love.update(dt)
-   pool:flush()
-   pool:emit("update", dt)
-   pool:emit("remove", ecs.shouldRemove)
+   UNIFORMS.setDeltaTime(dt)
+   process(STAGES.OnUpdate)
 end
 
 function love.draw()
-   pool:emit("draw")
+   process(STAGES.OnRender)
 end
 
 function love.keypressed(key)

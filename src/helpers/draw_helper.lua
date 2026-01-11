@@ -14,6 +14,11 @@ function DrawHelper:drawBox(x, y, width, height)
    self:drawBackground(x, y, width, height, BACKGROUND_COLOR)
 end
 
+function DrawHelper:drawState(state, x, y)
+   lg.setColor(TEXT_COLOR)
+   lg.print(state, x, y - 16)
+end
+
 function DrawHelper:drawSlot(x, y, width, height, slot)
    self:drawBorder(x, y, width, height, BORDER_COLOR)
    self:drawBackground(x, y, width, height, BACKGROUND_COLOR)

@@ -1,6 +1,6 @@
 # Processing System
 
-A generic system for managing machine automation. Handles state transitions, processing timers, and cycling for any machine type with varying requirements.
+A generic system for managing machine automation using the Evolved ECS architecture. Handles state transitions, processing timers, and cycling for any machine type with varying requirements.
 
 ## Overview
 
@@ -25,57 +25,43 @@ This model is player-friendly:
 - Stealing ingredients stops the machine (no punishment)
 - Mana drain is predictable and recoverable
 
-## Machine Hierarchy
+## Architecture
+
+The processing system uses a **behavior-based architecture** where each machine class has its own behavior module:
 
 ```
-Machine (base class)
-├── Assembler (mana + ritual + ingredients)
-├── Generator (auto-start, no ingredients)
-└── [Future machine types...]
+src/evolved/
+├── behaviors/
+│   ├── init.lua              # Behavior registry
+│   └── assembler_behavior.lua # Assembler-specific logic
+├── systems/
+│   ├── processing_system.lua # Main system (dispatches to behaviors)
+│   └── mana_system.lua       # Mana regeneration
+└── fragments.lua             # ECS components (Mana, ProcessingTimer, etc.)
 ```
 
-### Machine Base Class
+### Key Components
 
-All machines extend the `Machine` base class which provides:
+| Component | File | Purpose |
+|:----------|:-----|:--------|
+| Processing System | `src/evolved/systems/processing_system.lua` | Iterates entities, builds context, dispatches to behaviors |
+| Behavior Registry | `src/evolved/behaviors/init.lua` | Maps machine class names to behavior modules |
+| Assembler Behavior | `src/evolved/behaviors/assembler_behavior.lua` | State-specific logic for Assembler machines |
+| Mana System | `src/evolved/systems/mana_system.lua` | Regenerates mana for entities with Mana fragment |
 
-- Core properties (position, name, size, etc.)
-- Processing state (currentRecipe, processingTimer, savedTimer)
-- Mana resource
-- Inventory component
-- FSM infrastructure
+### ECS Fragments
 
-```lua
--- src/entities/machine.lua
-local Machine = Class("Machine")
+Machines require these fragments (defined in `src/evolved/fragments.lua`):
 
-function Machine:initialize(x, y, id)
-   -- Core identity
-   self.id = id
-   self.position = Vector(x, y)
-   
-   -- Processing state
-   self.currentRecipe = nil
-   self.processingTimer = 0
-   self.savedTimer = 0  -- For resuming after NO_MANA
-   
-   -- Resources
-   self.mana = data.mana or 0
-   
-   -- Components
-   self.inventory = InventoryComponent:new(data.inventory)
-   
-   -- FSM - subclasses override getFSMEvents()
-   self.fsm = statemachine.create({
-      initial = "blank",
-      events = self:getFSMEvents(),
-   })
-end
-
-function Machine:getFSMEvents()
-   -- Override in subclasses
-   return {}
-end
-```
+| Fragment | Type | Description |
+|:---------|:-----|:------------|
+| `MachineClass` | string | Machine type (e.g., "Assembler") - used to look up behavior |
+| `CurrentRecipe` | table | Active recipe data |
+| `StateMachine` | table | FSM instance with current state and transitions |
+| `Mana` | table | `{current, max, regen_rate}` |
+| `ProcessingTimer` | table | `{current, saved}` for timing and pause/resume |
+| `Inventory` | table | Input/output slots |
+| `ValidRecipes` | table | Array of recipes this machine can process |
 
 ## State Machines
 
@@ -115,42 +101,100 @@ Assemblers use mana and rituals to process recipes with ingredients.
 
 **Transitions:**
 ```lua
-{name = "set_recipe",   from = "blank",   to = "idle"},
-{name = "prepare",      from = "idle",    to = "ready"},
-{name = "start_ritual", from = "ready",   to = "working"},
-{name = "complete",     from = "working", to = "idle"},
-{name = "stop",         from = "working", to = "idle"},
-{name = "block",        from = "working", to = "blocked"},
-{name = "unblock",      from = "blocked", to = "idle"},
-{name = "starve",       from = "working", to = "no_mana"},
-{name = "refuel",       from = "no_mana", to = "working"},
+{name = "set_recipe",         from = "blank",   to = "idle"},
+{name = "prepare",            from = "idle",    to = "ready"},
+{name = "remove_ingredients", from = "ready",   to = "idle"},
+{name = "start_ritual",       from = "ready",   to = "working"},
+{name = "stop_ritual",        from = "working", to = "idle"},
+{name = "complete",           from = "working", to = "idle"},
+{name = "stop",               from = "working", to = "idle"},
+{name = "block",              from = "working", to = "blocked"},
+{name = "unblock",            from = "blocked", to = "idle"},
+{name = "starve",             from = "working", to = "no_mana"},
+{name = "refuel",             from = "no_mana", to = "working"},
 ```
 
-### Generator FSM
+## Behavior System
 
-Generators auto-start when recipe is set and don't require ingredients.
+### Context Object
 
-```
-      [BLANK] ──set_recipe──► [WORKING] ◄────────┐
-                                 │               │
-                            complete         restart
-                                 │               │
-                                 ▼               │
-                              [IDLE] ────────────┘
-                                 │
-                               block
-                                 │
-                                 ▼
-                            [BLOCKED] ──unblock──► [IDLE]
-```
+The processing system builds a context object for each machine and passes it to the behavior:
 
-**Transitions:**
 ```lua
-{name = "set_recipe", from = "blank",   to = "working"},
-{name = "complete",   from = "working", to = "idle"},
-{name = "restart",    from = "idle",    to = "working"},
-{name = "block",      from = "working", to = "blocked"},
-{name = "unblock",    from = "blocked", to = "idle"},
+local context = {
+   machineId = number,           -- Entity ID
+   machineName = string,         -- Display name for logging
+   fsm = table,                  -- State machine instance
+   recipe = table,               -- Current recipe
+   inventory = table,            -- Machine inventory
+   mana = table,                 -- {current, max, regen_rate}
+   processingTimer = table,      -- {current, saved}
+   dt = number,                  -- Delta time
+}
+```
+
+### Behavior Module Structure
+
+Each behavior module exports state handler functions and an `update()` dispatcher:
+
+```lua
+local Assembler = {}
+
+function Assembler.blank(context)
+   -- Handle blank state
+end
+
+function Assembler.idle(context)
+   -- Handle idle state
+end
+
+function Assembler.ready(context)
+   -- Handle ready state
+end
+
+function Assembler.working(context)
+   -- Handle working state (timer, mana, completion)
+end
+
+function Assembler.blocked(context)
+   -- Handle blocked state
+end
+
+function Assembler.no_mana(context)
+   -- Handle no_mana state
+end
+
+function Assembler.update(context)
+   local state = context.fsm.current
+   local behavior = Assembler[state]
+   if behavior then
+      behavior(context)
+   end
+end
+
+return Assembler
+```
+
+### Behavior Registry
+
+Behaviors are registered in `src/evolved/behaviors/init.lua`:
+
+```lua
+local Behaviors = {}
+local registry = {}
+
+function Behaviors.register(className, behaviorModule)
+   registry[className] = behaviorModule
+end
+
+function Behaviors.get(className)
+   return registry[className]
+end
+
+-- Register built-in behaviors
+Behaviors.register("Assembler", require("src.evolved.behaviors.assembler_behavior"))
+
+return Behaviors
 ```
 
 ## Recipe Format
@@ -186,114 +230,149 @@ return {
       -- Optional: requires ritual transition (for assemblers)
       requires_ritual = true,
    },
-   
-   -- No-ingredient recipe (mana synthesizer)
-   synthesize_essence = {
-      name = "Synthesize Essence",
-      outputs = { essence = 1 },
-      mana_per_tick = 5,
-      processing_time = 10,
-   },
-   
-   -- Generator recipe (no inputs, no mana)
-   generate_power = {
-      name = "Generate Power",
-      outputs = { power_crystal = 1 },
-      processing_time = 30,
-   },
 }
 ```
 
-## ECS Integration
+## Entity Setup
 
-The system uses a function filter to identify processing machines:
+### Prefab Definition (`src/evolved/entities.lua`)
 
 ```lua
-local function isProcessingMachine(entity)
-   return entity.fsm ~= nil 
-      and entity.inventory ~= nil 
-      and entity.processingTimer ~= nil
-end
+evolved_config.PREFABS = {
+   Assembler = builder()
+      :name("PREFABS.Assembler")
+      :prefab()
+      :set(FRAGMENTS.Color, Colors.PURPLE)
+      :set(FRAGMENTS.Inventory, Inventory.new())
+      :set(FRAGMENTS.MachineClass, "Assembler")
+      :set(FRAGMENTS.Mana, {current = 0, max = 100, regen_rate = 1})
+      :set(FRAGMENTS.ProcessingTimer, {current = 0, saved = 0})
+      :set(FRAGMENTS.StateMachine, StateMachine.new())
+      :set(TAGS.Interactable)
+      :set(TAGS.Physical)
+      :set(TAGS.Visual)
+      :set(TAGS.Processing)
+      :build(),
+}
+```
 
-pool = nata.new({
-   groups = {
-      processing = {filter = isProcessingMachine},
+### Entity Data (`src/data/entities/deployable_entities_data.lua`)
+
+```lua
+SkeletonAssembler = {
+   class = "Assembler",
+   color = Colors.PURPLE,
+   events = {
+      {name = "set_recipe",         from = "blank",   to = "idle"},
+      {name = "prepare",            from = "idle",    to = "ready"},
+      -- ... more events
    },
-   systems = {
-      require("src.systems.processing_system"),
+   inventory = {
+      max_input_slots = 2,
+      max_output_slots = 1,
    },
+   mana = {
+      current = 10,
+      max = 100,
+      regen_rate = 1,
+   },
+   valid_recipes = {Recipes.create_skeleton},
+},
+```
+
+### Spawning (`src/evolved/systems/setup_systems.lua`)
+
+```lua
+clone(PREFABS.Assembler, {
+   [Evolved.NAME] = "SkeletonAssembler",
+   [FRAGMENTS.Inventory] = Inventory.new(skeletonAssemblerData.inventory),
+   [FRAGMENTS.Mana] = {
+      current = skeletonAssemblerData.mana.current,
+      max = skeletonAssemblerData.mana.max,
+      regen_rate = skeletonAssemblerData.mana.regen_rate,
+   },
+   [FRAGMENTS.ProcessingTimer] = {current = 0, saved = 0},
+   [FRAGMENTS.StateMachine] = StateMachine.new({events = skeletonAssemblerData.events}),
+   [FRAGMENTS.ValidRecipes] = skeletonAssemblerData.valid_recipes,
 })
 ```
 
-## Usage
+## Mana System
 
-### 1. Create a Machine
+Mana regenerates automatically via `src/evolved/systems/mana_system.lua`:
 
 ```lua
--- Machines are created and added to the ECS pool
-local assembler = pool:queue(Assembler:new(600, 100, AssemblerRegistry.SKELETON_ASSEMBLER))
+builder()
+   :name("SYSTEMS.Mana")
+   :group(STAGES.OnUpdate)
+   :include(FRAGMENTS.Mana)
+   :execute(function(chunk, _, entityCount)
+      local manas = chunk:components(FRAGMENTS.Mana)
+      local dt = UNIFORMS.getDeltaTime()
+
+      for i = 1, entityCount do
+         local mana = manas[i]
+         local regenRate = mana.regen_rate or 0
+
+         if regenRate > 0 and mana.current < mana.max then
+            mana.current = math.min(mana.current + regenRate * dt, mana.max)
+         end
+      end
+   end):build()
 ```
 
-### 2. Set a Recipe
+## Adding New Machine Types
+
+1. **Create the behavior module** (`src/evolved/behaviors/furnace_behavior.lua`):
 
 ```lua
--- Get the machine
-local assembler = ecs.assembler
+local Furnace = {}
 
--- Set the recipe (transitions from BLANK to IDLE)
-assembler.currentRecipe = assembler.valid_recipes[1]
-if assembler.fsm:can("set_recipe") then
-   assembler.fsm:set_recipe()
+function Furnace.idle(context)
+   -- Furnace-specific idle logic
 end
+
+function Furnace.smelting(context)
+   -- Furnace-specific processing logic
+end
+
+function Furnace.update(context)
+   local state = context.fsm.current
+   local behavior = Furnace[state]
+   if behavior then behavior(context) end
+end
+
+return Furnace
 ```
 
-### 3. Add Ingredients (if required)
+2. **Register the behavior** (`src/evolved/behaviors/init.lua`):
 
 ```lua
--- Add items to input slots
-assembler.inventory:addItem("bone", 2)
-assembler.inventory:addItem("essence", 1)
-
--- The system automatically detects ingredients and transitions:
--- IDLE → READY → WORKING
+Behaviors.register("Furnace", require("src.evolved.behaviors.furnace_behavior"))
 ```
 
-### 4. Automatic Processing
-
-The system handles everything automatically:
-- Detects ingredients → transitions to READY
-- Starts ritual/processing → transitions to WORKING
-- Consumes mana per tick
-- On completion: consumes ingredients, produces outputs
-- If more ingredients available → restarts cycle
-
-### 5. Monitor Progress
+3. **Create a prefab** (`src/evolved/entities.lua`):
 
 ```lua
--- Get current state
-local state = assembler:getState()  -- "working", "idle", etc.
-
--- Get progress percentage (0-100)
-local progress = assembler:getProgress()
+Furnace = builder()
+   :name("PREFABS.Furnace")
+   :prefab()
+   :set(FRAGMENTS.MachineClass, "Furnace")
+   -- ... other fragments
+   :build(),
 ```
 
-## Output Stacking
-
-Outputs are placed in slots with stacking support:
-
-1. First, try to stack with existing slots of the same item type
-2. Then, fill empty slots
-3. Respects `max_stack_size` from ItemRegistry
+4. **Define entity data** (`src/data/entities/deployable_entities_data.lua`):
 
 ```lua
--- Example: producing 3 bones when max_stack_size is 64
--- Slot 1: bone x 60 → becomes bone x 63
--- Remaining: 0 (all stacked)
-
--- Example: producing 5 bones when slot is nearly full
--- Slot 1: bone x 62 → becomes bone x 64 (max)
--- Slot 2: (empty) → becomes bone x 3
+IronFurnace = {
+   class = "Furnace",
+   events = { ... },
+   -- ... other properties
+},
 ```
+
+The processing system automatically dispatches to the correct behavior based on `MachineClass`.
 
 ## Edge Cases Handled
 
@@ -301,81 +380,26 @@ Outputs are placed in slots with stacking support:
 |:---------|:---------|
 | No ingredients, only mana | Works - recipe.inputs is nil/empty |
 | No mana, only ingredients | Works - mana_per_tick defaults to 0 |
-| No ingredients, no mana | Works - auto-processes (generators) |
 | Output slots full | BLOCKED state, waits for space |
-| Output stacking | Stacks to max_stack_size |
+| Output stacking | Stacks to max_stack_size via ItemRegistry |
 | No output slots | Valid "sink" machine type |
 | Ingredients stolen mid-cycle | Returns to IDLE (not consumed yet) |
 | Mana depleted mid-cycle | NO_MANA state, preserves timer |
-| Recipe changed | Resets to IDLE |
 | Multiple outputs | Fills multiple slots as needed |
 | Chance-based outputs | Rolled on complete, doesn't block if no space |
 
 ## Debug Logging
 
-Enable/disable debug logging:
+Enable/disable debug logging in the behavior module:
 
 ```lua
-local ProcessingSystem = require("src.systems.processing_system")
-ProcessingSystem.DEBUG = true  -- or false
+local DEBUG = true  -- or false
 ```
 
 Example output:
 ```
-ProcessingSystem: Skeleton Assembler - Prepared, transitioning to READY
-ProcessingSystem: Skeleton Assembler - Starting ritual
+Assembler: SkeletonAssembler1048637 has ingredients -> ready
+Assembler: SkeletonAssembler1048637 starting ritual
   Processing time: 5s
-ProcessingSystem: Skeleton Assembler - Processing complete, produced outputs
+Assembler: SkeletonAssembler1048637 complete, produced outputs
 ```
-
-## Adding New Machine Types
-
-1. **Create the entity class** extending Machine:
-
-```lua
-local Machine = require("src.entities.machine")
-local MyMachine = Class("MyMachine", Machine)
-
-function MyMachine:initialize(x, y, id)
-   Machine.initialize(self, x, y, id)
-   -- Add machine-specific properties
-end
-
-function MyMachine:getFSMEvents()
-   return {
-      -- Define state transitions
-   }
-end
-
-return MyMachine
-```
-
-2. **Define entity data** in deployable_entities_data.lua:
-
-```lua
-my_machine = {
-   class = "MyMachine",
-   name = "My Machine",
-   mana = 50,
-   inventory = {
-      max_input_slots = 4,
-      max_output_slots = 2,
-   },
-   recipes = {Recipes.my_recipe},
-   -- ...
-}
-```
-
-3. **Create recipes** in recipes_data.lua:
-
-```lua
-my_recipe = {
-   name = "My Recipe",
-   inputs = { ... },
-   outputs = { ... },
-   mana_per_tick = 1,
-   processing_time = 10,
-}
-```
-
-4. The processing system handles the rest automatically based on the FSM events defined.
