@@ -1,16 +1,41 @@
-local Inventory = require("src.components.inventory")
+local Inventory = require("src.evolved.fragments.inventory")
+local StateMachine = require("src.evolved.fragments.state_machine")
+local Recipe = require("src.evolved.fragments.recipe")
 local evolved_config = require("src.evolved.evolved_config")
 local builder = Evolved.builder
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
-local function vector_duplicate(vector)
+local function duplicateVector(vector)
    return Vector(vector.x, vector.y)
+end
+
+local function clone(original)
+   return {table.unpack(original)}
+end
+
+local function deepClone(original)
+   local originalType = type(original)
+   local copy
+   if originalType == "table" then
+      copy = {}
+      for originalKey, originalValue in next, original, nil do
+         copy[deepClone(originalKey)] = deepClone(originalValue)
+      end
+      setmetatable(copy, deepClone(getmetatable(original)))
+   else -- number, string, boolean, etc
+      copy = original
+   end
+   return copy
 end
 
 evolved_config.FRAGMENTS = {
    Color = builder()
       :name("FRAGMENTS.Color")
       :default(Colors.WHITE)
+      :build(),
+   CurrentRecipe = builder()
+      :name("FRAGMENTS.CurrentRecipe")
+      :default(Recipe.new("empty"))
+      :duplicate(deepClone)
       :build(),
    InteractionRange = builder()
       :name("FRAGMENTS.InteractionRange")
@@ -19,12 +44,12 @@ evolved_config.FRAGMENTS = {
    Input = builder()
       :name("FRAGMENTS.Input")
       :default(Vector(0, 0))
-      :duplicate(vector_duplicate)
+      :duplicate(duplicateVector)
       :build(),
    Inventory = builder()
       :name("FRAGMENTS.Inventory")
       :default(nil)
-      :duplicate(Inventory.duplicate)
+      :duplicate(deepClone)
       :build(),
    MaxSpeed = builder()
       :name("FRAGMENTS.MaxSpeed")
@@ -33,7 +58,7 @@ evolved_config.FRAGMENTS = {
    Position = builder()
       :name("FRAGMENTS.Position")
       :default(Vector(0, 0))
-      :duplicate(vector_duplicate)
+      :duplicate(duplicateVector)
       :build(),
    Shape = builder()
       :name("FRAGMENTS.Shape")
@@ -42,17 +67,27 @@ evolved_config.FRAGMENTS = {
    Size = builder()
       :name("FRAGMENTS.Size")
       :default(Vector(16, 16))
-      :duplicate(vector_duplicate)
+      :duplicate(duplicateVector)
+      :build(),
+   StateMachine = builder()
+      :name("FRAGMENTS.State")
+      :default(StateMachine.new())
+      :duplicate(StateMachine.duplicate)
       :build(),
    Toolbar = builder()
       :name("FRAGMENTS.Toolbar")
       :default(nil)
-      :duplicate(Inventory.duplicate)
+      :duplicate(deepClone)
+      :build(),
+   ValidRecipes = builder()
+      :name("FRAGMENTS.ValidRecipes")
+      :default({})
+      :duplicate(deepClone)
       :build(),
    Velocity = builder()
       :name("FRAGMENTS.Velocity")
       :default(Vector(0, 0))
-      :duplicate(vector_duplicate)
+      :duplicate(duplicateVector)
       :build(),
 }
 
@@ -68,6 +103,11 @@ evolved_config.TAGS = {
       :name("TAGS.Interactable")
       :tag()
       :build(),
+   Inventory = builder()
+      :name("FRAGMENTS.Inventory")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
    Player = builder()
       :name("TAGS.Player")
       :tag()
@@ -75,15 +115,24 @@ evolved_config.TAGS = {
    Physical = builder()
       :name("TAGS.Physical")
       :tag()
-      :require(FRAGMENTS.Position, FRAGMENTS.Velocity, FRAGMENTS.Size)
+      :require(
+         FRAGMENTS.Position,
+         FRAGMENTS.Velocity,
+         FRAGMENTS.Size
+      )
       :build(),
    Visual = builder()
       :name("TAGS.Visual")
       :tag()
-      :require(FRAGMENTS.Shape, FRAGMENTS.Color)
+      :require(FRAGMENTS.Color, FRAGMENTS.Shape)
       :build(),
    Processing = builder()
       :name("TAGS.Processing")
+      :require(
+         FRAGMENTS.CurrentRecipe,
+         FRAGMENTS.StateMachine,
+         FRAGMENTS.ValidRecipes
+      )
       :tag()
       :build(),
 }

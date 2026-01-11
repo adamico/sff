@@ -61,19 +61,4 @@ function Inventory.addItem(inventory, item_id, count)
    return false
 end
 
-function Inventory.duplicate(inventory)
-   -- Simple deep copy - no class reconstruction needed
-   local new = {
-      input_slots = {},
-      output_slots = {},
-   }
-   for i, slot in ipairs(inventory.input_slots) do
-      new.input_slots[i] = slot.item_id and {item_id = slot.item_id, quantity = slot.quantity} or {}
-   end
-   for i, slot in ipairs(inventory.output_slots) do
-      new.output_slots[i] = slot.item_id and {item_id = slot.item_id, quantity = slot.quantity} or {}
-   end
-   return new
-end
-
 return Inventory

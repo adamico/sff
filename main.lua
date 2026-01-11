@@ -5,6 +5,7 @@ Events = require("src.config.events")
 Evolved = require("lib.evolved")
 Log = require("lib.log")
 Vector = require("lib.brinevector")
+require("src.helpers.text_helper")
 
 -- Enable debug mode for development (catches incorrect API usage)
 Evolved.debug_mode(true)

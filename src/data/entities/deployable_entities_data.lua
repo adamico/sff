@@ -4,10 +4,24 @@ return {
    SkeletonAssembler = {
       class = "Assembler",
       color = Colors.PURPLE,
+      events = {
+         {name = "set_recipe",   from = "blank",   to = "idle"},
+         {name = "prepare",      from = "idle",    to = "ready"},
+         {name = "start_ritual", from = "ready",   to = "working"},
+         {name = "complete",     from = "working", to = "idle"},
+         {name = "stop",         from = "working", to = "idle"},
+         {name = "block",        from = "working", to = "blocked"},
+         {name = "unblock",      from = "blocked", to = "idle"},
+         {name = "starve",       from = "working", to = "no_mana"},
+         {name = "refuel",       from = "no_mana", to = "working"},
+      },
       interactable = true,
       inventory = {
          max_input_slots = 2,
          max_output_slots = 1,
+         initial_items = {
+            {item_id = "bone", quantity = 1},
+         }
       },
       mana = {
          current = 10,
@@ -15,7 +29,7 @@ return {
          consume_rate = 1,
       },
       name = "Skeleton Assembler",
-      recipes = {Recipes.create_skeleton},
+      valid_recipes = {Recipes.create_skeleton},
       size = Vector(64, 64),
       timers = {
          processing = 5 -- seconds

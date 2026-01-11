@@ -1,4 +1,5 @@
-local Inventory = require "src.components.inventory"
+local Inventory = require "src.evolved.fragments.inventory"
+local StateMachine = require "src.evolved.fragments.state_machine"
 local evolved_config = require("src.evolved.evolved_config")
 local builder = Evolved.builder
 
@@ -25,6 +26,7 @@ evolved_config.PREFABS = {
       :prefab()
       :set(FRAGMENTS.Color, Colors.PURPLE)
       :set(FRAGMENTS.Inventory, Inventory.new())
+      :set(FRAGMENTS.StateMachine, StateMachine.new())
       :set(TAGS.Interactable)
       :set(TAGS.Physical)
       :set(TAGS.Visual)

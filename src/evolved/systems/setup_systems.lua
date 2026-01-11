@@ -1,10 +1,13 @@
-local Inventory = require("src.components.inventory")
+local Inventory = require("src.evolved.fragments.inventory")
+local StateMachine = require("src.evolved.fragments.state_machine")
 local builder = Evolved.builder
 local set = Evolved.set
 local clone = Evolved.clone
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 local DEPLOYABLE_ENTITIES_DATA = require("src.data.entities.deployable_entities_data")
+local skeletonAssemblerData = DEPLOYABLE_ENTITIES_DATA.SkeletonAssembler
+local creativeChestData = DEPLOYABLE_ENTITIES_DATA.CreativeChest
 
 builder()
    :name("SYSTEMS.Startup")
@@ -13,16 +16,18 @@ builder()
       set(ENTITIES.Player, FRAGMENTS.Position, Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
       clone(PREFABS.Assembler, {
          [Evolved.NAME] = "SkeletonAssembler",
-         [FRAGMENTS.Inventory] = Inventory.new(DEPLOYABLE_ENTITIES_DATA.SkeletonAssembler.inventory),
+         [FRAGMENTS.Inventory] = Inventory.new(skeletonAssemblerData.inventory),
          [FRAGMENTS.Position] = Vector(600, 100),
          [FRAGMENTS.Shape] = "rectangle",
-         [FRAGMENTS.Size] = Vector(64, 64)
+         [FRAGMENTS.Size] = Vector(64, 64),
+         [FRAGMENTS.StateMachine] = StateMachine.new({events = skeletonAssemblerData.events}),
+         [FRAGMENTS.ValidRecipes] = skeletonAssemblerData.valid_recipes,
       })
       clone(PREFABS.Storage, {
          [Evolved.NAME] = "CreativeChest",
-         [FRAGMENTS.Inventory] = Inventory.new(DEPLOYABLE_ENTITIES_DATA.CreativeChest.inventory),
+         [FRAGMENTS.Inventory] = Inventory.new(creativeChestData.inventory),
          [FRAGMENTS.Position] = Vector(100, 100),
          [FRAGMENTS.Shape] = "rectangle",
-         [FRAGMENTS.Size] = Vector(32, 32)
+         [FRAGMENTS.Size] = Vector(32, 32),
       })
    end):build()
