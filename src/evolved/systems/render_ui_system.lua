@@ -1,6 +1,6 @@
-local FlexInventoryView = require("src.ui.inventory_view")
+local InventoryView = require("src.ui.inventory_view")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
-local FlexMachineScreen = require("src.ui.machine_screen")
+local MachineScreen = require("src.ui.machine_screen")
 local MachineStateManager = require("src.ui.machine_state_manager")
 
 local builder = Evolved.builder
@@ -41,7 +41,7 @@ local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
 local function getToolbarView(toolbar)
    if not toolbar then return nil end
    if not toolbarView then
-      toolbarView = FlexInventoryView:new(toolbar, {
+      toolbarView = InventoryView:new(toolbar, {
          id = "toolbar",
          columns = COLUMNS,
          rows = TOOLBAR_ROWS,
@@ -56,7 +56,7 @@ local function getPlayerInventoryView(playerInventory)
    if not playerInventory then return nil end
 
    -- Always create new view since it gets destroyed when closed
-   local playerInventoryView = FlexInventoryView:new(playerInventory, {
+   local playerInventoryView = InventoryView:new(playerInventory, {
       id = "player_inventory",
       columns = COLUMNS,
       rows = INV_ROWS,
@@ -82,11 +82,11 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
    if not playerInventory or not targetInventory then return end
 
    -- Calculate target inventory dimensions based on actual slot count
-   local totalSlots = math.max(#targetInventory.slots, 1)
+   local slots = #targetInventory.slots
 
    -- Determine columns and rows based on slot count
-   local targetColumns = math.min(totalSlots, COLUMNS)
-   local targetRows = math.ceil(totalSlots / targetColumns)
+   local targetColumns = math.min(slots, COLUMNS)
+   local targetRows = math.ceil(slots / targetColumns)
 
    -- Calculate actual width and height for this inventory
    local targetWidth = targetColumns * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
@@ -102,11 +102,10 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
       rows = targetRows,
       x = targetX,
       y = targetY,
-      draggable = true,
       entityId = entityId or nil
    }
 
-   local targetInventoryView = FlexInventoryView:new(targetInventory, options)
+   local targetInventoryView = InventoryView:new(targetInventory, options)
 
    local views = {
       getToolbarView(playerToolbar),
@@ -129,7 +128,7 @@ local function openMachineScreen(entityId)
    local machineX = SCREEN_CENTER.x - MACHINE_WIDTH / 2
    local machineY = PLAYER_INV_Y - GAP - MACHINE_HEIGHT
 
-   local machineScreen = FlexMachineScreen:new({
+   local machineScreen = MachineScreen:new({
       entityId = entityId,
       x = machineX,
       y = machineY,
