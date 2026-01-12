@@ -1,0 +1,1256 @@
+local packageName = ... or "FlexLove"
+local modulePath = packageName:match("(.-)[^%.]+$") -- Get the module path prefix (e.g., "libs." or "")
+-- If modulePath is empty (e.g., require("FlexLove")), use the package name
+if modulePath == "" then
+  modulePath = packageName .. "."
+end
+
+local function req(name)
+  return require(modulePath .. "modules." .. name)
+end
+
+---@type ErrorHandler
+local ErrorHandler = req("ErrorHandler")
+local ModuleLoader = req("ModuleLoader")
+ModuleLoader.init({ ErrorHandler = ErrorHandler })
+
+local function safeReq(name, isOptional)
+  return ModuleLoader.safeRequire(modulePath .. "modules." .. name, isOptional)
+end
+
+-- Required core modules
+local utils = req("utils")
+local Calc = req("Calc")
+local Units = req("Units")
+local Context = req("Context")
+---@type StateManager
+local StateManager = req("StateManager")
+local RoundedRect = req("RoundedRect")
+local Grid = req("Grid")
+local InputEvent = req("InputEvent")
+local TextEditor = req("TextEditor")
+---@type LayoutEngine
+local LayoutEngine = req("LayoutEngine")
+local Renderer = req("Renderer")
+---@type EventHandler
+local EventHandler = req("EventHandler")
+local ScrollManager = req("ScrollManager")
+---@type Element
+local Element = req("Element")
+---@type Color
+local Color = req("Color")
+---@type FFI
+local FFI = req("FFI")
+
+-- Optional modules (can be excluded in minimal builds)
+local Blur = safeReq("Blur", true)
+---@type Performance
+local Performance = safeReq("Performance", true)
+local ImageRenderer = safeReq("ImageRenderer", true)
+local ImageScaler = safeReq("ImageScaler", true)
+local NinePatch = safeReq("NinePatch", true)
+local ImageCache = safeReq("ImageCache", true)
+local GestureRecognizer = safeReq("GestureRecognizer", true)
+---@type Animation
+local Animation = safeReq("Animation", true)
+---@type Theme
+local Theme = safeReq("Theme", true)
+
+-- Handle Animation.Transform safely
+local Transform = Animation.Transform or nil
+
+local enums = utils.enums
+
+---@class FlexLove
+local flexlove = Context
+flexlove._VERSION = "0.8.0"
+flexlove._DESCRIPTION = "UI Library for LÖVE Framework based on flexbox"
+flexlove._URL = "https://github.com/mikefreno/FlexLove"
+flexlove._LICENSE = [[
+  MIT License
+
+  Copyright (c) 2025 Mike Freno
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+]]
+
+-- GC (Garbage Collection) configuration
+---@type GCConfig
+flexlove._gcConfig = {
+  strategy = "auto", -- "auto", "periodic", "manual", "disabled"
+  memoryThreshold = 100, -- MB before forcing GC
+  interval = 60, -- Frames between GC steps (for periodic mode)
+  stepSize = 200, -- Work units per GC step (higher = more aggressive)
+}
+---@type GCState
+flexlove._gcState = {
+  framesSinceLastGC = 0,
+  lastMemory = 0,
+  gcCount = 0,
+}
+
+-- Deferred callback queue for operations that cannot run while Canvas is active
+---@type function[]
+flexlove._deferredCallbacks = {}
+
+-- Track accumulated delta time for immediate mode updates
+flexlove._accumulatedDt = 0
+
+--- Check if FlexLove initialization is complete and ready to create elements
+--- Use this before creating elements to avoid automatic queueing
+---@return boolean ready True if FlexLove is initialized and ready to use
+function flexlove.isReady()
+  return flexlove._initState == "ready"
+end
+
+--- Set up FlexLove for your application's specific needs - configure responsive scaling, theming, rendering mode, and debugging tools
+--- Use this to establish a consistent UI foundation that adapts to different screen sizes and provides performance insights
+--- After initialization, any queued element creation calls will be automatically processed
+---@param config FlexLoveConfig?
+function flexlove.init(config)
+  flexlove._initState = "initializing"
+  config = config or {}
+
+  flexlove._ErrorHandler = ErrorHandler.init({
+    includeStackTrace = config.includeStackTrace,
+    logLevel = config.reportingLogLevel,
+    logTarget = config.errorLogTarget,
+    logFile = config.errorLogFile,
+    maxLogSize = config.errorLogMaxSize,
+    maxLogFiles = config.maxErrorLogFiles,
+    enableRotation = config.errorLogRotateEnabled,
+  })
+
+  -- Initialize FFI module (LuaJIT optimizations)
+  flexlove._FFI = FFI.init({ ErrorHandler = flexlove._ErrorHandler })
+
+  -- Initialize Performance if available
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.Performance") then
+    flexlove._Performance = Performance.init({
+      enabled = config.performanceMonitoring or true,
+      hudEnabled = false, -- Start with HUD disabled
+      hudToggleKey = config.performanceHudKey or "f3",
+      hudPosition = config.performanceHudPosition or { x = 10, y = 10 },
+      warningThresholdMs = config.performanceWarningThreshold or 13.0,
+      criticalThresholdMs = config.performanceCriticalThreshold or 16.67,
+      logToConsole = config.performanceLogToConsole or false,
+      logWarnings = config.performanceWarnings or false,
+      warningsEnabled = config.performanceWarnings or false,
+      memoryProfiling = config.memoryProfiling or config.immediateMode and true or false,
+    }, { ErrorHandler = flexlove._ErrorHandler, FFI = flexlove._FFI })
+
+    if config.immediateMode then
+      flexlove._Performance:registerTableForMonitoring("StateManager.stateStore", StateManager._getInternalState().stateStore)
+      flexlove._Performance:registerTableForMonitoring("StateManager.stateMetadata", StateManager._getInternalState().stateMetadata)
+    end
+  else
+    flexlove._Performance = Performance
+  end
+
+  -- Initialize optional modules if available
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.ImageRenderer") then
+    ImageRenderer.init({ ErrorHandler = flexlove._ErrorHandler, utils = utils })
+  end
+
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.ImageScaler") then
+    ImageScaler.init({ ErrorHandler = flexlove._ErrorHandler })
+  end
+
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.NinePatch") then
+    NinePatch.init({ ErrorHandler = flexlove._ErrorHandler })
+  end
+
+  -- Initialize Blur module with immediate mode optimization config
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.Blur") then
+    local blurOptimizations = config.immediateModeBlurOptimizations
+    if blurOptimizations == nil then
+      blurOptimizations = true -- Default to enabled
+    end
+    Blur.init({
+      ErrorHandler = flexlove._ErrorHandler,
+      immediateModeOptimizations = blurOptimizations and config.immediateMode or false,
+    })
+  end
+
+  -- Initialize required modules
+  Calc.init({ ErrorHandler = flexlove._ErrorHandler })
+  Units.init({ Context = Context, ErrorHandler = flexlove._ErrorHandler, Calc = Calc })
+  Color.init({ ErrorHandler = flexlove._ErrorHandler, FFI = flexlove._FFI })
+  utils.init({ ErrorHandler = flexlove._ErrorHandler })
+
+  -- Initialize optional Animation module
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.Animation") then
+    Animation.init({ ErrorHandler = flexlove._ErrorHandler, Color = Color })
+  end
+
+  -- Initialize optional Theme module
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.Theme") then
+    Theme.init({ ErrorHandler = flexlove._ErrorHandler, Color = Color, utils = utils })
+  end
+
+  LayoutEngine.init({ ErrorHandler = flexlove._ErrorHandler, Performance = flexlove._Performance, FFI = flexlove._FFI })
+  EventHandler.init({ ErrorHandler = flexlove._ErrorHandler, Performance = flexlove._Performance, InputEvent = InputEvent, utils = utils })
+
+  flexlove._defaultDependencies = {
+    Context = Context,
+    Theme = Theme,
+    Color = Color,
+    Calc = Calc,
+    Units = Units,
+    Blur = Blur,
+    ImageRenderer = ImageRenderer,
+    ImageScaler = ImageScaler,
+    NinePatch = NinePatch,
+    RoundedRect = RoundedRect,
+    ImageCache = ImageCache,
+    utils = utils,
+    Grid = Grid,
+    InputEvent = InputEvent,
+    GestureRecognizer = GestureRecognizer,
+    StateManager = StateManager,
+    TextEditor = TextEditor,
+    LayoutEngine = LayoutEngine,
+    Renderer = Renderer,
+    EventHandler = EventHandler,
+    ScrollManager = ScrollManager,
+    ErrorHandler = flexlove._ErrorHandler,
+    Performance = flexlove._Performance,
+    Transform = Transform,
+  }
+
+  -- Initialize Element module with dependencies
+  Element.init(flexlove._defaultDependencies)
+
+  if config.baseScale then
+    flexlove.baseScale = {
+      width = config.baseScale.width or 1920,
+      height = config.baseScale.height or 1080,
+    }
+
+    local currentWidth, currentHeight = Units.getViewport()
+    flexlove.scaleFactors.x = currentWidth / flexlove.baseScale.width
+    flexlove.scaleFactors.y = currentHeight / flexlove.baseScale.height
+  end
+
+  if config.theme and ModuleLoader.isModuleLoaded(modulePath .. "modules.Theme") then
+    local success, err = pcall(function()
+      if type(config.theme) == "string" then
+        Theme.load(config.theme)
+        Theme.setActive(config.theme)
+        flexlove.defaultTheme = config.theme
+      elseif type(config.theme) == "table" then
+        local theme = Theme.new(config.theme)
+        Theme.setActive(theme)
+        flexlove.defaultTheme = theme.name
+      end
+    end)
+
+    if not success then
+      print("[FlexLove] Failed to load theme: " .. tostring(err))
+    end
+  end
+
+  local immediateMode = config.immediateMode or false
+  flexlove.setMode(immediateMode and "immediate" or "retained")
+
+  flexlove._autoFrameManagement = config.autoFrameManagement or false
+
+  -- Configure GC strategy
+  if config.gcStrategy then
+    flexlove._gcConfig.strategy = config.gcStrategy
+  end
+  if config.gcMemoryThreshold then
+    flexlove._gcConfig.memoryThreshold = config.gcMemoryThreshold
+  end
+  if config.gcInterval then
+    flexlove._gcConfig.interval = config.gcInterval
+  end
+  if config.gcStepSize then
+    flexlove._gcConfig.stepSize = config.gcStepSize
+  end
+
+  if config.stateRetentionFrames or config.maxStateEntries then
+    StateManager.configure({
+      stateRetentionFrames = config.stateRetentionFrames,
+      maxStateEntries = config.maxStateEntries,
+    })
+  end
+  flexlove.initialized = true
+  flexlove._initState = "ready"
+
+  -- Process all queued element creations
+  local queue = flexlove._initQueue
+  flexlove._initQueue = {} -- Clear queue before processing to prevent re-entry issues
+
+  for _, item in ipairs(queue) do
+    local element = Element.new(item.props)
+    if item.callback and type(item.callback) == "function" then
+      local success, err = pcall(item.callback, element)
+      if not success then
+        flexlove._ErrorHandler:warn("FlexLove", string.format("Failed to execute queued element callback: %s", tostring(err)))
+      end
+    end
+  end
+end
+
+--- Safely schedule operations that modify LÖVE's rendering state (like window mode changes) to execute after all canvas operations complete
+--- Prevents crashes from attempting canvas-incompatible operations during rendering
+---@param callback function The callback to execute
+function flexlove.deferCallback(callback)
+  if type(callback) ~= "function" then
+    flexlove._ErrorHandler:warn("FlexLove", "CORE_001")
+    return
+  end
+  table.insert(flexlove._deferredCallbacks, callback)
+end
+
+--- Execute deferred operations at the safest point in the render cycle - after all canvas operations are complete
+--- Call this at the end of love.draw() to enable window resizing and other state-modifying operations without crashes
+--- @usage
+--- function love.draw()
+---   love.graphics.setCanvas(myCanvas)
+---   FlexLove.draw()
+---   love.graphics.setCanvas() -- Release ALL canvases
+---   FlexLove.executeDeferredCallbacks() -- Now safe to execute
+--- end
+function flexlove.executeDeferredCallbacks()
+  if #flexlove._deferredCallbacks == 0 then
+    return
+  end
+
+  -- Copy callbacks and clear queue before execution
+  -- This prevents infinite loops if callbacks defer more callbacks
+  local callbacks = flexlove._deferredCallbacks
+  flexlove._deferredCallbacks = {}
+
+  for _, callback in ipairs(callbacks) do
+    local success, err = xpcall(callback, debug.traceback)
+    if not success then
+      flexlove._ErrorHandler:warn("FlexLove", "CORE_002", {
+        error = tostring(err),
+      })
+    end
+  end
+end
+
+--- Recalculate all UI layouts when the window size changes - ensures your interface adapts seamlessly to new dimensions
+--- Hook this to love.resize() to maintain proper scaling and positioning across window size changes
+function flexlove.resize()
+  local newWidth, newHeight = love.window.getMode()
+
+  if flexlove.baseScale then
+    flexlove.scaleFactors.x = newWidth / flexlove.baseScale.width
+    flexlove.scaleFactors.y = newHeight / flexlove.baseScale.height
+  end
+
+  if ModuleLoader.isModuleLoaded(modulePath .. "modules.Blur") then
+    Blur.clearCache()
+  end
+
+  -- Release old canvases explicitly
+  if flexlove._gameCanvas then
+    flexlove._gameCanvas:release()
+  end
+  if flexlove._backdropCanvas then
+    flexlove._backdropCanvas:release()
+  end
+
+  flexlove._gameCanvas = nil
+  flexlove._backdropCanvas = nil
+  flexlove._canvasDimensions = { width = 0, height = 0 }
+
+  for _, win in ipairs(flexlove.topElements) do
+    win:resize(newWidth, newHeight)
+  end
+end
+
+--- Switch between immediate mode (React-like, recreates UI each frame) and retained mode (persistent elements) to match your architectural needs
+--- Use immediate for simpler state management and declarative UIs, retained for performance-critical applications with complex state
+---@param mode "immediate"|"retained"
+function flexlove.setMode(mode)
+  if mode == "immediate" then
+    flexlove._immediateMode = true
+    flexlove._immediateModeState = StateManager
+    flexlove._frameStarted = false
+    flexlove._autoBeganFrame = false
+  elseif mode == "retained" then
+    flexlove._immediateMode = false
+    flexlove._immediateModeState = nil
+    flexlove._frameStarted = false
+    flexlove._autoBeganFrame = false
+    flexlove._currentFrameElements = {}
+    flexlove._frameNumber = 0
+  else
+    error("[FlexLove] Invalid mode: " .. tostring(mode) .. ". Expected 'immediate' or 'retained'")
+  end
+end
+
+--- Check which rendering mode is active to conditionally handle state management logic
+--- Useful for libraries and reusable components that need to adapt to different rendering strategies
+---@return "immediate"|"retained"
+function flexlove.getMode()
+  return flexlove._immediateMode and "immediate" or "retained"
+end
+
+--- Manually start a new frame in immediate mode for precise control over the UI lifecycle
+--- Only needed when you want explicit frame boundaries; otherwise FlexLove auto-manages frames
+function flexlove.beginFrame()
+  if not flexlove._immediateMode then
+    return
+  end
+
+  -- Reset accumulated delta time for new frame
+  flexlove._accumulatedDt = 0
+
+  -- Start performance frame timing
+  flexlove._Performance:startFrame()
+
+  -- Cleanup elements from PREVIOUS frame (after they've been drawn)
+  -- This breaks circular references and allows GC to collect memory
+  -- Note: Cleanup is minimal to preserve functionality
+  -- IMPORTANT: Only cleanup immediate-mode elements, preserve retained-mode elements
+  if flexlove._currentFrameElements then
+    local function cleanupChildren(elem)
+      for _, child in ipairs(elem.children) do
+        cleanupChildren(child)
+      end
+      elem:_cleanup()
+    end
+
+    for _, element in ipairs(flexlove._currentFrameElements) do
+      -- Only cleanup immediate-mode top-level elements
+      -- Retained-mode elements persist across frames
+      if not element.parent and element._elementMode == "immediate" then
+        cleanupChildren(element)
+      end
+    end
+  end
+
+  -- Preserve top-level retained elements before resetting
+  local retainedTopElements = {}
+  if flexlove.topElements then
+    for _, element in ipairs(flexlove.topElements) do
+      if element._elementMode == "retained" then
+        table.insert(retainedTopElements, element)
+      end
+    end
+  end
+
+  flexlove._frameNumber = flexlove._frameNumber + 1
+  StateManager.incrementFrame()
+  flexlove._currentFrameElements = {}
+  flexlove._frameStarted = true
+
+  -- Restore retained top-level elements
+  flexlove.topElements = retainedTopElements
+
+  -- Clear focused element at start of frame in immediate mode
+  -- Elements will restore their focus state during construction via setState()
+  Context._focusedElement = nil
+
+  Context.clearFrameElements()
+end
+
+--- Finalize the frame in immediate mode, triggering layout calculations and state persistence
+--- Only needed when manually controlling frames with beginFrame(); otherwise handled automatically
+function flexlove.endFrame()
+  if not flexlove._immediateMode then
+    return
+  end
+
+  Context.sortElementsByZIndex()
+
+  -- Layout all top-level elements now that all children have been added
+  -- This ensures overflow detection happens with complete child lists
+  -- Only process immediate-mode elements (retained elements handle their own layout)
+  for _, element in ipairs(flexlove._currentFrameElements) do
+    if not element.parent and element._elementMode == "immediate" then
+      element:layoutChildren() -- Layout with all children present
+    end
+  end
+
+  -- Handle mixed-mode trees: if immediate-mode children were added to retained-mode parents,
+  -- trigger layout on those parents so the children are properly positioned
+  -- We check for parents with _childrenDirty flag OR parents with immediate-mode children
+  local retainedParentsToLayout = {}
+  for _, element in ipairs(flexlove._currentFrameElements) do
+    if element._elementMode == "immediate" and element.parent and element.parent._elementMode == "retained" then
+      -- Found immediate child with retained parent - mark parent for layout
+      retainedParentsToLayout[element.parent] = true
+    end
+  end
+
+  -- Layout all retained parents that had immediate children added
+  for parent, _ in pairs(retainedParentsToLayout) do
+    parent:layoutChildren()
+  end
+
+  -- Auto-update all top-level elements created this frame
+  -- This happens AFTER layout so positions are correct
+  -- Use accumulated dt from FlexLove.update() calls to properly update animations and cursor blink
+  -- Process immediate-mode top-level elements (they recursively update their children)
+  for _, element in ipairs(flexlove._currentFrameElements) do
+    if not element.parent and element._elementMode == "immediate" then
+      element:update(flexlove._accumulatedDt)
+    end
+  end
+
+  -- Also update immediate-mode children that have retained-mode parents
+  -- These won't be updated by the loop above (since they have parents)
+  -- And their retained parents won't auto-update (retained = manual lifecycle)
+  -- So we need to explicitly update them here
+  for _, element in ipairs(flexlove._currentFrameElements) do
+    if element.parent and element.parent._elementMode == "retained" and element._elementMode == "immediate" then
+      element:update(flexlove._accumulatedDt)
+    end
+  end
+
+  -- Save state for all elements created this frame
+  -- State is collected from element and all sub-modules via element:saveState()
+  -- This is the ONLY place state is saved in immediate mode
+  -- Only process immediate-mode elements (retained elements don't use StateManager)
+  for _, element in ipairs(flexlove._currentFrameElements) do
+    if element._elementMode == "immediate" and element.id and element.id ~= "" then
+      -- Collect state from element and all sub-modules
+      local stateUpdate = element:saveState()
+
+      -- Use optimized update that only changes modified values
+      -- Returns true if state was changed (meaning blur cache needs invalidation)
+      local stateChanged = StateManager.updateStateIfChanged(element.id, stateUpdate)
+
+      -- Invalidate blur cache if blur-related properties changed
+      if stateChanged and (element.backdropBlur or element.contentBlur) and Blur then
+        Blur.clearElementCache(element.id)
+      end
+    end
+  end
+
+  StateManager.cleanup()
+  StateManager.forceCleanupIfNeeded()
+  flexlove._frameStarted = false
+
+  -- End performance frame timing
+  flexlove._Performance:endFrame()
+  flexlove._Performance:resetFrameCounters()
+end
+
+---@type love.Canvas?
+flexlove._gameCanvas = nil
+---@type love.Canvas?
+flexlove._backdropCanvas = nil
+---@type {width: number, height: number}
+flexlove._canvasDimensions = { width = 0, height = 0 }
+
+--- Render all UI elements with optional backdrop blur support for glassmorphic effects
+--- Place your game scene in gameDrawFunc to enable backdrop blur on UI elements; use postDrawFunc for overlays
+---@param gameDrawFunc function|nil pass component draws that should be affected by a backdrop blur
+---@param postDrawFunc function|nil pass component draws that should NOT be affected by a backdrop blur
+function flexlove.draw(gameDrawFunc, postDrawFunc)
+  if flexlove._immediateMode and flexlove._autoBeganFrame then
+    flexlove.endFrame()
+    flexlove._autoBeganFrame = false
+  end
+
+  local outerCanvas = love.graphics.getCanvas()
+  local gameCanvas = nil
+
+  if type(gameDrawFunc) == "function" then
+    local width, height = love.graphics.getDimensions()
+
+    if not flexlove._gameCanvas or flexlove._canvasDimensions.width ~= width or flexlove._canvasDimensions.height ~= height then
+      -- Release old canvases before creating new ones
+      if flexlove._gameCanvas then
+        flexlove._gameCanvas:release()
+      end
+      if flexlove._backdropCanvas then
+        flexlove._backdropCanvas:release()
+      end
+
+      flexlove._gameCanvas = love.graphics.newCanvas(width, height)
+      flexlove._backdropCanvas = love.graphics.newCanvas(width, height)
+      flexlove._canvasDimensions.width = width
+      flexlove._canvasDimensions.height = height
+    end
+
+    gameCanvas = flexlove._gameCanvas
+
+    love.graphics.setCanvas(gameCanvas)
+    love.graphics.clear()
+    gameDrawFunc()
+    love.graphics.setCanvas(outerCanvas)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(gameCanvas, 0, 0)
+  end
+
+  table.sort(flexlove.topElements, function(a, b)
+    return a.z < b.z
+  end)
+
+  local function hasBackdropBlur(element)
+    if element.backdropBlur and element.backdropBlur.radius > 0 then
+      return true
+    end
+    for _, child in ipairs(element.children) do
+      if hasBackdropBlur(child) then
+        return true
+      end
+    end
+    return false
+  end
+
+  local needsBackdropCanvas = false
+  for _, win in ipairs(flexlove.topElements) do
+    if hasBackdropBlur(win) then
+      needsBackdropCanvas = true
+      break
+    end
+  end
+
+  if needsBackdropCanvas and gameCanvas then
+    local backdropCanvas = flexlove._backdropCanvas
+    local prevColor = { love.graphics.getColor() }
+
+    love.graphics.setCanvas(backdropCanvas)
+    love.graphics.clear()
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(gameCanvas, 0, 0)
+
+    love.graphics.setCanvas(outerCanvas)
+    love.graphics.setColor(unpack(prevColor))
+
+    for _, win in ipairs(flexlove.topElements) do
+      -- Check if this element tree has backdrop blur
+      local needsBackdrop = hasBackdropBlur(win)
+
+      -- Draw element with backdrop blur applied if needed
+      if needsBackdrop then
+        win:draw(backdropCanvas)
+      else
+        win:draw(nil)
+      end
+
+      -- IMPORTANT: Update backdrop canvas for EVERY element (respecting z-index order)
+      -- This ensures that lower z-index elements are visible in the backdrop blur
+      -- of higher z-index elements
+      love.graphics.setCanvas(backdropCanvas)
+      love.graphics.setColor(1, 1, 1, 1)
+      win:draw(nil)
+      love.graphics.setCanvas(outerCanvas)
+    end
+  else
+    for _, win in ipairs(flexlove.topElements) do
+      win:draw(nil)
+    end
+  end
+
+  if type(postDrawFunc) == "function" then
+    postDrawFunc()
+  end
+
+  -- Render performance HUD if enabled
+  flexlove._Performance:renderHUD()
+
+  love.graphics.setCanvas(outerCanvas)
+
+  -- NOTE: Deferred callbacks are NOT executed here because the calling code
+  -- (e.g., main.lua) might still have a canvas active. Callbacks must be
+  -- executed by calling FlexLove.executeDeferredCallbacks() at the very end
+  -- of love.draw() after ALL canvases have been released.
+end
+
+--- Check if element is an ancestor of target
+---@param element Element The potential ancestor element
+---@param target Element The target element to check
+---@return boolean isAncestor True if element is an ancestor of target
+local function isAncestor(element, target)
+  local current = target.parent
+  while current do
+    if current == element then
+      return true
+    end
+    current = current.parent
+  end
+  return false
+end
+
+--- Determine which UI element the user is interacting with at a specific screen position
+--- Essential for custom input handling, tooltips, or debugging click targets in complex layouts
+---@param x number
+---@param y number
+---@return Element?
+function flexlove.getElementAtPosition(x, y)
+  local candidates = {}
+  local blockingElements = {}
+
+  local function collectHits(element, scrollOffsetX, scrollOffsetY)
+    scrollOffsetX = scrollOffsetX or 0
+    scrollOffsetY = scrollOffsetY or 0
+
+    local bx = element.x
+    local by = element.y
+    local bw = element._borderBoxWidth or (element.width + element.padding.left + element.padding.right)
+    local bh = element._borderBoxHeight or (element.height + element.padding.top + element.padding.bottom)
+
+    -- Adjust mouse position by accumulated scroll offset for hit testing
+    local adjustedX = x + scrollOffsetX
+    local adjustedY = y + scrollOffsetY
+
+    if adjustedX >= bx and adjustedX <= bx + bw and adjustedY >= by and adjustedY <= by + bh then
+      -- Collect interactive elements (those with onEvent handlers)
+      if element.onEvent and not element.disabled then
+        table.insert(candidates, element)
+      end
+
+      -- Collect all visible elements for input blocking
+      -- Elements with opacity > 0 block input to elements below them
+      if element.opacity > 0 then
+        table.insert(blockingElements, element)
+      end
+
+      -- Check if this element has scrollable overflow
+      local overflowX = element.overflowX or element.overflow
+      local overflowY = element.overflowY or element.overflow
+      local hasScrollableOverflow = (
+        overflowX == "scroll"
+        or overflowX == "auto"
+        or overflowY == "scroll"
+        or overflowY == "auto"
+        or overflowX == "hidden"
+        or overflowY == "hidden"
+      )
+
+      -- Accumulate scroll offset for children if this element has overflow clipping
+      local childScrollOffsetX = scrollOffsetX
+      local childScrollOffsetY = scrollOffsetY
+      if hasScrollableOverflow then
+        childScrollOffsetX = childScrollOffsetX + (element._scrollX or 0)
+        childScrollOffsetY = childScrollOffsetY + (element._scrollY or 0)
+      end
+
+      for _, child in ipairs(element.children) do
+        collectHits(child, childScrollOffsetX, childScrollOffsetY)
+      end
+    end
+  end
+
+  for _, element in ipairs(flexlove.topElements) do
+    collectHits(element)
+  end
+
+  -- Sort both lists by z-index (highest first)
+  table.sort(candidates, function(a, b)
+    return a.z > b.z
+  end)
+
+  table.sort(blockingElements, function(a, b)
+    return a.z > b.z
+  end)
+
+  -- If we have interactive elements, return the topmost one
+  -- But only if there's no blocking element with higher z-index (that isn't an ancestor)
+  if #candidates > 0 then
+    local topCandidate = candidates[1]
+
+    -- Check if any blocking element would prevent this interaction
+    if #blockingElements > 0 then
+      local topBlocker = blockingElements[1]
+      -- If the top blocker has higher z-index than the top candidate,
+      -- and the blocker is NOT an ancestor of the candidate,
+      -- return the blocker (even though it has no onEvent, it blocks input)
+      if topBlocker.z > topCandidate.z and not isAncestor(topBlocker, topCandidate) then
+        return topBlocker
+      end
+    end
+
+    return topCandidate
+  end
+
+  -- No interactive elements, but return topmost blocking element if any
+  -- This prevents clicks from passing through non-interactive overlays
+  return blockingElements[1]
+end
+
+--- Update all UI animations, interactions, and state changes each frame
+--- Hook this to love.update() to enable hover effects, animations, text cursors, and scrolling
+---@param dt number
+function flexlove.update(dt)
+  -- Update Performance module with actual delta time for accurate FPS
+  flexlove._Performance:updateDeltaTime(dt)
+
+  -- Garbage collection management
+  flexlove._manageGC()
+
+  local mx, my = love.mouse.getPosition()
+  local topElement = flexlove.getElementAtPosition(mx, my)
+
+  flexlove._activeEventElement = topElement
+
+  -- In immediate mode, accumulate dt and skip updating here - elements will be updated in endFrame after layout
+  if flexlove._immediateMode then
+    flexlove._accumulatedDt = flexlove._accumulatedDt + dt
+  else
+    for _, win in ipairs(flexlove.topElements) do
+      win:update(dt)
+    end
+  end
+
+  flexlove._activeEventElement = nil
+
+  -- Note: State saving happens in endFrame() after element:update() is called
+  -- This ensures all state changes (including cursor blink) are captured once per frame
+end
+
+--- Internal GC management function (called from update)
+function flexlove._manageGC()
+  local strategy = flexlove._gcConfig.strategy
+
+  if strategy == "disabled" then
+    return
+  end
+
+  local currentMemory = collectgarbage("count") / 1024 -- Convert to MB
+  flexlove._gcState.lastMemory = currentMemory
+  flexlove._gcState.framesSinceLastGC = flexlove._gcState.framesSinceLastGC + 1
+
+  -- Check memory threshold (applies to all strategies except disabled)
+  if currentMemory > flexlove._gcConfig.memoryThreshold then
+    -- Force full GC when exceeding threshold
+    collectgarbage("collect")
+    flexlove._gcState.gcCount = flexlove._gcState.gcCount + 1
+    flexlove._gcState.framesSinceLastGC = 0
+    return
+  end
+
+  -- Strategy-specific GC
+  if strategy == "periodic" then
+    -- Run incremental GC step every N frames
+    if flexlove._gcState.framesSinceLastGC >= flexlove._gcConfig.interval then
+      collectgarbage("step", flexlove._gcConfig.stepSize)
+      flexlove._gcState.gcCount = flexlove._gcState.gcCount + 1
+      flexlove._gcState.framesSinceLastGC = 0
+    end
+  elseif strategy == "auto" then
+    -- Let Lua's automatic GC handle it, but help with incremental steps
+    -- Run a small step every frame to keep memory under control
+    if flexlove._gcState.framesSinceLastGC >= 5 then
+      collectgarbage("step", 50) -- Small steps to avoid frame drops
+      flexlove._gcState.framesSinceLastGC = 0
+    end
+  end
+  -- "manual" strategy: no automatic GC, user must call flexlove.collectGarbage()
+end
+
+--- Manually trigger garbage collection to prevent frame drops during critical gameplay moments
+--- Use this to control when memory cleanup happens rather than letting it occur unpredictably
+---@param mode? string "collect" for full GC, "step" for incremental (default: "collect")
+---@param stepSize? number Work units for step mode (default: 200)
+function flexlove.collectGarbage(mode, stepSize)
+  mode = mode or "collect"
+  stepSize = stepSize or 200
+
+  if mode == "collect" then
+    collectgarbage("collect")
+    flexlove._gcState.gcCount = flexlove._gcState.gcCount + 1
+    flexlove._gcState.framesSinceLastGC = 0
+  elseif mode == "step" then
+    collectgarbage("step", stepSize)
+  elseif mode == "count" then
+    return collectgarbage("count") / 1024 -- Return memory in MB
+  end
+end
+
+--- Choose how FlexLove manages memory cleanup to balance performance and memory usage for your app's needs
+--- Use "manual" for tight control in performance-critical sections, "auto" for hands-off operation
+---@param strategy string "auto", "periodic", "manual", or "disabled"
+function flexlove.setGCStrategy(strategy)
+  if strategy == "auto" or strategy == "periodic" or strategy == "manual" or strategy == "disabled" then
+    flexlove._gcConfig.strategy = strategy
+  else
+    flexlove._ErrorHandler:warn("FlexLove", "CORE_003", {
+      strategy = tostring(strategy),
+    })
+  end
+end
+
+--- Monitor memory management behavior to diagnose performance issues and tune GC settings
+--- Use this to identify memory leaks or optimize garbage collection timing
+---@return GCStats stats GC statistics
+function flexlove.getGCStats()
+  return {
+    gcCount = flexlove._gcState.gcCount,
+    framesSinceLastGC = flexlove._gcState.framesSinceLastGC,
+    currentMemoryMB = flexlove._gcState.lastMemory,
+    strategy = flexlove._gcConfig.strategy,
+    threshold = flexlove._gcConfig.memoryThreshold,
+  }
+end
+
+--- Forward text input to focused editable elements like text fields and text areas
+--- Hook this to love.textinput() to enable text entry in your UI
+---@param text string
+function flexlove.textinput(text)
+  local focusedElement = Context.getFocused()
+  if focusedElement then
+    focusedElement:textinput(text)
+  end
+end
+
+--- Handle keyboard input for text editing, navigation, and performance overlay toggling
+--- Hook this to love.keypressed() to enable text selection, cursor movement, and the performance HUD
+---@param key string
+---@param scancode string
+---@param isrepeat boolean
+function flexlove.keypressed(key, scancode, isrepeat)
+  -- Handle performance HUD toggle
+  flexlove._Performance:keypressed(key)
+  local focusedElement = Context.getFocused()
+  if focusedElement then
+    focusedElement:keypressed(key, scancode, isrepeat)
+  end
+end
+
+--- Enable mouse wheel scrolling in scrollable containers and lists
+--- Hook this to love.wheelmoved() to allow users to scroll through content naturally
+---@param dx number
+---@param dy number
+function flexlove.wheelmoved(dx, dy)
+  local mx, my = love.mouse.getPosition()
+  local function findScrollableAtPosition(elements, x, y)
+    for i = #elements, 1, -1 do
+      local element = elements[i]
+
+      local bx = element.x
+      local by = element.y
+      local bw = element._borderBoxWidth or (element.width + element.padding.left + element.padding.right)
+      local bh = element._borderBoxHeight or (element.height + element.padding.top + element.padding.bottom)
+
+      if x >= bx and x <= bx + bw and y >= by and y <= by + bh then
+        if #element.children > 0 then
+          local childResult = findScrollableAtPosition(element.children, x, y)
+          if childResult then
+            return childResult
+          end
+        end
+
+        local overflowX = element.overflowX or element.overflow
+        local overflowY = element.overflowY or element.overflow
+        if (overflowX == "scroll" or overflowX == "auto" or overflowY == "scroll" or overflowY == "auto") and (element._overflowX or element._overflowY) then
+          return element
+        end
+      end
+    end
+
+    return nil
+  end
+
+  if flexlove._immediateMode then
+    for i = #Context._zIndexOrderedElements, 1, -1 do
+      local element = Context._zIndexOrderedElements[i]
+
+      local bx = element.x
+      local by = element.y
+      local bw = element._borderBoxWidth or (element.width + element.padding.left + element.padding.right)
+      local bh = element._borderBoxHeight or (element.height + element.padding.top + element.padding.bottom)
+
+      -- Calculate scroll offset from parent chain
+      local scrollOffsetX = 0
+      local scrollOffsetY = 0
+      local current = element.parent
+      while current do
+        local overflowX = current.overflowX or current.overflow
+        local overflowY = current.overflowY or current.overflow
+        local hasScrollableOverflow = (
+          overflowX == "scroll"
+          or overflowX == "auto"
+          or overflowY == "scroll"
+          or overflowY == "auto"
+          or overflowX == "hidden"
+          or overflowY == "hidden"
+        )
+        if hasScrollableOverflow then
+          scrollOffsetX = scrollOffsetX + (current._scrollX or 0)
+          scrollOffsetY = scrollOffsetY + (current._scrollY or 0)
+        end
+        current = current.parent
+      end
+
+      -- Adjust mouse position by scroll offset
+      local adjustedMx = mx + scrollOffsetX
+      local adjustedMy = my + scrollOffsetY
+
+      -- Check if mouse is within element bounds
+      if adjustedMx >= bx and adjustedMx <= bx + bw and adjustedMy >= by and adjustedMy <= by + bh then
+        -- Check if mouse position is clipped by any parent
+        local isClipped = false
+        local parentCheck = element.parent
+        while parentCheck do
+          local parentOverflowX = parentCheck.overflowX or parentCheck.overflow
+          local parentOverflowY = parentCheck.overflowY or parentCheck.overflow
+
+          if
+            parentOverflowX == "hidden"
+            or parentOverflowX == "scroll"
+            or parentOverflowX == "auto"
+            or parentOverflowY == "hidden"
+            or parentOverflowY == "scroll"
+            or parentOverflowY == "auto"
+          then
+            local parentX = parentCheck.x + parentCheck.padding.left
+            local parentY = parentCheck.y + parentCheck.padding.top
+            local parentW = parentCheck.width
+            local parentH = parentCheck.height
+
+            if mx < parentX or mx > parentX + parentW or my < parentY or my > parentY + parentH then
+              isClipped = true
+              break
+            end
+          end
+          parentCheck = parentCheck.parent
+        end
+
+        if not isClipped then
+          local overflowX = element.overflowX or element.overflow
+          local overflowY = element.overflowY or element.overflow
+
+          if overflowX == "scroll" or overflowX == "auto" or overflowY == "scroll" or overflowY == "auto" then
+            element:_handleWheelScroll(dx, dy)
+
+            if element._stateId and element._scrollManager then
+              local scrollManagerState = element._scrollManager:getState()
+              StateManager.updateState(element._stateId, {
+                scrollManager = scrollManagerState,
+              })
+            end
+            return
+          end
+        end
+      end
+    end
+  else
+    -- In retained mode, use the old tree traversal method
+    local scrollableElement = findScrollableAtPosition(flexlove.topElements, mx, my)
+    if scrollableElement then
+      scrollableElement:_handleWheelScroll(dx, dy)
+    end
+  end
+end
+
+--- Clean up all UI elements and reset FlexLove to initial state when changing scenes or shutting down
+--- Use this to prevent memory leaks when transitioning between game states or menus
+function flexlove.destroy()
+  for _, win in ipairs(flexlove.topElements) do
+    win:destroy()
+  end
+  flexlove.topElements = {}
+  flexlove.baseScale = nil
+  flexlove.scaleFactors = { x = 1.0, y = 1.0 }
+  flexlove._cachedViewport = { width = 0, height = 0 }
+
+  -- Release canvases explicitly before destroying
+  if flexlove._gameCanvas then
+    flexlove._gameCanvas:release()
+  end
+  if flexlove._backdropCanvas then
+    flexlove._backdropCanvas:release()
+  end
+
+  flexlove._gameCanvas = nil
+  flexlove._backdropCanvas = nil
+  flexlove._canvasDimensions = { width = 0, height = 0 }
+  Context.clearFocus()
+  StateManager:reset()
+end
+
+--- Create a new UI element with flexbox layout, styling, and interaction capabilities
+--- This is your primary API for building interfaces - buttons, panels, text, images, and containers
+--- If called before FlexLove.init(), the element creation will be automatically queued and executed after initialization
+---@param props ElementProps
+---@param callback? function Optional callback function(element) that will be called with the created element (useful when queued)
+---@return Element -- Returns element if initialized, nil if queued for later creation
+function flexlove.new(props, callback)
+  props = props or {}
+
+  if not flexlove.initialized then
+    -- Queue element creation for after initialization
+    table.insert(flexlove._initQueue, {
+      props = props,
+      callback = callback,
+    })
+
+    if flexlove._initState == "uninitialized" then
+      if flexlove._ErrorHandler then
+        flexlove._ErrorHandler:warn(
+          "FlexLove",
+          "[FlexLove] Element creation queued - FlexLove.init() has not been called yet. Element will be created automatically after init() is called."
+        )
+      end
+    end
+    return nil
+  end
+
+  -- Determine effective mode: props.mode takes precedence over global mode
+  local effectiveMode = props.mode or (flexlove._immediateMode and "immediate" or "retained")
+
+  -- If element is in retained mode, use standard Element.new
+  if effectiveMode == "retained" then
+    return Element.new(props)
+  end
+
+  -- Element is in immediate mode - proceed with immediate-mode logic
+  -- Auto-begin frame if not manually started (convenience feature)
+  if not flexlove._frameStarted then
+    flexlove.beginFrame()
+    flexlove._autoBeganFrame = true
+  end
+
+  -- Immediate mode: generate ID if not provided
+  if not props.id then
+    props.id = StateManager.generateID(props, props.parent)
+  end
+
+  -- Get or create state for this element
+  local state = StateManager.getState(props.id, {})
+
+  -- Mark state as used this frame
+  StateManager.markStateUsed(props.id)
+
+  -- Inject scroll state into props BEFORE creating element
+  -- This ensures scroll position is set before layoutChildren/detectOverflow is called
+  -- ScrollManager state uses _scrollX/_scrollY with underscore prefix
+  if state.scrollManager then
+    props._scrollX = state.scrollManager._scrollX or 0
+    props._scrollY = state.scrollManager._scrollY or 0
+  else
+    -- Fallback to old state structure for backward compatibility
+    props._scrollX = state._scrollX or 0
+    props._scrollY = state._scrollY or 0
+  end
+
+  local element = Element.new(props)
+
+  -- Restore all state from StateManager (delegates to sub-modules)
+  element:restoreState(state)
+
+  -- Bind element to StateManager for interactive states
+  element._stateId = props.id
+
+  -- Set initial theme state based on StateManager state
+  -- This will be updated in Element:update() but we need an initial value
+  if element.themeComponent then
+    local eventState = state.eventHandler or {}
+    if element.disabled or eventState.disabled then
+      element._themeState = "disabled"
+    elseif element.active or eventState.active then
+      element._themeState = "active"
+    elseif eventState._pressed and next(eventState._pressed) then
+      element._themeState = "pressed"
+    elseif eventState._hovered then
+      element._themeState = "hover"
+    else
+      element._themeState = "normal"
+    end
+  end
+
+  table.insert(flexlove._currentFrameElements, element)
+
+  return element
+end
+
+--- Check how many UI element states are being tracked in immediate mode to detect memory leaks
+--- Use this during development to ensure states are properly cleaned up
+---@return number
+function flexlove.getStateCount()
+  if not flexlove._immediateMode then
+    return 0
+  end
+  return StateManager.getStateCount()
+end
+
+--- Remove stored state for a specific element when you know it won't be rendered again
+--- Use this to immediately free memory for elements you've removed from your UI
+---@param id string
+function flexlove.clearState(id)
+  if not flexlove._immediateMode then
+    return
+  end
+  StateManager.clearState(id)
+end
+
+--- Wipe all element state when transitioning between completely different UI screens
+--- Use this for scene transitions to start with a clean slate and prevent state pollution
+function flexlove.clearAllStates()
+  if not flexlove._immediateMode then
+    return
+  end
+  StateManager.clearAllStates()
+end
+
+--- Inspect state management metrics to diagnose performance issues and optimize immediate mode usage
+--- Use this to understand state lifecycle and identify unexpected state accumulation
+---@return { stateCount: number, frameNumber: number, oldestState: number|nil, newestState: number|nil }
+function flexlove.getStateStats()
+  if not flexlove._immediateMode then
+    return { stateCount = 0, frameNumber = 0 }
+  end
+  return StateManager.getStats()
+end
+
+--- Create a calc() expression for dynamic CSS-like calculations
+--- Use this to create responsive layouts that adapt to viewport and parent dimensions
+--- @usage
+--- local button = FlexLove.new({
+---   x = FlexLove.calc("50% - 10vw"),
+---   y = FlexLove.calc("50% - 5vh"),
+---   width = "20vw",
+---   height = "10vh",
+--- })
+---@param expr string The calc expression (e.g., "50% - 10vw", "100px + 20%")
+---@return CalcObject calcObject A calc expression object that will be evaluated during layout
+function flexlove.calc(expr)
+  return Calc.new(expr)
+end
+
+--- Get the currently focused element
+--- Returns the element that is currently receiving keyboard input (e.g., text input, text area)
+---@return Element|nil The focused element, or nil if no element has focus
+function flexlove.getFocusedElement()
+  return Context.getFocused()
+end
+
+--- Set focus to a specific element
+--- Automatically blurs the previously focused element if different
+--- Use this to programmatically focus text inputs or other interactive elements
+---@param element Element|nil The element to focus (nil to clear focus)
+function flexlove.setFocusedElement(element)
+  Context.setFocused(element)
+end
+
+--- Clear focus from any element
+--- Removes keyboard focus from the currently focused element
+function flexlove.clearFocus()
+  Context.setFocused(nil)
+end
+
+flexlove.Animation = Animation
+flexlove.Color = Color
+flexlove.Theme = Theme
+flexlove.enums = enums
+
+return flexlove

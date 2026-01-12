@@ -3,6 +3,7 @@ Class = require("lib.middleclass")
 Colors = require("src.config.colors")
 Events = require("src.config.events")
 Evolved = require("lib.evolved")
+Flexlove = require("lib.flexlove.FlexLove")
 Log = require("lib.log")
 Vector = require("lib.brinevector")
 require("src.helpers.text_helper")
@@ -12,7 +13,6 @@ Evolved.debug_mode(true)
 
 local process = Evolved.process
 local evolved_config = require("src.evolved.evolved_config")
-local observe = Beholder.observe
 
 require("src.evolved.fragments")
 FRAGMENTS = evolved_config.FRAGMENTS
@@ -28,11 +28,17 @@ require("src.evolved.systems")
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
 function love.load()
+   Flexlove.init({
+      baseScale = {width = SCREEN_WIDTH, height = SCREEN_HEIGHT},
+      immediateMode = false,
+      theme = "metal"
+   })
    process(STAGES.OnSetup)
 end
 
 function love.update(dt)
    UNIFORMS.setDeltaTime(dt)
+   Flexlove.update(dt)
    process(STAGES.OnUpdate)
 end
 
@@ -43,12 +49,28 @@ local function drawDebugLines()
 end
 
 function love.draw()
-   -- drawDebugLines()
-   process(STAGES.OnRender)
+   Flexlove.draw(function()
+      -- Your game rendering here (entities, world, etc.)
+      -- drawDebugLines()
+      process(STAGES.OnRender)
+   end)
+end
+
+function love.resize(w, h)
+   Flexlove.resize()
+end
+
+function love.textinput(text)
+   Flexlove.textinput(text)
 end
 
 function love.keypressed(key)
+   Flexlove.keypressed(key, scancode, isrepeat)
    if key == "escape" then
       love.event.quit()
    end
+end
+
+function love.wheelmoved(dx, dy)
+   Flexlove.wheelmoved(dx, dy)
 end
