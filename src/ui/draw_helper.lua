@@ -1,4 +1,4 @@
-local FlexDrawHelper = {}
+local DrawHelper = {}
 
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5, 0.8)
 local SLOT_SIZE = 32
@@ -13,7 +13,7 @@ local TEXT_SIZE = 12
 --- @param stack table The held stack {item_id, quantity}
 --- @param mouse_x number Mouse X position
 --- @param mouse_y number Mouse Y position
-function FlexDrawHelper:drawHeldStack(stack, mouse_x, mouse_y)
+function DrawHelper:drawHeldStack(stack, mouse_x, mouse_y)
    if not stack or not stack.item_id then return end
 
    local size = SLOT_SIZE
@@ -51,7 +51,7 @@ end
 --- @param mouse_x number Mouse X position
 --- @param mouse_y number Mouse Y position
 --- @return table|nil The FlexLove element for the held stack
-function FlexDrawHelper:createHeldStackElement(stack, mouse_x, mouse_y)
+function DrawHelper:createHeldStackElement(stack, mouse_x, mouse_y)
    if not stack or not stack.item_id then return nil end
 
    local size = SLOT_SIZE
@@ -98,7 +98,7 @@ end
 --- @param element table The held stack element
 --- @param mouse_x number New mouse X position
 --- @param mouse_y number New mouse Y position
-function FlexDrawHelper:updateHeldStackPosition(element, mouse_x, mouse_y)
+function DrawHelper:updateHeldStackPosition(element, mouse_x, mouse_y)
    if not element then return end
 
    local size = SLOT_SIZE
@@ -108,4 +108,4 @@ function FlexDrawHelper:updateHeldStackPosition(element, mouse_x, mouse_y)
    element.y = mouse_y - offset
 end
 
-return FlexDrawHelper
+return DrawHelper

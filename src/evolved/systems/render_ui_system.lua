@@ -1,6 +1,6 @@
-local FlexInventoryView = require("src.ui.flex_inventory_view")
+local FlexInventoryView = require("src.ui.inventory_view")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
-local FlexMachineScreen = require("src.ui.flex_machine_screen")
+local FlexMachineScreen = require("src.ui.machine_screen")
 local MachineStateManager = require("src.ui.machine_state_manager")
 
 local builder = Evolved.builder
