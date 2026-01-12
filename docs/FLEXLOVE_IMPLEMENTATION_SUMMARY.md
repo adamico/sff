@@ -51,8 +51,7 @@ FlexInventoryView (Class)
 ├── containerElement (FlexLove.Element - main panel)
 ├── slotElements[] (array of slot element references)
 │   ├── element (FlexLove.Element - slot box)
-│   ├── slotIndex (number)
-│   └── slotType (string: "input"|"output")
+│   └── slotIndex (number)
 └── stateLabel (FlexLove.Element - optional state text)
 ```
 

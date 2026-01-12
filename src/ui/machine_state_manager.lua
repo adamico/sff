@@ -1,11 +1,12 @@
-local FlexDrawHelper = require("src.ui.flex_draw_helper")
 local InventoryHelper = require("src.helpers.inventory_helper")
+local HeldStackView = require("src.ui.held_stack_view")
 
 local MachineStateManager = {
    isOpen = false,
    screen = nil,
    views = {}, -- Inventory views (player inventory, toolbar)
    heldStack = nil,
+   heldStackView = nil,
 }
 
 --- Open the machine screen along with inventory views
@@ -23,6 +24,27 @@ function MachineStateManager:close()
       love.mouse.setVisible(true)
    end
 
+   -- Destroy held stack view
+   if self.heldStackView then
+      self.heldStackView:destroy()
+      self.heldStackView = nil
+   end
+
+   -- Destroy FlexLove elements
+   if self.screen and self.screen.destroy then
+      self.screen:destroy()
+   end
+
+   -- Destroy view elements (except toolbar which is always visible)
+   for _, view in ipairs(self.views) do
+      if view and view.destroy then
+         -- Don't destroy toolbar - it's managed separately by render_ui_system
+         if view.id ~= "toolbar" then
+            view:destroy()
+         end
+      end
+   end
+
    self.heldStack = nil
    self.isOpen = false
    self.screen = nil
@@ -32,8 +54,8 @@ end
 function MachineStateManager:returnHeldStack()
    local held_stack = self.heldStack
    if held_stack and held_stack.source_inventory then
-      local slotType = held_stack.source_slot_type or "input"
-      local slot = held_stack.source_inventory[slotType.."_slots"][held_stack.source_slot]
+      local slotType = held_stack.source_slot_type
+      local slot = InventoryHelper.getSlot(held_stack.source_inventory, held_stack.source_slot, slotType)
       if slot then
          slot.item_id = held_stack.item_id
          slot.quantity = held_stack.quantity
@@ -78,16 +100,58 @@ end
 --- Handle a click on any slot (machine or inventory)
 --- @param mouse_x number The x position of the mouse
 --- @param mouse_y number The y position of the mouse
+--- @param userdata table|nil Optional userdata from clicked element (to avoid redundant hit detection)
 --- @return boolean Success
-function MachineStateManager:handleSlotClick(mouse_x, mouse_y)
-   local slot_info = self:getSlotUnderMouse(mouse_x, mouse_y)
+function MachineStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
+   local slot_info
+
+   -- If userdata provided (from slot element click), use it directly
+   if userdata and userdata.slotIndex then
+      if userdata.screen then
+         -- Machine screen slot (has slotType)
+         local screen = userdata.screen
+         local slotIndex = userdata.slotIndex
+         local slotType = userdata.slotType
+         local inventory = screen:getInventory()
+         if inventory then
+            local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+            if slot then
+               slot_info = {
+                  screen = screen,
+                  inventory = inventory,
+                  slotIndex = slotIndex,
+                  slot = slot,
+                  slotType = slotType
+               }
+            end
+         end
+      elseif userdata.view then
+         -- Inventory view slot (no slotType, uses .slots)
+         local view = userdata.view
+         local slotIndex = userdata.slotIndex
+         local slots = view.inventory.slots
+         if slots and slots[slotIndex] then
+            slot_info = {
+               view = view,
+               inventory = view.inventory,
+               slotIndex = slotIndex,
+               slot = slots[slotIndex],
+               slotType = nil -- No slot type for simple inventories
+            }
+         end
+      end
+   else
+      -- Fallback: do hit detection (for clicks not from slot elements)
+      slot_info = self:getSlotUnderMouse(mouse_x, mouse_y)
+   end
+
    if not slot_info then return false end
 
    local inventory = slot_info.inventory
    if not inventory then return false end
 
    local slot_index = slot_info.slotIndex
-   local slotType = slot_info.slotType
+   local slotType = slot_info.slotType -- Can be nil for simple inventories
    local slot = slot_info.slot
 
    -- If holding an item, try to place/swap/stack
@@ -102,14 +166,12 @@ end
 
 --- Pick up an item from a slot (internal method - assumes heldStack is nil)
 --- @param slot_index number The slot index to pick from
---- @param slotType string The type of slot (input, output, catalyst)
+--- @param slotType string|nil The type of slot (input, output, catalyst) or nil for simple inventories
 --- @param inventory table The inventory to pick from
 --- @return boolean Success
 function MachineStateManager:pickItemFromSlot(slot_index, slotType, inventory)
-   local slots = inventory[slotType.."_slots"]
-   if not slots then return false end
-
-   local slot = slots[slot_index]
+   -- Handle both typed slots (machine) and simple slots (inventory)
+   local slot = InventoryHelper.getSlot(inventory, slot_index, slotType)
    if not slot or not slot.item_id then return false end
 
    -- Pick up the entire stack
@@ -121,6 +183,9 @@ function MachineStateManager:pickItemFromSlot(slot_index, slotType, inventory)
       source_slot_type = slotType,
    }
 
+   -- Create held stack view
+   self.heldStackView = HeldStackView:new(self.heldStack)
+
    -- Clear the slot
    slot.item_id = nil
    slot.quantity = 0
@@ -130,20 +195,22 @@ end
 
 --- Place the held item into a slot (handles empty slots, stacking, and swapping)
 --- @param slot_index number The slot index to place into
---- @param slotType string The type of slot (input, output, catalyst)
+--- @param slotType string|nil The type of slot or nil for simple inventories
 --- @param inventory table The inventory to place into
 --- @return boolean Success
 function MachineStateManager:placeItemInSlot(slot_index, slotType, inventory)
-   local slots = inventory[slotType.."_slots"]
-   if not slots then return false end
-
-   local slot = slots[slot_index]
+   -- Handle both typed slots (machine) and simple slots (inventory)
+   local slot = InventoryHelper.getSlot(inventory, slot_index, slotType)
    if not slot then return false end
 
    -- Empty slot - place the item
    if not slot.item_id then
       slot.item_id = self.heldStack.item_id
       slot.quantity = self.heldStack.quantity
+      if self.heldStackView then
+         self.heldStackView:destroy()
+         self.heldStackView = nil
+      end
       self.heldStack = nil
       love.mouse.setVisible(true)
       return true
@@ -154,6 +221,10 @@ function MachineStateManager:placeItemInSlot(slot_index, slotType, inventory)
       local max_stack_size = InventoryHelper.getMaxStackQuantity(slot.item_id)
       if slot.quantity + self.heldStack.quantity <= max_stack_size then
          slot.quantity = slot.quantity + self.heldStack.quantity
+         if self.heldStackView then
+            self.heldStackView:destroy()
+            self.heldStackView = nil
+         end
          self.heldStack = nil
          love.mouse.setVisible(true)
          return true
@@ -185,6 +256,11 @@ function MachineStateManager:placeItemInSlot(slot_index, slotType, inventory)
    self.heldStack.source_inventory = inventory
    self.heldStack.source_slot = slot_index
    self.heldStack.source_slot_type = slotType
+
+   -- Update held stack view
+   if self.heldStackView then
+      self.heldStackView:updateStack(self.heldStack)
+   end
    return true
 end
 
@@ -200,10 +276,19 @@ function MachineStateManager:draw()
    if self.screen then
       self.screen:draw()
    end
+end
 
-   -- Draw held stack last (always on top)
-   if self.heldStack then
-      FlexDrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
+--- Draw the held stack (should be called AFTER FlexLove.draw())
+function MachineStateManager:drawHeldStack()
+   if self.heldStackView then
+      self.heldStackView:draw()
+   end
+end
+
+function MachineStateManager:update(dt)
+   -- Update held stack view position to follow cursor
+   if self.heldStackView then
+      self.heldStackView:update(dt)
    end
 end
 

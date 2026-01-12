@@ -24,10 +24,6 @@ function InventoryView:initialize(inventory, options)
    self.padding = options.padding or 4
    self.border_width = BORDER_WIDTH
    self.entityId = options.entityId or nil
-
-   -- Format: {{x = 200, y = 10}, {x = 300, y = 10}, ...}
-   -- positions are relative to the inventory view's origin
-   self.output_slot_positions = options.output_slot_positions or {}
 end
 
 function InventoryView:draw()
@@ -128,22 +124,11 @@ function InventoryView:drawSlots(slotType)
 end
 
 function InventoryView:getSlotPosition(slot_index, slotType)
-   if slotType == "input" then
-      local col = (slot_index - 1) % self.columns
-      local row = math.floor((slot_index - 1) / self.columns)
-      local x = self.x + self.padding + col * (self.slot_size - self.border_width)
-      local y = self.y + self.padding + row * (self.slot_size - self.border_width)
-      return x, y
-   elseif slotType == "output" then
-      if self.output_slot_positions and self.output_slot_positions[slot_index] then
-         local position = self.output_slot_positions[slot_index]
-         return self.x + position.x, self.y + position.y
-      else
-         local x = self.x + self.padding + (slot_index - 1) * (self.slot_size - self.border_width)
-         local y = self.y + self.padding + self.rows * (self.slot_size - self.border_width)
-         return x, y
-      end
-   end
+   local col = (slot_index - 1) % self.columns
+   local row = math.floor((slot_index - 1) / self.columns)
+   local x = self.x + self.padding + col * (self.slot_size - self.border_width)
+   local y = self.y + self.padding + row * (self.slot_size - self.border_width)
+   return x, y
 end
 
 function InventoryView:isPointInSlot(mx, my, slot_x, slot_y)
@@ -152,20 +137,17 @@ function InventoryView:isPointInSlot(mx, my, slot_x, slot_y)
 end
 
 function InventoryView:getSlotUnderMouse(mx, my)
-   local allSlots = {"input", "output"}
-   for _, slotType in ipairs(allSlots) do
-      local slots = self.inventory[slotType.."_slots"]
-      if slots then
-         for slotIndex = 1, #slots do
-            local slot_x, slot_y = self:getSlotPosition(slotIndex, slotType)
-            if self:isPointInSlot(mx, my, slot_x, slot_y) then
-               return {
-                  view = self,
-                  slotIndex = slotIndex,
-                  slot = slots[slotIndex],
-                  slotType = slotType
-               }
-            end
+   local slots = self.inventory.input_slots
+   if slots then
+      for slotIndex = 1, #slots do
+         local slot_x, slot_y = self:getSlotPosition(slotIndex, "input")
+         if self:isPointInSlot(mx, my, slot_x, slot_y) then
+            return {
+               view = self,
+               slotIndex = slotIndex,
+               slot = slots[slotIndex],
+               slotType = "input"
+            }
          end
       end
    end

@@ -1,3 +1,4 @@
+local InventoryHelper = require("src.helpers.inventory_helper")
 local FlexMachineScreen = Class("FlexMachineScreen")
 local get = Evolved.get
 
@@ -48,8 +49,8 @@ function FlexMachineScreen:initialize(options)
    self.padding = options.padding or PADDING
    self.slotSize = options.slotSize or SLOT_SIZE
    self.width = options.width or WIDTH
-   self.x = options.x or 0
-   self.y = options.y or 0
+   self.x = math.floor(options.x or 0)
+   self.y = math.floor(options.y or 0)
 
    -- Slot layout configuration (can be provided or will be computed lazily)
    -- Format: {type = "input", positions = {{x = 10, y = 20}, ...}}
@@ -100,29 +101,31 @@ function FlexMachineScreen:createDefaultLayout()
    local startY = self.padding + 20 -- Leave room for state text
 
    -- Input slots on the left
-   if inventory.input_slots and #inventory.input_slots > 0 then
+   local maxInput = inventory.max_input_slots or 0
+   if maxInput > 0 then
       local inputPositions = {}
-      for i = 1, #inventory.input_slots do
+      for i = 1, maxInput do
          local row = math.floor((i - 1) / 3)
          local col = (i - 1) % 3
          table.insert(inputPositions, {
-            x = self.padding + col * (self.slotSize + 4),
-            y = startY + row * (self.slotSize + 4)
+            x = math.floor(self.padding + col * (self.slotSize + 4)),
+            y = math.floor(startY + row * (self.slotSize + 4))
          })
       end
       table.insert(layout, {type = "input", positions = inputPositions})
    end
 
    -- Output slots on the right
-   if inventory.output_slots and #inventory.output_slots > 0 then
+   local maxOutput = inventory.max_output_slots or 0
+   if maxOutput > 0 then
       local outputPositions = {}
       local outputStartX = self.width - self.padding - self.slotSize
-      for i = 1, #inventory.output_slots do
+      for i = 1, maxOutput do
          local row = math.floor((i - 1) / 2)
          local col = (i - 1) % 2
          table.insert(outputPositions, {
-            x = outputStartX - col * (self.slotSize + 4),
-            y = startY + row * (self.slotSize + 4)
+            x = math.floor(outputStartX - col * (self.slotSize + 4)),
+            y = math.floor(startY + row * (self.slotSize + 4))
          })
       end
       table.insert(layout, {type = "output", positions = outputPositions})
@@ -135,15 +138,13 @@ function FlexMachineScreen:buildUI()
    -- Main container panel
    self.containerElement = Flexlove.new({
       id = "machine_screen_container",
-      x = self.x,
-      y = self.y,
+      x = math.floor(self.x),
+      y = math.floor(self.y),
       width = self.width,
       height = self.height,
       backgroundColor = BACKGROUND_COLOR,
-      border = {
-         width = self.borderWidth,
-         color = BORDER_COLOR
-      },
+      border = self.borderWidth,
+      borderColor = BORDER_COLOR,
       padding = {
          top = self.padding,
          right = self.padding,
@@ -178,8 +179,8 @@ function FlexMachineScreen:createHeader()
    if name then
       self.nameLabel = Flexlove.new({
          id = "machine_name",
-         x = self.x + self.padding,
-         y = self.y + self.padding,
+         x = math.floor(self.padding),
+         y = math.floor(self.padding),
          text = name,
          textColor = TEXT_COLOR,
          textSize = HEADER_TEXT_SIZE,
@@ -192,8 +193,8 @@ function FlexMachineScreen:createHeader()
    if state then
       self.stateLabel = Flexlove.new({
          id = "machine_state",
-         x = self.x + self.width - self.padding - 60, -- Approximate width
-         y = self.y + self.padding,
+         x = math.floor(self.width - self.padding - 60), -- Approximate width
+         y = math.floor(self.padding),
          text = state,
          textColor = TEXT_COLOR,
          textSize = HEADER_TEXT_SIZE,
@@ -213,14 +214,15 @@ function FlexMachineScreen:createSlots()
    for _, layoutGroup in ipairs(slotLayout) do
       local slotType = layoutGroup.type
       local positions = layoutGroup.positions
-      local slots = inventory[slotType.."_slots"]
+      local slots = InventoryHelper.getSlots(inventory, slotType)
 
       if slots and positions then
          for slotIndex = 1, #positions do
             local pos = positions[slotIndex]
             local slot = slots[slotIndex] or {}
-            local slotX = self.x + pos.x
-            local slotY = self.y + pos.y
+            -- pos.x and pos.y are already relative to container
+            local slotX = math.floor(pos.x)
+            local slotY = math.floor(pos.y)
 
             -- Create slot element
             local slotElement = Flexlove.new({
@@ -230,10 +232,8 @@ function FlexMachineScreen:createSlots()
                width = self.slotSize,
                height = self.slotSize,
                backgroundColor = BACKGROUND_COLOR,
-               border = {
-                  width = self.borderWidth,
-                  color = BORDER_COLOR
-               },
+               border = self.borderWidth,
+               borderColor = BORDER_COLOR,
                text = slot.item_id and string.sub(slot.item_id, 1, 1) or "",
                textColor = TEXT_COLOR,
                textSize = HEADER_TEXT_SIZE,
@@ -242,9 +242,16 @@ function FlexMachineScreen:createSlots()
                userdata = {
                   slotIndex = slotIndex,
                   slotType = slotType,
-                  slotPosition = Vector(slotX, slotY),
+                  slotPosition = Vector(self.x + slotX, self.y + slotY),
                   screen = self
                },
+               onEvent = function(element, event)
+                  if event.type == "click" then
+                     local mx, my = love.mouse.getPosition()
+                     -- Pass element userdata to avoid redundant hit detection
+                     Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+                  end
+               end,
                parent = self.containerElement
             })
 
@@ -255,19 +262,7 @@ function FlexMachineScreen:createSlots()
                slotType = slotType
             })
 
-            -- Add quantity label if needed
-            if slot.quantity and slot.quantity > 1 then
-               Flexlove.new({
-                  id = "machine_qty_"..slotType.."_"..slotIndex,
-                  x = slotX + self.slotSize - 18,
-                  y = slotY + self.slotSize - 16,
-                  text = tostring(slot.quantity),
-                  textColor = TEXT_COLOR,
-                  textSize = TEXT_SIZE,
-                  positioning = "absolute",
-                  parent = slotElement
-               })
-            end
+            -- Quantity label will be added by updateSlots()
          end
       end
    end
@@ -281,8 +276,8 @@ function FlexMachineScreen:createManaBar()
 
    local barWidth = self.width - self.padding * 2
    local barHeight = 8
-   local barX = self.x + self.padding
-   local barY = self.y + self.height - self.padding - barHeight - 48
+   local barX = self.padding
+   local barY = self.height - self.padding - barHeight - 48
 
    -- Mana label
    self.manaLabel = Flexlove.new({
@@ -291,7 +286,7 @@ function FlexMachineScreen:createManaBar()
       y = barY - 16,
       text = string.format("Mana: %d/%d", mana.current, mana.max),
       textColor = TEXT_COLOR,
-      textSize = LABEL_TEXT_SIZE,
+      textSize = TEXT_SIZE,
       positioning = "absolute",
       parent = self.containerElement
    })
@@ -304,10 +299,8 @@ function FlexMachineScreen:createManaBar()
       width = barWidth,
       height = barHeight,
       backgroundColor = MANA_BACKGROUND_COLOR,
-      border = {
-         width = 1,
-         color = BORDER_COLOR
-      },
+      border = 1,
+      borderColor = Color.new(1, 1, 1),
       positioning = "absolute",
       parent = self.containerElement
    })
@@ -316,8 +309,8 @@ function FlexMachineScreen:createManaBar()
    local fillRatio = mana.current / mana.max
    self.manaBarFill = Flexlove.new({
       id = "mana_bar_fill",
-      x = barX,
-      y = barY,
+      x = 0,
+      y = 0,
       width = barWidth * fillRatio,
       height = barHeight,
       backgroundColor = MANA_FILL_COLOR,
@@ -337,8 +330,8 @@ function FlexMachineScreen:createProgressBar()
 
    local barWidth = self.width - self.padding * 2
    local barHeight = 8
-   local barX = self.x + self.padding
-   local barY = self.y + self.height - self.padding - barHeight - 32
+   local barX = self.padding
+   local barY = self.height - self.padding - barHeight - 32
 
    -- Progress bar background
    self.progressBarContainer = Flexlove.new({
@@ -348,10 +341,8 @@ function FlexMachineScreen:createProgressBar()
       width = barWidth,
       height = barHeight,
       backgroundColor = PROGRESS_BACKGROUND_COLOR,
-      border = {
-         width = 1,
-         color = BORDER_COLOR
-      },
+      border = 1,
+      borderColor = Color.new(1, 1, 1),
       positioning = "absolute",
       parent = self.containerElement
    })
@@ -360,8 +351,8 @@ function FlexMachineScreen:createProgressBar()
    local fillRatio = processingTimer.current / recipe.processing_time
    self.progressBarFill = Flexlove.new({
       id = "progress_bar_fill",
-      x = barX,
-      y = barY,
+      x = 0,
+      y = 0,
       width = barWidth * fillRatio,
       height = barHeight,
       backgroundColor = PROGRESS_FILL_COLOR,
@@ -373,8 +364,8 @@ end
 function FlexMachineScreen:createStartButton()
    local buttonWidth = 100
    local buttonHeight = 24
-   local buttonX = self.x + self.width - buttonWidth - self.padding
-   local buttonY = self.y + self.height - self.padding - buttonHeight
+   local buttonX = self.width - buttonWidth - self.padding
+   local buttonY = self.height - self.padding - buttonHeight
 
    self.startButton = Flexlove.new({
       id = "start_button",
@@ -439,12 +430,28 @@ function FlexMachineScreen:updateSlots()
       local slotIndex = slotData.slotIndex
       local slotType = slotData.slotType
       local element = slotData.element
-      local slots = inventory[slotType.."_slots"]
+      local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
 
-      if slots and slots[slotIndex] then
-         local slot = slots[slotIndex]
+      if slot then
          local itemText = slot.item_id and string.sub(slot.item_id, 1, 1) or ""
          element:setText(itemText)
+
+         -- Clear existing quantity labels
+         element:clearChildren()
+
+         -- Add quantity label if needed
+         if slot.quantity and slot.quantity > 1 then
+            Flexlove.new({
+               id = "machine_qty_"..slotType.."_"..slotIndex.."_update",
+               x = self.slotSize - 18,
+               y = self.slotSize - 16,
+               text = tostring(slot.quantity),
+               textColor = TEXT_COLOR,
+               textSize = 12,
+               positioning = "absolute",
+               parent = element
+            })
+         end
       end
    end
 end

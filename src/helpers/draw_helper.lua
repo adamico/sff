@@ -47,13 +47,4 @@ function DrawHelper:drawBackground(x, y, width, height, color)
    lg.rectangle("fill", x + BORDER_WIDTH, y + BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2)
 end
 
-function DrawHelper:drawHeldStack(stack, mouse_x, mouse_y)
-   local size = SLOT_SIZE
-   local offset = size / 2
-   local x, y = mouse_x - offset, mouse_y - offset
-   self:drawBorder(x, y, size, size, STACK_BORDER_COLOR)
-   self:drawBackground(x, y, size, size, STACK_BACKGROUND_COLOR)
-   self:drawItem(x, y, size, size, stack, TEXT_COLOR)
-end
-
 return DrawHelper

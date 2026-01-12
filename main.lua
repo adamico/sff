@@ -51,10 +51,20 @@ local function drawDebugLines()
 end
 
 function love.draw()
+   local InventoryStateManager = require("src.ui.inventory_state_manager")
+   local MachineStateManager = require("src.ui.machine_state_manager")
+
    Flexlove.draw(function()
       -- Your game rendering here (entities, world, etc.)
       -- drawDebugLines()
       process(STAGES.OnRender)
+   end, function()
+      -- Post-draw: render held stack AFTER FlexLove UI (so it doesn't block events)
+      if InventoryStateManager.isOpen then
+         InventoryStateManager:drawHeldStack()
+      elseif MachineStateManager.isOpen then
+         MachineStateManager:drawHeldStack()
+      end
    end)
 end
 

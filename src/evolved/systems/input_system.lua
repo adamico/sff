@@ -59,9 +59,9 @@ local function actionDetection(playerInventory, playerToolbar)
    end
 
    if actionDetector:pressed(A.INTERACT) then
-      if InventoryStateManager.isOpen or MachineStateManager.isOpen then
-         trigger(Events.INPUT_INVENTORY_CLICKED, mx, my)
-      else
+      -- Inventory clicks are now handled by FlexLove slot onEvent callbacks
+      -- Only handle world interactions here
+      if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
          trigger(Events.INPUT_INTERACTED, mx, my)
       end
    end

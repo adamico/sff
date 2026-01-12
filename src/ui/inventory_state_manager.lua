@@ -1,10 +1,11 @@
-local FlexDrawHelper = require("src.ui.flex_draw_helper")
 local InventoryHelper = require("src.helpers.inventory_helper")
+local HeldStackView = require("src.ui.held_stack_view")
 
 local InventoryStateManager = {
    isOpen = false,
    views = {},
    heldStack = nil,
+   heldStackView = nil,
 }
 
 function InventoryStateManager:open(views)
@@ -18,6 +19,22 @@ function InventoryStateManager:close()
       love.mouse.setVisible(true)
    end
 
+   -- Destroy held stack view
+   if self.heldStackView then
+      self.heldStackView:destroy()
+      self.heldStackView = nil
+   end
+
+   -- Destroy FlexLove elements (except toolbar which is always visible)
+   for _, view in ipairs(self.views) do
+      if view and view.destroy then
+         -- Don't destroy toolbar - it's managed separately by render_ui_system
+         if view.id ~= "toolbar" then
+            view:destroy()
+         end
+      end
+   end
+
    self.heldStack = nil
    self.isOpen = false
    self.views = {}
@@ -26,7 +43,7 @@ end
 function InventoryStateManager:returnHeldStack()
    local held_stack = self.heldStack
    if held_stack and held_stack.source_inventory then
-      local slot = held_stack.source_inventory.input_slots[held_stack.source_slot]
+      local slot = held_stack.source_inventory.slots[held_stack.source_slot]
       if slot then
          slot.item_id = held_stack.item_id
          slot.quantity = held_stack.quantity
@@ -47,21 +64,41 @@ end
 --- Handle a click on an inventory slot (main entry point for click logic)
 --- @param mouse_x number The x position of the mouse_x
 --- @param mouse_y number The y position of the mouse_y
+--- @param userdata table|nil Optional userdata from clicked element (to avoid redundant hit detection)
 --- @return boolean Success
-function InventoryStateManager:handleSlotClick(mouse_x, mouse_y)
-   local slot_info = self:getSlotUnderMouse(mouse_x, mouse_y)
-   if not slot_info then return false end
+function InventoryStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
+   local slot_info
+
+   -- If userdata provided (from slot element click), use it directly
+   if userdata and userdata.slotIndex and userdata.view then
+      local view = userdata.view
+      local slotIndex = userdata.slotIndex
+      local slots = view.inventory.slots
+      if slots and slots[slotIndex] then
+         slot_info = {
+            view = view,
+            slotIndex = slotIndex,
+            slot = slots[slotIndex],
+         }
+      end
+   else
+      -- Fallback: do hit detection (for clicks not from slot elements)
+      slot_info = self:getSlotUnderMouse(mouse_x, mouse_y)
+   end
+
+   if not slot_info then
+      return false
+   end
 
    local inventory = slot_info.view.inventory
    local slot_index = slot_info.slotIndex
-   local slotType = slot_info.slotType
    local slot = slot_info.slot
 
    -- If holding an item, try to place/swap/stack
    if self.heldStack then
-      return self:placeItemInSlot(slot_index, slotType, inventory)
+      return self:placeItemInSlot(slot_index, inventory)
    elseif slot.item_id then
-      return self:pickItemFromSlot(slot_index, slotType, inventory)
+      return self:pickItemFromSlot(slot_index, inventory)
    end
 
    return false
@@ -71,8 +108,8 @@ end
 --- @param slot_index number The slot index to pick from
 --- @param inventory table The inventory to pick from
 --- @return boolean Success
-function InventoryStateManager:pickItemFromSlot(slot_index, slotType, inventory)
-   local slot = inventory[slotType.."_slots"][slot_index]
+function InventoryStateManager:pickItemFromSlot(slot_index, inventory)
+   local slot = inventory.slots[slot_index]
    if not slot or not slot.item_id then return false end
 
    -- Pick up the entire stack
@@ -81,8 +118,10 @@ function InventoryStateManager:pickItemFromSlot(slot_index, slotType, inventory)
       quantity = slot.quantity,
       source_inventory = inventory,
       source_slot = slot_index,
-      source_slot_type = slotType,
    }
+
+   -- Create held stack view
+   self.heldStackView = HeldStackView:new(self.heldStack)
 
    -- Clear the slot
    slot.item_id = nil
@@ -95,14 +134,18 @@ end
 --- @param inventory table The inventory to place into
 --- @param slot_index number The slot index to place into
 --- @return boolean Success
-function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
-   local slot = inventory[slotType.."_slots"][slot_index]
+function InventoryStateManager:placeItemInSlot(slot_index, inventory)
+   local slot = inventory.slots[slot_index]
    if not slot then return false end
 
    -- Empty slot - place the item
    if not slot.item_id then
       slot.item_id = self.heldStack.item_id
       slot.quantity = self.heldStack.quantity
+      if self.heldStackView then
+         self.heldStackView:destroy()
+         self.heldStackView = nil
+      end
       self.heldStack = nil
       love.mouse.setVisible(true)
       return true
@@ -113,6 +156,10 @@ function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
       local max_stack_size = InventoryHelper.getMaxStackQuantity(slot.item_id)
       if slot.quantity + self.heldStack.quantity <= max_stack_size then
          slot.quantity = slot.quantity + self.heldStack.quantity
+         if self.heldStackView then
+            self.heldStackView:destroy()
+            self.heldStackView = nil
+         end
          self.heldStack = nil
          love.mouse.setVisible(true)
          return true
@@ -127,7 +174,6 @@ function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
                quantity = new_held_quantity,
                source_inventory = inventory,
                source_slot = slot_index,
-               source_slot_type = slotType
             }
          slot.quantity = max_stack_size
          love.mouse.setVisible(true)
@@ -143,7 +189,11 @@ function InventoryStateManager:placeItemInSlot(slot_index, slotType, inventory)
    self.heldStack.quantity = temp.quantity
    self.heldStack.source_inventory = inventory
    self.heldStack.source_slot = slot_index
-   self.heldStack.source_slot_type = slotType
+
+   -- Update held stack view
+   if self.heldStackView then
+      self.heldStackView:updateStack(self.heldStack)
+   end
    return true
 end
 
@@ -154,8 +204,19 @@ function InventoryStateManager:draw()
          view:draw()
       end
    end
-   if self.heldStack then
-      FlexDrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
+end
+
+--- Draw the held stack (should be called AFTER FlexLove.draw())
+function InventoryStateManager:drawHeldStack()
+   if self.heldStackView then
+      self.heldStackView:draw()
+   end
+end
+
+function InventoryStateManager:update(dt)
+   -- Update held stack view position to follow cursor
+   if self.heldStackView then
+      self.heldStackView:update(dt)
    end
 end
 

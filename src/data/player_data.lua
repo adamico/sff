@@ -2,13 +2,11 @@ return {
    color = Colors.BLUE,
    interactionRange = 128,
    inventory = {
-      max_input_slots = 40,
-      max_output_slots = 0,
+      max_slots = 40,
 
    },
    toolbar = {
-      max_input_slots = 10,
-      max_output_slots = 0,
+      max_slots = 10,
       initial_items = {
          {item_id = "bone",    quantity = 10},
          {item_id = "bone",    quantity = 10},

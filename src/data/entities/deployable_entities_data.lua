@@ -45,7 +45,7 @@ return {
       creative = true,
       interactable = true,
       inventory = {
-         max_input_slots = 32,
+         max_slots = 32,
          initial_items = {
             {item_id = "bone",    quantity = 63},
             {item_id = "essence", quantity = 15}

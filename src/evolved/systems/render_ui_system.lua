@@ -31,7 +31,7 @@ local MACHINE_HEIGHT = 200
 
 -- Cached views (created lazily)
 local toolbarView = nil
-local playerInventoryView = nil
+-- Don't cache playerInventoryView - it gets destroyed when closed
 
 -- Position presets
 local CENTERED_X = SCREEN_CENTER.x - WIDTH / 2
@@ -55,18 +55,14 @@ end
 local function getPlayerInventoryView(playerInventory)
    if not playerInventory then return nil end
 
-   if not playerInventoryView then
-      playerInventoryView = FlexInventoryView:new(playerInventory, {
-         id = "player_inventory",
-         columns = COLUMNS,
-         rows = INV_ROWS,
-         x = CENTERED_X,
-         y = PLAYER_INV_Y
-      })
-   end
-
-   -- Always reset to centered position
-   playerInventoryView:setPosition(CENTERED_X, PLAYER_INV_Y)
+   -- Always create new view since it gets destroyed when closed
+   local playerInventoryView = FlexInventoryView:new(playerInventory, {
+      id = "player_inventory",
+      columns = COLUMNS,
+      rows = INV_ROWS,
+      x = CENTERED_X,
+      y = PLAYER_INV_Y
+   })
 
    return playerInventoryView
 end
@@ -86,16 +82,11 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
    if not playerInventory or not targetInventory then return end
 
    -- Calculate target inventory dimensions based on actual slot count
-   local inputSlotCount = targetInventory.input_slots and #targetInventory.input_slots or 0
-   local outputSlotCount = targetInventory.output_slots and #targetInventory.output_slots or 0
-   local totalSlots = math.max(inputSlotCount, 1)
+   local totalSlots = math.max(#targetInventory.slots, 1)
 
    -- Determine columns and rows based on slot count
    local targetColumns = math.min(totalSlots, COLUMNS)
    local targetRows = math.ceil(totalSlots / targetColumns)
-   if outputSlotCount > 0 then
-      targetRows = targetRows + 1 -- Add a row for output slots
-   end
 
    -- Calculate actual width and height for this inventory
    local targetWidth = targetColumns * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
@@ -183,11 +174,11 @@ observe(Events.INPUT_INVENTORY_CLOSED, function()
    end
 end)
 
-observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY)
+observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
    if InventoryStateManager.isOpen then
-      InventoryStateManager:handleSlotClick(mouseX, mouseY)
+      InventoryStateManager:handleSlotClick(mouseX, mouseY, userdata)
    elseif MachineStateManager.isOpen then
-      MachineStateManager:handleSlotClick(mouseX, mouseY)
+      MachineStateManager:handleSlotClick(mouseX, mouseY, userdata)
    end
 end)
 
@@ -208,10 +199,14 @@ builder()
       end
    end)
    :epilogue(function()
+      -- Update state managers (for held stack position tracking)
+      local dt = UNIFORMS.getDeltaTime()
       if InventoryStateManager.isOpen then
+         InventoryStateManager:update(dt)
          InventoryStateManager:draw()
       end
       if MachineStateManager.isOpen then
+         MachineStateManager:update(dt)
          MachineStateManager:draw()
       end
    end)

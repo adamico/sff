@@ -2,6 +2,11 @@
 
 Quick reference for common FlexLove operations in the game UI system.
 
+**Current Architecture:**
+- FlexLove elements for retained-mode UI (inventory slots, machine screens, buttons)
+- Immediate-mode Love2D drawing for cursor-following elements (held items)
+- Dual inventory system (simple `slots` for player/storage, typed `input_slots`/`output_slots` for machines)
+
 ---
 
 ## Creating UI Elements
@@ -15,7 +20,8 @@ local panel = Flexlove.new({
    width = 200,
    height = 150,
    backgroundColor = Flexlove.Color.new(0.5, 0.45, 0.5),
-   border = { width = 2, color = Flexlove.Color.new(1, 1, 1) },
+   border = 2,  -- Border width as a number
+   borderColor = Flexlove.Color.new(1, 1, 1),  -- Border color as separate property
    positioning = "absolute"
 })
 ```
@@ -29,7 +35,8 @@ local slot = Flexlove.new({
    width = 32,
    height = 32,
    backgroundColor = Flexlove.Color.new(0.5, 0.45, 0.5),
-   border = { width = 2, color = Flexlove.Color.new(1, 1, 1) },
+   border = 2,  -- Border width as a number
+   borderColor = Flexlove.Color.new(1, 1, 1),  -- Border color as separate property
    text = "A",
    textColor = Flexlove.Color.new(1, 1, 1),
    textSize = 14,
@@ -64,7 +71,8 @@ local barBg = Flexlove.new({
    width = 200,
    height = 8,
    backgroundColor = Flexlove.Color.new(0.2, 0.2, 0.2),
-   border = { width = 1, color = Flexlove.Color.new(1, 1, 1) },
+   border = 1,  -- Border width as a number
+   borderColor = Flexlove.Color.new(1, 1, 1),  -- Border color as separate property
    positioning = "absolute",
    parent = containerElement
 })
@@ -399,13 +407,116 @@ function updateSlot(slotElement, slot)
 end
 ```
 
-### Drawing Held Item (Cursor-Following)
+### Held Stack Pattern (Cursor-Following Items)
+
+**Important:** Held items MUST NOT be FlexLove elements, as they would block clicks to slots below them.
+
 ```lua
--- In state manager's draw():
-if self.heldStack then
-   local mx, my = love.mouse.getPosition()
-   FlexDrawHelper:drawHeldStack(self.heldStack, mx, my)
+-- 1. Create HeldStackView (immediate-mode Love2D rendering)
+self.heldStackView = HeldStackView:new(self.heldStack)
+
+-- 2. Update position every frame (in state manager's update())
+function StateManager:update(dt)
+   if self.heldStackView then
+      self.heldStackView:update(dt)  -- Follows cursor
+   end
 end
+
+-- 3. Draw AFTER FlexLove.draw() completes (in main.lua postDrawFunc)
+Flexlove.draw(function()
+   -- Game rendering
+   process(STAGES.OnRender)
+end, function()
+   -- Post-draw: render held stack on top
+   if InventoryStateManager.isOpen then
+      InventoryStateManager:drawHeldStack()
+   elseif MachineStateManager.isOpen then
+      MachineStateManager:drawHeldStack()
+   end
+end)
+
+-- 4. In state manager:
+function StateManager:drawHeldStack()
+   if self.heldStackView then
+      self.heldStackView:draw()  -- Uses love.graphics, not FlexLove
+   end
+end
+
+-- 5. Cleanup when done
+if self.heldStackView then
+   self.heldStackView:destroy()
+   self.heldStackView = nil
+end
+```
+
+**Why this pattern:**
+- FlexLove's hit-testing blocks events if any visible element (opacity > 0) is above an interactive element
+- Held items need to appear on top visually but not interfere with clicking slots
+- Solution: Draw held items outside FlexLove tree using Love2D immediate-mode rendering
+
+---
+
+## Inventory System Patterns
+
+### Simple Inventory (Player, Toolbar, Storage)
+```lua
+-- Access slots directly
+local slots = inventory.slots
+local slot = inventory.slots[slotIndex]
+
+-- Or use helper (recommended for consistency)
+local slots = InventoryHelper.getSlots(inventory, nil)
+local slot = InventoryHelper.getSlot(inventory, slotIndex, nil)
+```
+
+### Typed Inventory (Machines)
+```lua
+-- Access typed slots
+local inputSlots = inventory.input_slots
+local outputSlots = inventory.output_slots
+local slot = inventory.input_slots[slotIndex]
+
+-- Or use helper (recommended)
+local inputSlots = InventoryHelper.getSlots(inventory, "input")
+local outputSlots = InventoryHelper.getSlots(inventory, "output")
+local slot = InventoryHelper.getSlot(inventory, slotIndex, "input")
+```
+
+### Slot Element with Userdata
+```lua
+-- For simple inventory slots:
+local slotElement = Flexlove.new({
+   id = "inv_slot_"..i,
+   -- ... other properties ...
+   userdata = {
+      slotIndex = i,
+      view = self  -- Reference back to view
+   },
+   onEvent = function(element, event)
+      if event.type == "click" then
+         local mx, my = love.mouse.getPosition()
+         -- Pass userdata to avoid redundant hit detection
+         Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+      end
+   end
+})
+
+-- For machine slots:
+local slotElement = Flexlove.new({
+   id = "machine_slot_"..slotType.."_"..i,
+   -- ... other properties ...
+   userdata = {
+      slotIndex = i,
+      slotType = slotType,  -- "input" or "output"
+      screen = self  -- Reference back to screen
+   },
+   onEvent = function(element, event)
+      if event.type == "click" then
+         local mx, my = love.mouse.getPosition()
+         Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+      end
+   end
+})
 ```
 
 ---
@@ -462,6 +573,7 @@ print("Element at cursor:", element and element.id or "none")
 - Check if element has `onEvent` callback
 - Use `Flexlove.getElementAtPosition()` for debugging
 - Ensure element is not hidden behind another element (check z-index)
+- **Check if held stack is blocking clicks** - held items MUST use immediate-mode drawing, not FlexLove elements
 
 ### Position incorrect after resize
 - Call `Flexlove.resize()` in `love.resize()`
@@ -475,4 +587,6 @@ print("Element at cursor:", element and element.id or "none")
 - `docs/FLEXLOVE_INTEGRATION.md` - Complete integration guide
 - `docs/FLEXLOVE_IMPLEMENTATION_SUMMARY.md` - Implementation details
 - `docs/MIGRATION_STEPS.md` - Step-by-step migration
+- `docs/INVENTORY_SYSTEM.md` - Dual inventory system documentation
+- `src/ui/held_stack_view.lua` - Held stack immediate-mode rendering implementation
 - https://mikefreno.github.io/FlexLove/api.html - Official API docs

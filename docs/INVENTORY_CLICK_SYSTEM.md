@@ -62,7 +62,7 @@ The system is built with clear separation of concerns across multiple components
 
 6. **Inventory Fragment** (`src/evolved/fragments/inventory.lua`)
    - ECS fragment attached to entities
-   - Contains `input_slots` and `output_slots` arrays
+   - Contains `slots`
    - Each slot: `{item_id: string, quantity: number}`
    - Provides `new()` and `duplicate()` functions
 

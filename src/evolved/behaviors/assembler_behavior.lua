@@ -19,6 +19,7 @@
 
 local Recipe = require("src.evolved.fragments.recipe")
 local ItemRegistry = require("src.registries.item_registry")
+local InventoryHelper = require("src.helpers.inventory_helper")
 local set = Evolved.set
 
 local Assembler = {}
@@ -35,9 +36,10 @@ local MANA_RESUME_THRESHOLD_SECONDS = 1.0
 --- @return table ingredientCounts Map of item_id to quantity
 local function countIngredients(inventory)
    local counts = {}
-   if not inventory.input_slots then return counts end
+   local slots = InventoryHelper.getSlots(inventory, "input")
+   if not slots then return counts end
 
-   for _, slot in ipairs(inventory.input_slots) do
+   for _, slot in ipairs(slots) do
       if slot.item_id then
          counts[slot.item_id] = (counts[slot.item_id] or 0) + (slot.quantity or 1)
       end
@@ -70,7 +72,8 @@ local function consumeIngredients(recipe, inventory)
 
    for ingredient, amount in pairs(recipe.inputs) do
       local remaining = amount
-      for _, slot in ipairs(inventory.input_slots) do
+      local slots = InventoryHelper.getSlots(inventory, "input")
+      for _, slot in ipairs(slots or {}) do
          if slot.item_id == ingredient and remaining > 0 then
             local toRemove = math.min(remaining, slot.quantity or 0)
             slot.quantity = slot.quantity - toRemove
@@ -148,11 +151,12 @@ end
 --- @param inventory table The machine inventory
 --- @return boolean hasSpace
 local function hasOutputSpace(recipe, inventory)
-   if not inventory.output_slots then return true end
-   if #inventory.output_slots == 0 then return true end
+   local slots = InventoryHelper.getSlots(inventory, "output")
+   if not slots then return true end
+   if #slots == 0 then return true end
 
    -- Check for empty slots
-   for _, slot in ipairs(inventory.output_slots) do
+   for _, slot in ipairs(slots) do
       if not slot.item_id then
          return true
       end
@@ -162,7 +166,7 @@ local function hasOutputSpace(recipe, inventory)
    if recipe and recipe.outputs then
       for output_id, _ in pairs(recipe.outputs) do
          local maxStack = ItemRegistry.getMaxStackSize(output_id)
-         for _, slot in ipairs(inventory.output_slots) do
+         for _, slot in ipairs(slots) do
             if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
                return true
             end
@@ -179,14 +183,15 @@ end
 --- @return boolean success
 local function produceOutputs(recipe, inventory)
    if not recipe or not recipe.outputs then return true end
-   if not inventory.output_slots or #inventory.output_slots == 0 then return true end
+   local slots = InventoryHelper.getSlots(inventory, "output")
+   if not slots or #slots == 0 then return true end
 
    for output_id, amount in pairs(recipe.outputs) do
       local remaining = amount
       local maxStack = ItemRegistry.getMaxStackSize(output_id)
 
       -- First, try to stack with existing slots
-      for _, slot in ipairs(inventory.output_slots) do
+      for _, slot in ipairs(slots) do
          if remaining <= 0 then break end
 
          if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
@@ -197,7 +202,7 @@ local function produceOutputs(recipe, inventory)
       end
 
       -- Then, fill empty slots
-      for _, slot in ipairs(inventory.output_slots) do
+      for _, slot in ipairs(slots) do
          if remaining <= 0 then break end
 
          if not slot.item_id then
@@ -220,7 +225,7 @@ local function produceOutputs(recipe, inventory)
          if math.random() < chance then
             local maxStack = ItemRegistry.getMaxStackSize(output_id)
 
-            for _, slot in ipairs(inventory.output_slots) do
+            for _, slot in ipairs(slots) do
                if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
                   slot.quantity = (slot.quantity or 0) + 1
                   break
