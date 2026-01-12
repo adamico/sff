@@ -121,4 +121,5 @@ src/evolved/
 ## To Process
 
 - Machines should have a more complex visual representation. Minecraft modding does this by using an entity screen which can contain more detailed information about the machine's state, progress, inventory slots etc.
-- Initial recipe assignment is currently hardcoded in assembler behavior - should be set via UI or entity data
+- Initial recipe assignment is currently hardcoded in assembler behavior  should be set via UI or entity data
+- The machine state manager and the machine screen are still using the same logic from the inventory manager which by definition only have interactable slots for storage and other inventories. Machine screens currently only have different kind of interactable slots (currently inputs and outputs) but we need to allow adding other interactable widgets such as buttons, dropdowns, etc.
