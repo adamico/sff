@@ -1,6 +1,7 @@
 local Bindings = require("src.config.input_bindings")
-local InputHelper = {}
 local lk = love.keyboard
+
+local InputHelper = {}
 
 --- Creates and edge detector for detecting rising edges (press events)
 --- @param options table|nil Options: {threshold = number}

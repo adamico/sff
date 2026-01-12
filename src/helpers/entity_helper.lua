@@ -1,8 +1,8 @@
 local EntityHelper = {}
 
 --- Calculate squared distance between two entities with position components
---- @param aId evolved.id
---- @param bId evolved.id
+--- @param aId number Entity ID
+--- @param bId number Entity ID
 --- @return number Squared distance between entity centers
 function EntityHelper.getDistanceSquared(aId, bId)
    local aCenter = EntityHelper.getEntityCenter(aId)
@@ -13,7 +13,7 @@ function EntityHelper.getDistanceSquared(aId, bId)
 end
 
 --- Calculate entity center based on visual representation
---- @param entityId table Entity with position and size (Vector)
+--- @param entityId number Entity with position and size (Vector)
 --- @return table Entity center (Vector)
 function EntityHelper.getEntityCenter(entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
@@ -30,7 +30,7 @@ end
 --- Check if point is inside circle
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId evolved.id Circle with position and radius (Vector)
+--- @param entityId number Circle with position and radius (Vector)
 --- @return boolean True if point is inside circle, false otherwise
 local function pointIsInsideCircle(x, y, entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
@@ -43,7 +43,7 @@ end
 --- Check if point is inside rectangle
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId evolved.id Rectangle with position and size (Vector)
+--- @param entityId number Rectangle with position and size (Vector)
 --- @return boolean True if point is inside rectangle, false otherwise
 local function pointIsInsideRectangle(x, y, entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
@@ -56,7 +56,7 @@ end
 --- Check if point is inside entity
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId evolved.id
+--- @param entityId number Entity with position and shape (Vector)
 --- @return boolean True if point is inside entity, false otherwise
 function EntityHelper.pointIsInsideEntity(x, y, entityId)
    local shape = Evolved.get(entityId, FRAGMENTS.Shape)
