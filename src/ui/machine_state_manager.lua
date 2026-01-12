@@ -1,4 +1,4 @@
-local DrawHelper = require("src.helpers.draw_helper")
+local FlexDrawHelper = require("src.ui.flex_draw_helper")
 local InventoryHelper = require("src.helpers.inventory_helper")
 
 local MachineStateManager = {
@@ -203,7 +203,7 @@ function MachineStateManager:draw()
 
    -- Draw held stack last (always on top)
    if self.heldStack then
-      DrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
+      FlexDrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
    end
 end
 

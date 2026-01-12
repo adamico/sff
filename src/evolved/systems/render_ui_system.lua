@@ -1,6 +1,6 @@
-local InventoryView = require("src.ui.inventory_view")
+local FlexInventoryView = require("src.ui.flex_inventory_view")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
-local MachineScreen = require("src.ui.machine_screen")
+local FlexMachineScreen = require("src.ui.flex_machine_screen")
 local MachineStateManager = require("src.ui.machine_state_manager")
 
 local builder = Evolved.builder
@@ -41,7 +41,7 @@ local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
 local function getToolbarView(toolbar)
    if not toolbar then return nil end
    if not toolbarView then
-      toolbarView = InventoryView:new(toolbar, {
+      toolbarView = FlexInventoryView:new(toolbar, {
          id = "toolbar",
          columns = COLUMNS,
          rows = TOOLBAR_ROWS,
@@ -56,7 +56,7 @@ local function getPlayerInventoryView(playerInventory)
    if not playerInventory then return nil end
 
    if not playerInventoryView then
-      playerInventoryView = InventoryView:new(playerInventory, {
+      playerInventoryView = FlexInventoryView:new(playerInventory, {
          id = "player_inventory",
          columns = COLUMNS,
          rows = INV_ROWS,
@@ -115,7 +115,7 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
       entityId = entityId or nil
    }
 
-   local targetInventoryView = InventoryView:new(targetInventory, options)
+   local targetInventoryView = FlexInventoryView:new(targetInventory, options)
 
    local views = {
       getToolbarView(playerToolbar),
@@ -138,7 +138,7 @@ local function openMachineScreen(entityId)
    local machineX = SCREEN_CENTER.x - MACHINE_WIDTH / 2
    local machineY = PLAYER_INV_Y - GAP - MACHINE_HEIGHT
 
-   local machineScreen = MachineScreen:new({
+   local machineScreen = FlexMachineScreen:new({
       entityId = entityId,
       x = machineX,
       y = machineY,

@@ -1,4 +1,4 @@
-local DrawHelper = require("src.helpers.draw_helper")
+local FlexDrawHelper = require("src.ui.flex_draw_helper")
 local InventoryHelper = require("src.helpers.inventory_helper")
 
 local InventoryStateManager = {
@@ -155,7 +155,7 @@ function InventoryStateManager:draw()
       end
    end
    if self.heldStack then
-      DrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
+      FlexDrawHelper:drawHeldStack(self.heldStack, love.mouse.getPosition())
    end
 end
 
