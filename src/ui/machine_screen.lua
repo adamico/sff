@@ -94,23 +94,13 @@ function MachineScreen:getInventory()
 end
 
 function MachineScreen:draw()
-   -- Draw the main box
    self:drawBox(self.x, self.y, self.width, self.height)
-
-   -- Draw machine name
    self:drawMachineName()
-
-   -- Draw machine state
    self:drawMachineState()
-
-   -- Draw slots
    self:drawSlots()
-
-   -- Draw mana bar if entity has mana
    self:drawManaBar()
-
-   -- Draw progress bar if processing
    self:drawProgressBar()
+   self:drawButtons()
 end
 
 function MachineScreen:drawMachineName()
@@ -177,7 +167,7 @@ function MachineScreen:drawManaBar()
    local barWidth = self.width - self.padding * 2
    local barHeight = 8
    local barX = self.x + self.padding
-   local barY = self.y + self.height - self.padding - barHeight - 16
+   local barY = self.y + self.height - self.padding - barHeight - 48
 
    -- Background
    love.graphics.setColor(0.2, 0.2, 0.3)
@@ -194,7 +184,7 @@ function MachineScreen:drawManaBar()
 
    -- Label
    love.graphics.setColor(1, 1, 1)
-   love.graphics.print(string.format("Mana: %d/%d", mana.current, mana.max), barX, barY - 14)
+   love.graphics.print(string.format("Mana: %d/%d", mana.current, mana.max), barX, barY - 16)
 end
 
 function MachineScreen:drawProgressBar()
@@ -209,7 +199,7 @@ function MachineScreen:drawProgressBar()
    local barWidth = self.width - self.padding * 2
    local barHeight = 8
    local barX = self.x + self.padding
-   local barY = self.y + self.height - self.padding - barHeight
+   local barY = self.y + self.height - self.padding - barHeight - 32
 
    -- Background
    love.graphics.setColor(0.2, 0.2, 0.2)
@@ -223,6 +213,20 @@ function MachineScreen:drawProgressBar()
    -- Border
    love.graphics.setColor(1, 1, 1)
    love.graphics.rectangle("line", barX, barY, barWidth, barHeight)
+end
+
+function MachineScreen:drawButtons()
+   local drawableButtonLabel = love.graphics.newText(love.graphics.getFont(), "Start Ritual")
+   local buttonWidth = drawableButtonLabel:getWidth() + 8
+   local buttonHeight = 24
+   local buttonX = self.x + self.width - buttonWidth - self.padding
+   local buttonY = self.y + self.height - self.padding - buttonHeight
+
+   -- Background
+   love.graphics.setColor(0.2, 0.2, 0.2)
+   love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight)
+
+   self:drawLabel(drawableButtonLabel, buttonX + 4, buttonY + buttonHeight - 4)
 end
 
 function MachineScreen:isPointInSlot(mouseX, mouseY, slotX, slotY)
