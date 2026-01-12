@@ -36,9 +36,14 @@ function love.update(dt)
    process(STAGES.OnUpdate)
 end
 
-function love.draw()
+local function drawDebugLines()
    love.graphics.setColor(1, 0, 0)
    love.graphics.line(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT)
+   love.graphics.line(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2)
+end
+
+function love.draw()
+   -- drawDebugLines()
    process(STAGES.OnRender)
 end
 
