@@ -4,6 +4,8 @@ Colors = require("src.config.colors")
 Events = require("src.config.events")
 Evolved = require("lib.evolved")
 Flexlove = require("lib.flexlove.FlexLove")
+Color = Flexlove.Color
+
 Log = require("lib.log")
 Vector = require("lib.brinevector")
 require("src.helpers.text_helper")

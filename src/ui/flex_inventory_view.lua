@@ -1,6 +1,5 @@
 local FlexInventoryView = Class("FlexInventoryView")
 local get = Evolved.get
-local Color = Flexlove.Color
 
 local BORDER_WIDTH = 2
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)

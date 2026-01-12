@@ -1,6 +1,5 @@
 local FlexMachineScreen = Class("FlexMachineScreen")
 local get = Evolved.get
-local Color = Flexlove.Color
 
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)
 local BORDER_COLOR = Color.new(1, 1, 1, 1)
