@@ -9,8 +9,8 @@ local HEADER_SIZE = 14
 local TEXT_SIZE = 10
 
 -- Quantity label offset from bottom-right corner of held stack
-local QUANTITY_OFFSET_X = 4
-local QUANTITY_OFFSET_Y = 4
+local QUANTITY_OFFSET_X = 18
+local QUANTITY_OFFSET_Y = 18
 
 --- @class HeldStackView
 --- @field stack table The held stack data {item_id, quantity}
@@ -95,8 +95,8 @@ function HeldStackView:draw()
 
       local textWidth = self.smallFont:getWidth(quantityText)
       local textHeight = self.smallFont:getHeight()
-      local quantityX = x + SLOT_SIZE - textWidth - QUANTITY_OFFSET_X
-      local quantityY = y + SLOT_SIZE - textHeight - QUANTITY_OFFSET_Y
+      local quantityX = x + QUANTITY_OFFSET_X
+      local quantityY = y + QUANTITY_OFFSET_Y
 
       love.graphics.print(quantityText, quantityX, quantityY)
    end

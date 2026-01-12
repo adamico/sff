@@ -263,11 +263,10 @@ function Assembler.blank(context)
 
    -- Transition to idle once we have a valid recipe
    if isValidRecipe(context.recipe) then
-      if context.fsm:can("set_recipe") then
-         context.fsm:set_recipe()
-         if DEBUG then
-            Log.info("Assembler: "..context.machineName.." -> idle")
-         end
+      context.fsm:set_recipe()
+      set(context.machineId, FRAGMENTS.ProcessingTimer, {current = recipe.processing_time, saved = 0})
+      if DEBUG then
+         Log.info("Assembler: "..context.machineName.." -> idle")
       end
    end
 end

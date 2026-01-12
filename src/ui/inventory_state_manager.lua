@@ -130,6 +130,28 @@ function InventoryStateManager:pickItemFromSlot(slot_index, inventory)
    return true
 end
 
+--- Clear the held stack and show cursor
+local function clearHeldStack(self)
+   if self.heldStackView then
+      self.heldStackView:destroy()
+      self.heldStackView = nil
+   end
+   self.heldStack = nil
+   love.mouse.setVisible(true)
+end
+
+--- Update held stack with new data
+local function updateHeldStack(self, item_id, quantity, inventory, slot_index)
+   self.heldStack.item_id = item_id
+   self.heldStack.quantity = quantity
+   self.heldStack.source_inventory = inventory
+   self.heldStack.source_slot = slot_index
+
+   if self.heldStackView then
+      self.heldStackView:updateStack(self.heldStack)
+   end
+end
+
 --- Place the held item into a slot (handles empty slots, stacking, and swapping)
 --- @param inventory table The inventory to place into
 --- @param slot_index number The slot index to place into
@@ -142,58 +164,48 @@ function InventoryStateManager:placeItemInSlot(slot_index, inventory)
    if not slot.item_id then
       slot.item_id = self.heldStack.item_id
       slot.quantity = self.heldStack.quantity
-      if self.heldStackView then
-         self.heldStackView:destroy()
-         self.heldStackView = nil
-      end
-      self.heldStack = nil
-      love.mouse.setVisible(true)
+      clearHeldStack(self)
       return true
    end
 
-   -- Slot has same item - try stack them
+   -- Slot has same item - try to stack them
    if slot.item_id == self.heldStack.item_id then
       local max_stack_size = InventoryHelper.getMaxStackQuantity(slot.item_id)
-      if slot.quantity + self.heldStack.quantity <= max_stack_size then
-         slot.quantity = slot.quantity + self.heldStack.quantity
-         if self.heldStackView then
-            self.heldStackView:destroy()
-            self.heldStackView = nil
-         end
-         self.heldStack = nil
-         love.mouse.setVisible(true)
+      local total = slot.quantity + self.heldStack.quantity
+
+      if total <= max_stack_size then
+         -- Everything fits - merge stacks
+         slot.quantity = total
+         clearHeldStack(self)
          return true
       else
+         -- Partial stack - fill slot and keep remainder
          if slot.quantity >= max_stack_size then return false end
 
          local remaining_space = max_stack_size - slot.quantity
          local new_held_quantity = self.heldStack.quantity - remaining_space
-         self.heldStack = new_held_quantity <= 0 and nil or
-            {
-               item_id = self.heldStack.item_id,
-               quantity = new_held_quantity,
-               source_inventory = inventory,
-               source_slot = slot_index,
-            }
          slot.quantity = max_stack_size
-         love.mouse.setVisible(true)
+
+         if new_held_quantity <= 0 then
+            clearHeldStack(self)
+         else
+            self.heldStack.quantity = new_held_quantity
+            self.heldStack.source_inventory = inventory
+            self.heldStack.source_slot = slot_index
+            love.mouse.setVisible(true)
+         end
          return true
       end
    end
 
    -- Slot has different item - swap them
-   local temp = {item_id = slot.item_id, quantity = slot.quantity}
+   local temp_item = slot.item_id
+   local temp_quantity = slot.quantity
+
    slot.item_id = self.heldStack.item_id
    slot.quantity = self.heldStack.quantity
-   self.heldStack.item_id = temp.item_id
-   self.heldStack.quantity = temp.quantity
-   self.heldStack.source_inventory = inventory
-   self.heldStack.source_slot = slot_index
 
-   -- Update held stack view
-   if self.heldStackView then
-      self.heldStackView:updateStack(self.heldStack)
-   end
+   updateHeldStack(self, temp_item, temp_quantity, inventory, slot_index)
    return true
 end
 

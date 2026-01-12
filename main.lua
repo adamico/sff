@@ -55,7 +55,6 @@ function love.draw()
    local MachineStateManager = require("src.ui.machine_state_manager")
 
    Flexlove.draw(function()
-      -- Your game rendering here (entities, world, etc.)
       -- drawDebugLines()
       process(STAGES.OnRender)
    end, function()

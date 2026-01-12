@@ -12,29 +12,28 @@ local SLOT_SIZE = 32
 local COLUMNS = 10
 local INV_ROWS = 4
 local TOOLBAR_ROWS = 1
-local BORDER_WIDTH = 2
 local PADDING = 4
 local GAP = 20
 
 -- Calculated dimensions (matching inventory_view.lua calculateBoxDimensions)
-local WIDTH = COLUMNS * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
-local INV_HEIGHT = INV_ROWS * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
-local TOOLBAR_HEIGHT = TOOLBAR_ROWS * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
+local INV_WIDTH = COLUMNS * SLOT_SIZE + PADDING * 2
+local INV_HEIGHT = INV_ROWS * SLOT_SIZE + PADDING * 2
+local TOOLBAR_HEIGHT = TOOLBAR_ROWS * SLOT_SIZE + PADDING * 2
 
 -- Screen dimensions
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 local SCREEN_CENTER = Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
 -- Machine screen layout constants
-local MACHINE_WIDTH = 300
-local MACHINE_HEIGHT = 200
+local MACHINE_WIDTH = 320
+local MACHINE_HEIGHT = 240
 
 -- Cached views (created lazily)
 local toolbarView = nil
 -- Don't cache playerInventoryView - it gets destroyed when closed
 
 -- Position presets
-local CENTERED_X = SCREEN_CENTER.x - WIDTH / 2
+local CENTERED_X = SCREEN_CENTER.x - INV_WIDTH / 2
 local TOOLBAR_Y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
 local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
 
@@ -89,8 +88,8 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
    local targetRows = math.ceil(slots / targetColumns)
 
    -- Calculate actual width and height for this inventory
-   local targetWidth = targetColumns * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
-   local targetHeight = targetRows * (SLOT_SIZE - BORDER_WIDTH) + BORDER_WIDTH + PADDING * 2
+   local targetWidth = targetColumns * SLOT_SIZE + PADDING * 2
+   local targetHeight = targetRows * SLOT_SIZE + PADDING * 2
 
    -- Center the target inventory
    local targetX = SCREEN_CENTER.x - targetWidth / 2
