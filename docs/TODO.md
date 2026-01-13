@@ -21,7 +21,7 @@
 
 ### Pending
 
-- [ ] Start Ritual button in machine UI
+- [x] Start Ritual button in machine UI
 - [ ] Deploy assembled creatures using EntityRegistry
 - [ ] Placement system with ghost preview
 - [ ] Collision detection for placement (red/green)
