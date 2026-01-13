@@ -4,6 +4,7 @@ local entities = {}
 local categories = {
    require("src.data.entities.deployable_entities_data"),
    require("src.data.entities.creature_entities_data"),
+   require("src.data.entities.player_entities_data"),
 }
 
 for _, category in ipairs(categories) do

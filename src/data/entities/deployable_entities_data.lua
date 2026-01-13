@@ -1,30 +1,20 @@
+local Inventory = require("src.evolved.fragments.inventory")
+local InputQueue = require("src.evolved.fragments.input_queue")
+local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipes = require("src.data.recipes_data")
 
 return {
    SkeletonAssembler = {
-      class = "Assembler",
       color = Colors.PURPLE,
-      events = {
-         {name = "set_recipe",         from = "blank",   to = "idle"},
-         {name = "prepare",            from = "idle",    to = "ready"},
-         {name = "remove_ingredients", from = "ready",   to = "idle"},
-         {name = "start_ritual",       from = "ready",   to = "working"},
-         {name = "stop_ritual",        from = "working", to = "idle"},
-         {name = "complete",           from = "working", to = "idle"},
-         {name = "stop",               from = "working", to = "idle"},
-         {name = "block",              from = "working", to = "blocked"},
-         {name = "unblock",            from = "blocked", to = "idle"},
-         {name = "starve",             from = "working", to = "no_mana"},
-         {name = "refuel",             from = "no_mana", to = "working"},
-      },
-      interactable = true,
-      inventory = {
+      inputQueue = InputQueue.new(),
+      inventory = Inventory.new({
          max_input_slots = 2,
          max_output_slots = 1,
          initial_items = {
             {item_id = "bone", quantity = 1},
          }
-      },
+      }),
+      machineClass = "Assembler",
       mana = {
          current = 100,
          max = 100,
@@ -32,27 +22,39 @@ return {
          consume_rate = 1,
       },
       name = "Skeleton Assembler",
-      valid_recipes = {Recipes.create_skeleton},
+      processingTimer = {current = 0, saved = 0, duration = 5},
+      shape = "rectangle",
       size = Vector(64, 64),
-      timers = {
-         processing = 5 -- seconds
-      },
-      visual = "rectangle",
+      stateMachine = StateMachine.new({
+         events = {
+            {name = "set_recipe",         from = "blank",   to = "idle"},
+            {name = "prepare",            from = "idle",    to = "ready"},
+            {name = "remove_ingredients", from = "ready",   to = "idle"},
+            {name = "start_ritual",       from = "ready",   to = "working"},
+            {name = "stop_ritual",        from = "working", to = "idle"},
+            {name = "complete",           from = "working", to = "idle"},
+            {name = "stop",               from = "working", to = "idle"},
+            {name = "block",              from = "working", to = "blocked"},
+            {name = "unblock",            from = "blocked", to = "idle"},
+            {name = "starve",             from = "working", to = "no_mana"},
+            {name = "refuel",             from = "no_mana", to = "working"},
+         }
+      }),
+      tags = {"interactable", "physical", "processing", "visual"},
+      validRecipes = {Recipes.create_skeleton},
    },
    CreativeChest = {
-      class = "Storage",
       color = Colors.GOLD,
-      creative = true,
-      interactable = true,
-      inventory = {
+      inventory = Inventory.new({
          max_slots = 32,
          initial_items = {
             {item_id = "bone",    quantity = 63},
             {item_id = "essence", quantity = 15}
          }
-      },
+      }),
       name = "Creative Chest",
+      shape = "rectangle",
       size = Vector(32, 32),
-      visual = "rectangle",
+      tags = {"interactable", "physical", "visual"},
    },
 }

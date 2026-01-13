@@ -58,7 +58,7 @@ function EntityPlacementManager:draw()
    end
 
    -- Draw ghost rectangle
-   if entityData.visual == "circle" or entityData.shape == "circle" then
+   if entityData.shape == "circle" then
       love.graphics.circle("fill", self.ghostPosition.x, self.ghostPosition.y, size.x / 2)
    else
       love.graphics.rectangle("fill", x, y, size.x, size.y)

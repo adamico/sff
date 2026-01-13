@@ -1,15 +1,16 @@
 return {
    skeleton = {
-      class = "Creature",
       color = Colors.WHITE,
-      harvest_time = 5,
-      harvest_yield = 25,
-      recycle_returns = {
+      harvestTime = 5,
+      harvestYield = 25,
+      name = "Skeleton",
+      recycleReturns = {
          bone = 1,
          essence = 1,
       },
+      shape = "circle",
       size = Vector(16, 16),
+      tags = {"physical", "visual"},
       tier = "basic",
-      visual = "circle",
    },
 }

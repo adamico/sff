@@ -2,65 +2,73 @@
    Spawner System
 
    Handles entity spawning requests triggered by events.
-   Centralizes entity creation logic (prefab selection, component building).
+   Fully data-driven: iterates over FRAGMENTS and checks for matching entity data fields.
+
+   Convention:
+   - Entity data field names are lowercase versions of FRAGMENTS names
+   - e.g., FRAGMENTS.Color → entityData.color
+   - e.g., FRAGMENTS.MaxSpeed → entityData.maxSpeed
 ]]
 
 local EntityRegistry = require("src.registries.entity_registry")
-local Inventory = require("src.evolved.fragments.inventory")
-local StateMachine = require("src.evolved.fragments.state_machine")
-local InputQueue = require("src.evolved.fragments.input_queue")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
-local clone = Evolved.clone
 
---- Get the appropriate prefab for an entity class
---- @param class string The entity class (e.g., "Assembler", "Storage", "Creature")
---- @return table|nil The prefab, or nil if not found
-local function getPrefabForClass(class)
-   if class == "Assembler" then
-      return PREFABS.Assembler
-   elseif class == "Storage" then
-      return PREFABS.Storage
-   elseif class == "Creature" then
-      return PREFABS.Creature
-   end
-   return nil
+--- Convert fragment name to entity data field name
+--- e.g., "FRAGMENTS.MaxSpeed" → "maxSpeed", "FRAGMENTS.Color" → "color"
+--- @param fragmentName string The fragment name (e.g., "MaxSpeed")
+--- @return string The entity data field name (e.g., "maxSpeed")
+local function fragmentNameToFieldName(fragmentName)
+   -- Convert first character to lowercase
+   return fragmentName:sub(1, 1):lower()..fragmentName:sub(2)
 end
 
 --- Build components for an entity based on its data
+--- Iterates over FRAGMENTS and checks for matching entity data fields
 --- @param entityData table The entity data from the registry
 --- @param position table The position vector to spawn at
---- @return table The component map for cloning
+--- @return table The component map
 local function buildComponents(entityData, position)
    local components = {
       [Evolved.NAME] = entityData.name or entityData.id,
       [FRAGMENTS.Position] = Vector(position.x, position.y),
-      [FRAGMENTS.Color] = entityData.color or Colors.WHITE,
-      [FRAGMENTS.Size] = entityData.size or Vector(32, 32),
-      [FRAGMENTS.Shape] = entityData.shape or entityData.visual or "rectangle",
    }
 
-   -- Add inventory if entity has one
-   if entityData.inventory then
-      components[FRAGMENTS.Inventory] = Inventory.new(entityData.inventory)
-   end
+   -- Iterate over all defined fragments
+   for fragmentName, fragment in pairs(FRAGMENTS) do
+      local fieldName = fragmentNameToFieldName(fragmentName)
+      local value = entityData[fieldName]
 
-   -- Add state machine for machines
-   if entityData.events then
-      components[FRAGMENTS.StateMachine] = StateMachine.new({events = entityData.events})
-   end
-
-   -- Add machine-specific components
-   if entityData.class == "Assembler" then
-      components[FRAGMENTS.Mana] = entityData.mana
-      components[FRAGMENTS.ProcessingTimer] = {current = 0, saved = 0}
-      components[FRAGMENTS.ValidRecipes] = entityData.valid_recipes
-      components[FRAGMENTS.MachineClass] = "Assembler"
-      components[FRAGMENTS.InputQueue] = InputQueue.new()
+      if value ~= nil then
+         components[fragment] = value
+      end
    end
 
    return components
+end
+
+--- Determine which tags to apply based on entity data
+--- Reads from entityData.tags array (e.g., {"physical", "visual", "player"})
+--- @param entityData table The entity data from the registry
+--- @return table Array of tags to apply
+local function getTags(entityData)
+   local tags = {}
+
+   if entityData.tags then
+      for _, tagName in ipairs(entityData.tags) do
+         -- Convert tag name to TAGS reference (capitalize first letter)
+         local capitalizedName = tagName:sub(1, 1):upper()..tagName:sub(2)
+         local tag = TAGS[capitalizedName]
+         if tag then
+            table.insert(tags, tag)
+         else
+            Log.warn("SpawnerSystem: Unknown tag '"..tagName.."'")
+         end
+      end
+   end
+
+   return tags
 end
 
 --- Spawn an entity at a given position
@@ -74,14 +82,27 @@ local function spawnEntity(entityId, position)
       return nil
    end
 
-   local prefab = getPrefabForClass(entityData.class)
-   if not prefab then
-      Log.warn("SpawnerSystem: No prefab found for entity class: "..tostring(entityData.class))
-      return nil
+   -- Build components from entity data
+   local components = buildComponents(entityData, position)
+
+   -- Get tags to apply
+   local tags = getTags(entityData)
+
+   -- Use the builder pattern to create the entity
+   local entityBuilder = Evolved.builder()
+
+   -- Add all components
+   for fragment, value in pairs(components) do
+      entityBuilder:set(fragment, value)
    end
 
-   local components = buildComponents(entityData, position)
-   local spawnedId = clone(prefab, components)
+   -- Add all tags
+   for _, tag in ipairs(tags) do
+      entityBuilder:set(tag)
+   end
+
+   -- Spawn the entity
+   local spawnedId = entityBuilder:spawn()
 
    Log.debug("SpawnerSystem: Spawned entity '"..entityId.."' at ("..position.x..", "..position.y..")")
 
@@ -93,12 +114,12 @@ observe(Events.ENTITY_SPAWN_REQUESTED, function(request)
    local spawnedId = spawnEntity(request.entityId, request.position)
 
    if spawnedId then
-      trigger(Events.ENTITY_DEPLOYED, spawnedId, request.position, request.sourceSlotIndex)
+      trigger(Events.ENTITY_SPAWNED, spawnedId, request.position, request.sourceSlotIndex)
    end
 end)
 
 return {
    spawnEntity = spawnEntity,
-   getPrefabForClass = getPrefabForClass,
    buildComponents = buildComponents,
+   getTags = getTags,
 }
