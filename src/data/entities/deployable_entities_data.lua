@@ -4,7 +4,7 @@ local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipes = require("src.data.recipes_data")
 
 return {
-   SkeletonAssembler = {
+   skeletonAssembler = {
       color = Colors.PURPLE,
       inputQueue = InputQueue.new(),
       inventory = Inventory.new({
@@ -41,15 +41,15 @@ return {
          }
       }),
       tags = {"interactable", "physical", "processing", "visual"},
-      validRecipes = {Recipes.create_skeleton},
+      validRecipes = {Recipes.createSkeleton},
    },
-   CreativeChest = {
+   creativeChest = {
       color = Colors.GOLD,
       inventory = Inventory.new({
          max_slots = 32,
          initial_items = {
-            {item_id = "bone",    quantity = 63},
-            {item_id = "essence", quantity = 15}
+            {item_id = "bone",          quantity = 63},
+            {item_id = "unlifeEssence", quantity = 15}
          }
       }),
       name = "Creative Chest",

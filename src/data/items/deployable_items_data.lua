@@ -1,16 +1,16 @@
 return {
-   skeleton_assembler = {
+   skeletonAssembler = {
       name = "Skeleton Assembler",
       category = "building",
       max_stack_size = 10,
       deployable = true,
-      spawns_entity = "SkeletonAssembler",
+      spawns_entity = "skeletonAssembler",
    },
-   creative_chest = {
+   creativeChest = {
       name = "Creative Chest",
       category = "building",
       max_stack_size = 10,
       deployable = true,
-      spawns_entity = "CreativeChest",
+      spawns_entity = "creativeChest",
    },
 }

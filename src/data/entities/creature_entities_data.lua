@@ -6,7 +6,7 @@ return {
       name = "Skeleton",
       recycleReturns = {
          bone = 1,
-         essence = 1,
+         unlifeEssence = 1,
       },
       shape = "circle",
       size = Vector(16, 16),

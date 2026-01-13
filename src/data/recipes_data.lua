@@ -1,10 +1,10 @@
 return {
-   create_skeleton = {
+   createSkeleton = {
       name = "Create Skeleton",
       category = "creature_creation",
       inputs = {
          bone = 2,
-         essence = 1,
+         unlifeEssence = 1,
       },
       outputs = {
          skeleton = 1,

@@ -21,9 +21,9 @@ return {
       toolbar = Inventory.new({
          max_slots = 10,
          initial_items = {
-            {item_id = "bone",     quantity = 10},
-            {item_id = "skeleton", quantity = 1},
-            {item_id = "essence",  quantity = 10},
+            {item_id = "bone",          quantity = 10},
+            {item_id = "skeleton",      quantity = 1},
+            {item_id = "unlifeEssence", quantity = 10},
          },
       }),
    },

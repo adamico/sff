@@ -12,6 +12,6 @@ builder()
       ENTITIES.Player = SpawnerSystem.spawnEntity("player", Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
       -- Spawn other entities
-      SpawnerSystem.spawnEntity("SkeletonAssembler", Vector(600, 100))
-      SpawnerSystem.spawnEntity("CreativeChest", Vector(100, 100))
+      SpawnerSystem.spawnEntity("skeletonAssembler", Vector(600, 100))
+      SpawnerSystem.spawnEntity("creativeChest", Vector(100, 100))
    end):build()

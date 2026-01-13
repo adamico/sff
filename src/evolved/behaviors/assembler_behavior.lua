@@ -256,7 +256,7 @@ end
 function Assembler.blank(context)
    -- REFACTOR: Auto-assign recipe if none set (this could be driven by UI later)
    if not isValidRecipe(context.recipe) then
-      local newRecipe = Recipe.new("create_skeleton")
+      local newRecipe = Recipe.new("createSkeleton")
       set(context.machineId, FRAGMENTS.CurrentRecipe, newRecipe)
       context.recipe = newRecipe
 
