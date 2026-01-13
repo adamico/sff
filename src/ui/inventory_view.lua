@@ -1,3 +1,5 @@
+local InventoryStateManager = require("src.ui.inventory_state_manager")
+local MachineStateManager = require("src.ui.machine_state_manager")
 local InventoryView = Class("InventoryView")
 
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)
@@ -104,7 +106,12 @@ function InventoryView:createSlots()
          onEvent = function(element, event)
             if event.type == "click" then
                local mx, my = love.mouse.getPosition()
-               Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+
+               if self.id == "toolbar" and not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+                  Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
+               else
+                  Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+               end
             end
          end,
          parent = self.slotsContainer

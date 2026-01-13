@@ -1,12 +1,15 @@
 local InputHelper = require("src.helpers.input_helper")
 local InventoryStateManager = require("src.ui.inventory_state_manager")
 local MachineStateManager = require("src.ui.machine_state_manager")
+local EntityPlacementManager = require("src.ui.entity_placement_manager")
 local builder = Evolved.builder
 local execute = Evolved.execute
 local get = Evolved.get
 local set = Evolved.set
 local observe = Beholder.observe
 local trigger = Beholder.trigger
+
+local TOOLBAR_KEYS_MAX = 9
 
 local A = require("src.config.input_bindings").actions
 
@@ -59,10 +62,23 @@ local function actionDetection(playerInventory, playerToolbar)
    end
 
    if actionDetector:pressed(A.INTERACT) then
-      -- Inventory clicks are now handled by FlexLove slot onEvent callbacks
-      -- Only handle world interactions here
-      if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+      if EntityPlacementManager.isPlacing then
+         EntityPlacementManager:handleClick(1)
+      elseif not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
          trigger(Events.INPUT_INTERACTED, mx, my)
+      end
+   end
+
+   if actionDetector:pressed(A.CANCEL_PLACEMENT) then
+      if EntityPlacementManager.isPlacing then
+         EntityPlacementManager:handleClick(2)
+      end
+   end
+
+   for i = 0, TOOLBAR_KEYS_MAX do
+      if actionDetector:pressed(A["TOOLBAR_USE_"..i])
+         and not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+         trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
       end
    end
 end

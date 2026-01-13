@@ -46,4 +46,11 @@ evolved_config.PREFABS = {
       :set(TAGS.Physical)
       :set(TAGS.Visual)
       :build(),
+   Creature = builder()
+      :name("PREFABS.Creature")
+      :prefab()
+      :set(FRAGMENTS.Color, Colors.WHITE)
+      :set(TAGS.Physical)
+      :set(TAGS.Visual)
+      :build(),
 }
