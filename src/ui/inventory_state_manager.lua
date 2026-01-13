@@ -69,6 +69,7 @@ end
 function InventoryStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
    local slot_info
 
+   -- REVIEW: is this check still needed?
    -- If userdata provided (from slot element click), use it directly
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view

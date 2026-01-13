@@ -48,7 +48,6 @@ end
 function InventoryView:buildUI()
    local width, height = self:calculateBoxDimensions()
 
-   -- Main container panel
    self.containerElement = Flexlove.new({
       id = self.id.."_container",
       x = self.x,
@@ -68,7 +67,6 @@ function InventoryView:buildUI()
       userdata = {view = self}
    })
 
-   -- Nested slots container with constrained width for proper wrapping
    local slotsWidth = self.columns * self.slot_size
    self.slotsContainer = Flexlove.new({
       id = self.id.."_slots_container",
@@ -88,8 +86,6 @@ function InventoryView:createSlots()
 
    for slotIndex = 1, #slots do
       local slot = slots[slotIndex]
-
-      -- Create slot element using flexbox (no manual positioning needed)
       local slotElement = Flexlove.new({
          id = self.id.."_slot_"..slotIndex,
          width = self.slot_size,
@@ -114,7 +110,6 @@ function InventoryView:createSlots()
          parent = self.slotsContainer
       })
 
-      -- Store reference
       table.insert(self.slotElements, {
          element = slotElement,
          slotIndex = slotIndex,
