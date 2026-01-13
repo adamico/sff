@@ -1,3 +1,4 @@
+local InputQueue = require("src.evolved.fragments.input_queue")
 local Inventory = require("src.evolved.fragments.inventory")
 local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipe = require("src.evolved.fragments.recipe")
@@ -31,6 +32,11 @@ evolved_config.FRAGMENTS = {
    Color = builder()
       :name("FRAGMENTS.Color")
       :default(Colors.WHITE)
+      :build(),
+   InputQueue = builder()
+      :name("FRAGMENTS.InputQueue")
+      :default(InputQueue.new())
+      :duplicate(deepClone)
       :build(),
    Mana = builder()
       :name("FRAGMENTS.Mana")
@@ -144,6 +150,7 @@ evolved_config.TAGS = {
       :name("TAGS.Processing")
       :require(
          FRAGMENTS.CurrentRecipe,
+         FRAGMENTS.InputQueue,
          FRAGMENTS.Mana,
          FRAGMENTS.ProcessingTimer,
          FRAGMENTS.StateMachine,

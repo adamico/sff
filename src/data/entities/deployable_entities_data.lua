@@ -26,7 +26,7 @@ return {
          }
       },
       mana = {
-         current = 10,
+         current = 100,
          max = 100,
          regen_rate = 0,
          consume_rate = 1,

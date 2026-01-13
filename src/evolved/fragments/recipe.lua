@@ -4,7 +4,7 @@ local Recipe = {}
 function Recipe.new(name)
    local data = RecipesData[name] or {}
    recipe = {
-      name = name or "Empty Recipe",
+      name = data.name or "Empty Recipe",
       category = data.category or "Empty category",
       inputs = data.inputs or {},
       outputs = data.outputs or {},

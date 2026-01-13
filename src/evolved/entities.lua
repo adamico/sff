@@ -1,3 +1,4 @@
+local InputQueue = require "src.evolved.fragments.input_queue"
 local Inventory = require "src.evolved.fragments.inventory"
 local StateMachine = require "src.evolved.fragments.state_machine"
 local evolved_config = require("src.evolved.evolved_config")
@@ -25,6 +26,7 @@ evolved_config.PREFABS = {
       :name("PREFABS.Assembler")
       :prefab()
       :set(FRAGMENTS.Color, Colors.PURPLE)
+      :set(FRAGMENTS.InputQueue, InputQueue.new())
       :set(FRAGMENTS.Inventory, Inventory.new())
       :set(FRAGMENTS.MachineClass, "Assembler")
       :set(FRAGMENTS.Mana, {current = 0, max = 100})

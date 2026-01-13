@@ -1,6 +1,7 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
 local MachineScreen = Class("MachineScreen")
 local get = Evolved.get
+local trigger = Beholder.trigger
 
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)
 local BORDER_COLOR = Color.new(1, 1, 1, 1)
@@ -89,18 +90,36 @@ function MachineScreen:buildUI()
 end
 
 function MachineScreen:createHeader()
-   local name = self:getName()
-
    local header = Flexlove.new({
       flexDirection = "horizontal",
       parent = self.containerElement,
+      justifyContent = "space-between",
       positioning = "flex",
    })
 
+   self:createNameLabel(header)
+   self:createRecipeLabel(header)
+end
+
+function MachineScreen:createRecipeLabel(parent)
+   local recipe = self:getRecipe()
+   if recipe then
+      self.recipeLabel = Flexlove.new({
+         id = "machine_recipe",
+         parent = parent,
+         text = recipe.name,
+         textColor = TEXT_COLOR,
+         textSize = HEADER_TEXT_SIZE,
+      })
+   end
+end
+
+function MachineScreen:createNameLabel(parent)
+   local name = self:getName()
    if name then
       self.nameLabel = Flexlove.new({
          id = "machine_name",
-         parent = header,
+         parent = parent,
          text = name,
          textColor = TEXT_COLOR,
          textSize = HEADER_TEXT_SIZE,
@@ -148,7 +167,7 @@ function MachineScreen:createSlots()
             onEvent = function(element, event)
                if event.type == "click" then
                   local mx, my = love.mouse.getPosition()
-                  Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+                  trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
                end
             end,
             parent = slotTypeContainer
@@ -265,9 +284,20 @@ function MachineScreen:createFooter()
       padding = 4,
       parent = self.footerContainer,
       onEvent = function(element, event)
+         local name, fsm, recipe, processingTimer = get(self.entityId,
+            Evolved.NAME,
+            FRAGMENTS.StateMachine,
+            FRAGMENTS.CurrentRecipe,
+            FRAGMENTS.ProcessingTimer
+         )
          if event.type == "click" then
-            -- Handle button click
-            -- This would trigger the machine start logic
+            trigger(Events.RITUAL_STARTED, {
+               entityId = self.entityId,
+               machineName = (name or "Machine")..self.entityId,
+               fsm = fsm,
+               recipe = recipe,
+               processingTimer = processingTimer,
+            })
          end
       end
    })
@@ -285,6 +315,7 @@ function MachineScreen:draw()
    self:updateSlots()
    self:updateManaBar()
    self:updateProgressBar()
+   self:updateStartButton()
 end
 
 function MachineScreen:updateMachineName()
@@ -303,6 +334,15 @@ function MachineScreen:updateMachineState()
          self.stateLabel:setText(state)
       end
    end
+end
+
+function MachineScreen:updateStartButton()
+   if not self.startButton or not self.entityId then return end
+
+   local state = self:getCurrentState()
+   -- Disable button when machine is working or in no_mana state
+   local shouldDisable = state == "working" or state == "no_mana" or state == "blocked"
+   self.startButton.disabled = shouldDisable
 end
 
 function MachineScreen:updateSlots()
@@ -366,6 +406,10 @@ end
 
 function MachineScreen:getName()
    return self.entityId and get(self.entityId, Evolved.NAME) or nil
+end
+
+function MachineScreen:getRecipe()
+   return self.entityId and get(self.entityId, FRAGMENTS.CurrentRecipe) or nil
 end
 
 function MachineScreen:getCurrentState()

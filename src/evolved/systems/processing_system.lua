@@ -6,6 +6,7 @@ builder()
    :group(STAGES.OnUpdate)
    :include(TAGS.Processing)
    :execute(function(chunk, entityIds, entityCount)
+      local inputQueues = chunk:components(FRAGMENTS.InputQueue)
       local stateMachines = chunk:components(FRAGMENTS.StateMachine)
       local recipes = chunk:components(FRAGMENTS.CurrentRecipe)
       local inventories = chunk:components(FRAGMENTS.Inventory)
@@ -27,6 +28,7 @@ builder()
                fsm = stateMachines[i],
                recipe = recipes[i],
                inventory = inventories[i],
+               inputQueue = inputQueues[i],
                mana = manas[i],
                processingTimer = processingTimers[i],
                dt = dt,

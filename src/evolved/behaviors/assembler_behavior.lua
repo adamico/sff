@@ -6,25 +6,29 @@
 
    Context structure:
    {
-      machineId = number,           -- Entity ID
+      entityId = number,           -- Entity ID
       machineName = string,         -- Display name for logging
       fsm = table,                  -- State machine instance
       recipe = table,               -- Current recipe
       inventory = table,            -- Machine inventory
+      inputQueue = table,           -- Input action queue
       mana = table,                 -- {current, max}
       processingTimer = table,      -- {current, saved}
       dt = number,                  -- Delta time
    }
 ]]
 
-local Recipe = require("src.evolved.fragments.recipe")
-local ItemRegistry = require("src.registries.item_registry")
-local InventoryHelper = require("src.helpers.inventory_helper")
-local set = Evolved.set
+local Recipe                        = require("src.evolved.fragments.recipe")
+local ItemRegistry                  = require("src.registries.item_registry")
+local InventoryHelper               = require("src.helpers.inventory_helper")
+local input_queue                   = require("src.evolved.fragments.input_queue")
+local get                           = Evolved.get
+local set                           = Evolved.set
+local observe                       = Beholder.observe
 
-local Assembler = {}
+local Assembler                     = {}
 
-local DEBUG = true
+local DEBUG                         = true
 local MANA_RESUME_THRESHOLD_SECONDS = 1.0
 
 --------------------------------------------------------------------------------
@@ -275,11 +279,9 @@ end
 --- @param context table The update context
 function Assembler.idle(context)
    if hasRequiredIngredients(context.recipe, context.inventory) then
-      if context.fsm:can("prepare") then
-         context.fsm:prepare()
-         if DEBUG then
-            Log.info("Assembler: "..context.machineName.." has ingredients -> ready")
-         end
+      context.fsm:prepare()
+      if DEBUG then
+         Log.info("Assembler: "..context.machineName.." has ingredients -> ready")
       end
    end
 end
@@ -291,23 +293,9 @@ function Assembler.ready(context)
 
    -- Check if ingredients were removed
    if not hasRequiredIngredients(context.recipe, context.inventory) then
-      if context.fsm:can("remove_ingredients") then
-         context.fsm:remove_ingredients()
-         if DEBUG then
-            Log.info("Assembler: "..context.machineName.." ingredients removed -> idle")
-         end
-      end
-      return
-   end
-
-   -- Set processing timer and start ritual
-   context.processingTimer.current = context.recipe.processing_time or 1
-
-   if context.fsm:can("start_ritual") then
-      context.fsm:start_ritual()
+      context.fsm:remove_ingredients()
       if DEBUG then
-         Log.info("Assembler: "..context.machineName.." starting ritual")
-         Log.info("  Processing time: "..context.processingTimer.current.."s")
+         Log.info("Assembler: "..context.machineName.." ingredients removed -> idle")
       end
    end
 end
@@ -339,6 +327,7 @@ function Assembler.working(context)
       if DEBUG then
          Log.warn("Assembler: "..context.machineName.." ingredients missing -> idle")
       end
+
       return
    end
 
@@ -349,6 +338,7 @@ function Assembler.working(context)
       if DEBUG then
          Log.warn("Assembler: "..context.machineName.." mana depleted -> no_mana")
       end
+
       return
    end
 
@@ -359,9 +349,8 @@ function Assembler.working(context)
    if timer.current <= 0 then
       -- Consume ingredients on complete
       if not consumeIngredients(context.recipe, context.inventory) then
-         if context.fsm:can("stop") then
-            context.fsm:stop()
-         end
+         context.fsm:stop()
+
          return
       end
 
@@ -421,6 +410,58 @@ function Assembler.no_mana(context)
 end
 
 --------------------------------------------------------------------------------
+-- Action Handlers
+--------------------------------------------------------------------------------
+
+--- Handlers for queued actions
+--- Each handler receives the context and returns true if the action was handled
+local ACTION_HANDLERS = {
+   --- Start the ritual if FSM can transition
+   start_ritual = function(context)
+      -- Validate preconditions
+      if not isValidRecipe(context.recipe) then
+         if DEBUG then
+            Log.warn("Assembler: "..context.machineName.." no valid recipe set")
+         end
+         return false
+      end
+
+      if not hasRequiredIngredients(context.recipe, context.inventory) then
+         if DEBUG then
+            Log.warn("Assembler: "..context.machineName.." missing ingredients")
+         end
+         return false
+      end
+
+      -- Set processing timer and transition
+      context.processingTimer.current = context.recipe.processing_time or 1
+      context.fsm:start_ritual()
+
+      if DEBUG then
+         Log.info("Assembler: "..context.machineName.." ritual started")
+         Log.info("  Processing time: "..context.processingTimer.current.."s")
+      end
+
+      return true
+   end,
+}
+
+--- Drain the input queue and process all pending actions
+--- @param context table The update context
+local function drainQueue(context)
+   if not context.inputQueue then return end
+
+   input_queue.drain(context.inputQueue, function(action)
+      local handler = ACTION_HANDLERS[action.type]
+      if handler then
+         handler(context)
+      elseif DEBUG then
+         Log.warn("Assembler: Unknown action type: "..tostring(action.type))
+      end
+   end)
+end
+
+--------------------------------------------------------------------------------
 -- Main Update
 --------------------------------------------------------------------------------
 
@@ -428,6 +469,10 @@ end
 --- Dispatches to the appropriate state behavior
 --- @param context table The update context
 function Assembler.update(context)
+   -- First, drain any pending actions from external sources
+   drainQueue(context)
+
+   -- Then, run state-specific behavior
    local state = context.fsm.current
    local behavior = Assembler[state]
 
@@ -437,5 +482,19 @@ function Assembler.update(context)
       Log.warn("Assembler: No behavior defined for state: "..tostring(state))
    end
 end
+
+--------------------------------------------------------------------------------
+-- Observers setup
+--------------------------------------------------------------------------------
+
+observe(Events.RITUAL_STARTED, function(payload)
+   local queue = get(payload.entityId, FRAGMENTS.InputQueue)
+   if queue then
+      input_queue.push(queue, {type = "start_ritual"})
+   end
+   if DEBUG then
+      Log.info("Assembler: "..payload.machineName.." enqueued start_ritual")
+   end
+end)
 
 return Assembler
