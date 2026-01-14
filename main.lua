@@ -79,13 +79,6 @@ function love.textinput(text)
    Flexlove.textinput(text)
 end
 
-function love.keypressed(key)
-   Flexlove.keypressed(key, scancode, isrepeat)
-   if key == "escape" then
-      love.event.quit()
-   end
-end
-
 function love.wheelmoved(dx, dy)
    Flexlove.wheelmoved(dx, dy)
 end
