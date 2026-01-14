@@ -9,6 +9,7 @@ return {
          offsetY = 0,
          radius = 8,
       },
+      interaction = {type = "creature", action = "inspect"},
       name = "Skeleton",
       recycleReturns = {
          bone = 1,
@@ -16,7 +17,7 @@ return {
       },
       shape = "circle",
       size = Vector(16, 16),
-      tags = {"physical", "visual"},
+      tags = {"interactable", "physical", "visual"},
       tier = "basic",
    },
 }

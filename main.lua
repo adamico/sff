@@ -15,6 +15,7 @@ Evolved.debug_mode(true)
 
 local process = Evolved.process
 local evolvedConfig = require("src.evolved.evolved_config")
+local observe = Beholder.observe
 
 require("src.evolved.fragments")
 FRAGMENTS = evolvedConfig.FRAGMENTS
@@ -35,6 +36,10 @@ function love.load()
       theme = "metal"
    })
    process(STAGES.OnSetup)
+
+   observe(Events.CREATURE_INTERACTED, function(entityId, action)
+      print("Creature interacted: "..entityId..", action: "..action)
+   end)
 end
 
 function love.update(dt)

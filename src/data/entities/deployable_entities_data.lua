@@ -21,6 +21,7 @@ return {
             {itemId = "bone", quantity = 1},
          }
       }),
+      interaction = {type = "machine"},
       machineClass = "Assembler",
       mana = {
          current = 100,
@@ -66,6 +67,7 @@ return {
             {itemId = "unlifeEssence", quantity = 15}
          }
       }),
+      interaction = {type = "storage"},
       name = "Creative Chest",
       shape = "rectangle",
       size = Vector(32, 32),

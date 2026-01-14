@@ -24,7 +24,7 @@
 - [x] Start Ritual button in machine UI
 - [x] Deploy assembled creatures using EntityRegistry
 - [x] Placement system with ghost preview
-- [ ] Collision detection for placement (red/green)
+- [x] Collision detection for placement (red/green)
 - [x] Toolbar item click → spawn entity
 - [ ] Harvest interaction (click skeleton → harvest)
 - [ ] Harvest timer and mana yield
@@ -76,3 +76,4 @@
 - Initial recipe assignment is hardcoded in assembler behavior
 - Machine screens need non-slot widgets (buttons, dropdowns)
 - Consider more complex machine visuals like Minecraft mod UIs
+- <https://github.com/BlackMATov/evolved.lua/tree/main?tab=readme-ov-file#singletons>

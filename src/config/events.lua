@@ -9,6 +9,7 @@ local Events = {
    INPUT_INVENTORY_CLOSED = "input:inventory_closed",
    INPUT_INVENTORY_CLICKED = "input:inventory_clicked",
    MACHINE_INTERACTED = "machine:interacted",
+   CREATURE_INTERACTED = "creature:interacted",
    PLACEMENT_MODE_ENTERED = "placement_mode:entered",
    PLACEMENT_MODE_EXITED = "placement_mode:exited",
    RITUAL_STARTED = "ritual:started",

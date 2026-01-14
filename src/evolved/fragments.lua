@@ -119,6 +119,10 @@ evolvedConfig.FRAGMENTS = {
       })
       :duplicate(deepClone)
       :build(),
+   Interaction = builder()
+      :name("FRAGMENTS.Interaction")
+      :duplicate(deepClone)
+      :build(),
 }
 
 local FRAGMENTS = evolvedConfig.FRAGMENTS

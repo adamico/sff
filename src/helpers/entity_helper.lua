@@ -27,42 +27,51 @@ function EntityHelper.getEntityCenter(entityId)
    return Vector(x, y)
 end
 
---- Check if point is inside circle
+--- Check if point is inside circle hitbox
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId number Circle with position and radius (Vector)
+--- @param entityId number Entity with position and hitbox
 --- @return boolean True if point is inside circle, false otherwise
 local function pointIsInsideCircle(x, y, entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
-   local size = Evolved.get(entityId, FRAGMENTS.Size)
-   local dx, dy = x - position.x, y - position.y
+   local hitbox = Evolved.get(entityId, FRAGMENTS.Hitbox)
+   -- Apply hitbox offset to get center
+   local centerX = position.x + (hitbox.offsetX or 0)
+   local centerY = position.y + (hitbox.offsetY or 0)
+   local dx, dy = x - centerX, y - centerY
    local distSquared = dx * dx + dy * dy
-   return distSquared <= size.x ^ 2
+   local radius = hitbox.radius or 8
+   return distSquared <= radius * radius
 end
 
---- Check if point is inside rectangle
+--- Check if point is inside rectangle hitbox
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId number Rectangle with position and size (Vector)
+--- @param entityId number Entity with position and hitbox
 --- @return boolean True if point is inside rectangle, false otherwise
 local function pointIsInsideRectangle(x, y, entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
-   local size = Evolved.get(entityId, FRAGMENTS.Size)
-   local left, top = position.x, position.y
-   local right, bottom = left + size.x, top + size.y
+   local hitbox = Evolved.get(entityId, FRAGMENTS.Hitbox)
+   -- Apply hitbox offset
+   local left = position.x + (hitbox.offsetX or 0) - (hitbox.width or 16) / 2
+   local top = position.y + (hitbox.offsetY or 0) - (hitbox.height or 16) / 2
+   local right = left + (hitbox.width or 16)
+   local bottom = top + (hitbox.height or 16)
    return x >= left and x <= right and y >= top and y <= bottom
 end
 
---- Check if point is inside entity
+--- Check if point is inside entity hitbox
 --- @param x number X coordinate of point
 --- @param y number Y coordinate of point
---- @param entityId number Entity with position and shape (Vector)
+--- @param entityId number Entity with position and hitbox
 --- @return boolean True if point is inside entity, false otherwise
 function EntityHelper.pointIsInsideEntity(x, y, entityId)
-   local shape = Evolved.get(entityId, FRAGMENTS.Shape)
-   if shape == "circle" then
+   local hitbox = Evolved.get(entityId, FRAGMENTS.Hitbox)
+   if not hitbox then return false end
+
+   if hitbox.shape == "circle" then
       return pointIsInsideCircle(x, y, entityId)
-   elseif shape == "rectangle" then
+   elseif hitbox.shape == "rectangle" then
       return pointIsInsideRectangle(x, y, entityId)
    end
    return false
