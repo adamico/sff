@@ -19,6 +19,7 @@ Bindings.actions = {
    TOOLBAR_USE_7    = "toolbar_use_7",
    TOOLBAR_USE_8    = "toolbar_use_8",
    TOOLBAR_USE_9    = "toolbar_use_9",
+   TOGGLE_HITBOXES  = "toggle_hitboxes",
 }
 
 Bindings.actionsToKeys = {
@@ -41,6 +42,7 @@ Bindings.actionsToKeys = {
    toolbar_use_7    = {type = "key", scancode = "7"},
    toolbar_use_8    = {type = "key", scancode = "8"},
    toolbar_use_9    = {type = "key", scancode = "9"},
+   toggle_hitboxes  = {type = "key", scancode = "f3"},
 }
 
 return Bindings

@@ -3,13 +3,19 @@ local builder = Evolved.builder
 local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 
 builder()
-   :name("SYSTEMS.RenderEntities")
+   :name("SYSTEMS.RenderHitboxes")
    :group(STAGES.OnRender)
    :include(TAGS.Visual)
+   :prologue(function()
+      -- Skip hitbox rendering if disabled
+      if not UNIFORMS.getShowHitboxes() then
+         return true -- return true to skip system execution
+      end
+   end)
    :execute(function(chunk, entityIds, entityCount)
       local positions, sizes = chunk:components(FRAGMENTS.Position, FRAGMENTS.Size)
-      local visuals = chunk:components(FRAGMENTS.Shape)
-      local colors = chunk:components(FRAGMENTS.Color)
+      local hitboxShapes = chunk:components(FRAGMENTS.Shape)
+      local hitboxColors = chunk:components(FRAGMENTS.Color)
       local names = chunk:components(Evolved.NAME)
 
       for i = 1, entityCount do
@@ -17,11 +23,11 @@ builder()
          local name = names[i]
          local label = string.format("%s%d", name, id)
 
-         EntityDrawHelper.drawShape(
-            visuals[i],
+         EntityDrawHelper.drawHitbox(
+            hitboxShapes[i],
             positions[i],
             sizes[i],
-            colors[i],
+            hitboxColors[i],
             label
          )
       end

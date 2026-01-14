@@ -58,7 +58,7 @@ function EntityPlacementManager:draw()
       )
    end
 
-   EntityDrawHelper.drawShape(shape, drawPos, size, color)
+   EntityDrawHelper.drawHitbox(shape, drawPos, size, color)
 
    love.graphics.setColor(1, 1, 1, 1)
 end

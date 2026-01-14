@@ -81,6 +81,11 @@ local function actionDetection(playerInventory, playerToolbar)
          trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
       end
    end
+
+   -- Debug: Toggle hitbox visibility
+   if actionDetector:pressed(A.TOGGLE_HITBOXES) then
+      UNIFORMS.toggleHitboxes()
+   end
 end
 
 builder()
