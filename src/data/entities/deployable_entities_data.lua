@@ -6,6 +6,13 @@ local Recipes = require("src.data.recipes_data")
 return {
    skeletonAssembler = {
       color = Colors.PURPLE,
+      hitbox = {
+         shape = "rectangle",
+         offsetX = 0,
+         offsetY = 0,
+         width = 64,
+         height = 64,
+      },
       inputQueue = InputQueue.new(),
       inventory = Inventory.new({
          maxInputSlots = 2,
@@ -45,6 +52,13 @@ return {
    },
    creativeChest = {
       color = Colors.GOLD,
+      hitbox = {
+         shape = "rectangle",
+         offsetX = 0,
+         offsetY = 0,
+         width = 32,
+         height = 32,
+      },
       inventory = Inventory.new({
          maxSlots = 32,
          initialItems = {

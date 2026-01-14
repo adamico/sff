@@ -109,6 +109,16 @@ evolvedConfig.FRAGMENTS = {
       :default(Vector(0, 0))
       :duplicate(duplicateVector)
       :build(),
+   Hitbox = builder()
+      :name("FRAGMENTS.Hitbox")
+      :default({
+         shape = "circle",
+         offsetX = 0,
+         offsetY = 0,
+         radius = 8,
+      })
+      :duplicate(deepClone)
+      :build(),
 }
 
 local FRAGMENTS = evolvedConfig.FRAGMENTS
@@ -138,7 +148,8 @@ evolvedConfig.TAGS = {
       :require(
          FRAGMENTS.Position,
          FRAGMENTS.Velocity,
-         FRAGMENTS.Size
+         FRAGMENTS.Size,
+         FRAGMENTS.Hitbox
       )
       :build(),
    Visual = builder()

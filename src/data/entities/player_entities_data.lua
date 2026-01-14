@@ -3,6 +3,12 @@ local Inventory = require("src.evolved.fragments.inventory")
 return {
    player = {
       color = Colors.BLUE,
+      hitbox = {
+         shape = "circle",
+         offsetX = 0,
+         offsetY = 0,
+         radius = 8,
+      },
       interactionRange = 128,
       inventory = Inventory.new({
          maxSlots = 40,

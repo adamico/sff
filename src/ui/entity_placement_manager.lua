@@ -1,9 +1,12 @@
 local EntityRegistry = require("src.registries.entity_registry")
 local EntityDrawHelper = require("src.helpers.entity_draw_helper")
+local CollisionHelper = require("src.helpers.collision_helper")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
 local get = Evolved.get
+local execute = Evolved.execute
+local builder = Evolved.builder
 
 local VALID_GHOST_COLOR = {0, 1, 0, 0.5}
 local INVALID_GHOST_COLOR = {1, 0, 0, 0.5}
@@ -15,6 +18,12 @@ local EntityPlacementManager = {
    ghostPosition = nil,
    isValidPlacement = true,
 }
+
+-- Query for all physical entities (same as collision system)
+local physicalQuery = builder()
+   :name("QUERIES.PlacementPhysical")
+   :include(TAGS.Physical)
+   :build()
 
 observe(Events.PLACEMENT_MODE_ENTERED, function(item, slotIndex)
    EntityPlacementManager.isPlacing = true
@@ -31,34 +40,78 @@ observe(Events.INPUT_INVENTORY_OPENED, function()
    end
 end)
 
+--- Build ghost hitbox bounds at current position
+--- @param self table EntityPlacementManager
+--- @return table|nil bounds World-space hitbox bounds or nil
+local function getGhostBounds(self)
+   if not self.item or not self.item.spawnsEntity then return nil end
+
+   local entityData = EntityRegistry.getEntity(self.item.spawnsEntity)
+   if not entityData then return nil end
+
+   local hitbox = entityData.hitbox or {shape = "circle", offsetX = 0, offsetY = 0, radius = 16}
+
+   if hitbox.shape == "circle" then
+      return {
+         shape = "circle",
+         x = self.ghostPosition.x + hitbox.offsetX,
+         y = self.ghostPosition.y + hitbox.offsetY,
+         radius = hitbox.radius,
+      }
+   else
+      return {
+         shape = "rectangle",
+         x = self.ghostPosition.x + hitbox.offsetX,
+         y = self.ghostPosition.y + hitbox.offsetY,
+         width = hitbox.width,
+         height = hitbox.height,
+      }
+   end
+end
+
+--- Check if ghost bounds collide with any existing entity
+--- @param ghostBounds table World-space hitbox bounds
+--- @return boolean true if collision found (invalid placement)
+local function checkCollisionWithExisting(ghostBounds)
+   for chunk, entityIds, entityCount in execute(physicalQuery) do
+      local positions, hitboxes = chunk:components(FRAGMENTS.Position, FRAGMENTS.Hitbox)
+
+      for i = 1, entityCount do
+         local entityBounds = CollisionHelper.getHitboxBounds(positions[i], hitboxes[i])
+
+         if CollisionHelper.areColliding(ghostBounds, entityBounds) then
+            return true -- Collision found
+         end
+      end
+   end
+
+   return false -- No collision
+end
+
 function EntityPlacementManager:update(dt)
    if not self.isPlacing then return end
 
    local mx, my = love.mouse.getPosition()
    self.ghostPosition = Vector(mx, my)
+
+   -- Check for collisions with existing entities
+   local ghostBounds = getGhostBounds(self)
+   if ghostBounds then
+      self.isValidPlacement = not checkCollisionWithExisting(ghostBounds)
+   else
+      self.isValidPlacement = false
+   end
 end
 
 function EntityPlacementManager:draw()
    if not self.isPlacing or not self.ghostPosition then return end
 
-   local entityData = EntityRegistry.getEntity(self.item.spawnsEntity)
-   if not entityData then return end
+   local ghostBounds = getGhostBounds(self)
+   if not ghostBounds then return end
 
-   local size = entityData.size or Vector(32, 32)
-   local shape = entityData.shape or "rectangle"
    local color = self.isValidPlacement and VALID_GHOST_COLOR or INVALID_GHOST_COLOR
 
-   -- Convert mouse position (center) to draw position:
-   -- Rectangles use top-left origin, circles use center
-   local drawPos = self.ghostPosition
-   if shape ~= "circle" then
-      drawPos = Vector(
-         self.ghostPosition.x - size.x / 2,
-         self.ghostPosition.y - size.y / 2
-      )
-   end
-
-   EntityDrawHelper.drawHitbox(shape, drawPos, size, color)
+   EntityDrawHelper.drawHitbox(ghostBounds, color)
 
    love.graphics.setColor(1, 1, 1, 1)
 end
