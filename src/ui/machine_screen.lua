@@ -139,8 +139,8 @@ function MachineScreen:createSlots()
    })
 
    local definedSlots = {
-      {type = "input",  slots = inventory.input_slots},
-      {type = "output", slots = inventory.output_slots}
+      {type = "input",  slots = inventory.inputSlots},
+      {type = "output", slots = inventory.outputSlots}
    }
 
    for _, typeSlotPair in ipairs(definedSlots) do
@@ -159,7 +159,7 @@ function MachineScreen:createSlots()
             backgroundColor = BACKGROUND_COLOR,
             border = self.borderWidth,
             borderColor = BORDER_COLOR,
-            text = slot.item_id and string.sub(slot.item_id, 1, 1) or "",
+            text = slot.itemId and string.sub(slot.itemId, 1, 1) or "",
             textColor = TEXT_COLOR,
             textSize = HEADER_TEXT_SIZE,
             textAlign = "center",
@@ -226,8 +226,8 @@ function MachineScreen:createProgressBar()
    local processingTimer = get(self.entityId, FRAGMENTS.ProcessingTimer)
    local recipe = get(self.entityId, FRAGMENTS.CurrentRecipe)
 
-   if not processingTimer or not recipe or not recipe.processing_time then return end
-   if recipe.processing_time <= 0 then return end
+   if not processingTimer or not recipe or not recipe.processingTime then return end
+   if recipe.processingTime <= 0 then return end
 
    self.progressBarContainer = Flexlove.new({
       backgroundColor = PROGRESS_BACKGROUND_COLOR,
@@ -248,7 +248,7 @@ function MachineScreen:createProgressBar()
 end
 
 function MachineScreen:setProgressBarFill(recipe, processingTimer)
-   local fillRatio = (recipe.processing_time - processingTimer.current) / recipe.processing_time
+   local fillRatio = (recipe.processingTime - processingTimer.current) / recipe.processingTime
    self.progressBarFill.width = self.progressBarContainer.width * fillRatio
    self.progressBarFill._borderBoxWidth = nil
 end
@@ -340,8 +340,8 @@ function MachineScreen:updateStartButton()
    if not self.startButton or not self.entityId then return end
 
    local state = self:getCurrentState()
-   -- Disable button when machine is working or in no_mana state
-   local shouldDisable = state == "working" or state == "no_mana" or state == "blocked"
+   -- Disable button when machine is working or in noMana state
+   local shouldDisable = state == "working" or state == "noMana" or state == "blocked"
    self.startButton.disabled = shouldDisable
 end
 
@@ -358,7 +358,7 @@ function MachineScreen:updateSlots()
          local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
 
          if slot then
-            local itemText = slot.item_id and string.sub(slot.item_id, 1, 1) or ""
+            local itemText = slot.itemId and string.sub(slot.itemId, 1, 1) or ""
             element:setText(itemText)
 
             -- Clear existing quantity labels
@@ -398,8 +398,8 @@ function MachineScreen:updateProgressBar()
    local processingTimer = get(self.entityId, FRAGMENTS.ProcessingTimer)
    local recipe = get(self.entityId, FRAGMENTS.CurrentRecipe)
 
-   if not processingTimer or not recipe or not recipe.processing_time then return end
-   if recipe.processing_time <= 0 then return end
+   if not processingTimer or not recipe or not recipe.processingTime then return end
+   if recipe.processingTime <= 0 then return end
 
    self:setProgressBarFill(recipe, processingTimer)
 end
@@ -438,7 +438,7 @@ function MachineScreen:getSlotUnderMouse(mouseX, mouseY)
       if slotIndex and slotType then
          local inventory = self:getInventory()
          if inventory then
-            local slots = inventory[slotType.."_slots"]
+            local slots = inventory[slotType.."Slots"]
             if slots and slots[slotIndex] then
                return {
                   screen = self,

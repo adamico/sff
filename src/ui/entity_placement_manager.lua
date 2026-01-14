@@ -41,7 +41,7 @@ end
 function EntityPlacementManager:draw()
    if not self.isPlacing or not self.ghostPosition then return end
 
-   local entityData = EntityRegistry.getEntity(self.item.spawns_entity)
+   local entityData = EntityRegistry.getEntity(self.item.spawnsEntity)
    if not entityData then return end
 
    local size = entityData.size or Vector(32, 32)
@@ -78,8 +78,8 @@ end
 function EntityPlacementManager:deployEntity()
    if not self.isPlacing or not self.isValidPlacement then return false end
 
-   if not self.item or not self.item.spawns_entity then
-      Log.warn("EntityPlacementManager: No spawns_entity defined for item")
+   if not self.item or not self.item.spawnsEntity then
+      Log.warn("EntityPlacementManager: No spawnsEntity defined for item")
       return false
    end
 
@@ -87,11 +87,11 @@ function EntityPlacementManager:deployEntity()
    if not toolbar or not toolbar.slots then return false end
 
    local slot = toolbar.slots[self.sourceSlotIndex]
-   if not slot or not slot.item_id or slot.quantity <= 0 then return false end
+   if not slot or not slot.itemId or slot.quantity <= 0 then return false end
 
    -- Request entity spawn via event (spawner_system handles creation)
    trigger(Events.ENTITY_SPAWN_REQUESTED, {
-      entityId = self.item.spawns_entity,
+      entityId = self.item.spawnsEntity,
       position = self.ghostPosition,
       sourceSlotIndex = self.sourceSlotIndex,
    })
@@ -99,7 +99,7 @@ function EntityPlacementManager:deployEntity()
    -- Consume 1 item from toolbar slot
    slot.quantity = slot.quantity - 1
    if slot.quantity <= 0 then
-      slot.item_id = nil
+      slot.itemId = nil
       slot.quantity = 0
       -- Exit placement mode if no more items
       self:cancelPlacement()

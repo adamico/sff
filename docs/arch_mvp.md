@@ -94,7 +94,7 @@ src/
                                 ▼                   │
                              [READY]                │
                                 │                   │
-                          start_ritual              │
+                          startRitual              │
                                 │                   │
                                 ▼                   │
      [NO_MANA] ◄───starve─── [WORKING] ───block───► [BLOCKED]

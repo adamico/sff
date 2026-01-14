@@ -63,7 +63,7 @@ If not holding: pickItemFromSlot()
 
 ```lua
 {
-   item_id = "stone",
+   itemId = "stone",
    quantity = 5,
    source_inventory = InventoryComponent,
    source_slot = 3,

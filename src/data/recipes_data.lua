@@ -9,8 +9,8 @@ return {
       outputs = {
          skeleton = 1,
       },
-      mana_per_tick = 2,
-      processing_time = 5,
-      requires_ritual = true,
+      manaPerTick = 2,
+      processingTime = 5,
+      requiresRitual = true,
    },
 }

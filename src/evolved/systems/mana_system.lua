@@ -10,7 +10,7 @@ builder()
 
       for i = 1, entityCount do
          local mana = manas[i]
-         local regenRate = mana.regen_rate or 0
+         local regenRate = mana.regenRate or 0
 
          if regenRate > 0 and mana.current < mana.max then
             mana.current = math.min(mana.current + regenRate * dt, mana.max)

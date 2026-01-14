@@ -33,9 +33,9 @@ function InventoryView:initialize(inventory, options)
    self.y = math.floor(options.y or 0)
    self.columns = options.columns or COLUMNS
    self.rows = options.rows or ROWS
-   self.slot_size = options.slot_size or SLOT_SIZE
+   self.slotSize = options.slotSize or SLOT_SIZE
    self.padding = options.padding or PADDING
-   self.border_width = BORDER_WIDTH
+   self.borderWidth = BORDER_WIDTH
    self.entityId = options.entityId or nil
 
    -- FlexLove elements
@@ -57,7 +57,7 @@ function InventoryView:buildUI()
       width = width,
       height = height,
       backgroundColor = BACKGROUND_COLOR,
-      border = self.border_width,
+      border = self.borderWidth,
       borderColor = BORDER_COLOR,
       padding = {
          top = self.padding,
@@ -69,7 +69,7 @@ function InventoryView:buildUI()
       userdata = {view = self}
    })
 
-   local slotsWidth = self.columns * self.slot_size
+   local slotsWidth = self.columns * self.slotSize
    self.slotsContainer = Flexlove.new({
       id = self.id.."_slots_container",
       width = slotsWidth,
@@ -90,12 +90,12 @@ function InventoryView:createSlots()
       local slot = slots[slotIndex]
       local slotElement = Flexlove.new({
          id = self.id.."_slot_"..slotIndex,
-         width = self.slot_size,
-         height = self.slot_size,
+         width = self.slotSize,
+         height = self.slotSize,
          backgroundColor = BACKGROUND_COLOR,
-         border = self.border_width,
+         border = self.borderWidth,
          borderColor = BORDER_COLOR,
-         text = slot.item_id and string.sub(slot.item_id, 1, 1) or "",
+         text = slot.itemId and string.sub(slot.itemId, 1, 1) or "",
          textColor = TEXT_COLOR,
          textSize = HEADER_SIZE,
          textAlign = "center",
@@ -136,7 +136,7 @@ function InventoryView:updateSlots()
 
       if slots and slots[slotIndex] then
          local slot = slots[slotIndex]
-         local itemText = slot.item_id and string.sub(slot.item_id, 1, 1) or ""
+         local itemText = slot.itemId and string.sub(slot.itemId, 1, 1) or ""
          element:setText(itemText)
 
          -- Clear existing quantity labels
@@ -160,20 +160,20 @@ function InventoryView:updateSlots()
 end
 
 function InventoryView:calculateBoxDimensions()
-   return self.columns * self.slot_size + self.padding * 2, self.rows * self.slot_size + self.padding * 2
+   return self.columns * self.slotSize + self.padding * 2, self.rows * self.slotSize + self.padding * 2
 end
 
-function InventoryView:getSlotPosition(slot_index)
-   local col = (slot_index - 1) % self.columns
-   local row = math.floor((slot_index - 1) / self.columns)
-   local x = math.floor(self.x + self.padding + col * self.slot_size)
-   local y = math.floor(self.y + self.padding + row * self.slot_size)
+function InventoryView:getSlotPosition(slotIndex)
+   local col = (slotIndex - 1) % self.columns
+   local row = math.floor((slotIndex - 1) / self.columns)
+   local x = math.floor(self.x + self.padding + col * self.slotSize)
+   local y = math.floor(self.y + self.padding + row * self.slotSize)
    return x, y
 end
 
-function InventoryView:isPointInSlot(mx, my, slot_x, slot_y)
-   return mx >= slot_x and mx <= slot_x + self.slot_size
-      and my >= slot_y and my <= slot_y + self.slot_size
+function InventoryView:isPointInSlot(mx, my, slotX, slotY)
+   return mx >= slotX and mx <= slotX + self.slotSize
+      and my >= slotY and my <= slotY + self.slotSize
 end
 
 function InventoryView:getSlotUnderMouse(mx, my)

@@ -13,13 +13,13 @@ local QUANTITY_OFFSET_X = 18
 local QUANTITY_OFFSET_Y = 18
 
 --- @class HeldStackView
---- @field stack table The held stack data {item_id, quantity}
+--- @field stack table The held stack data {itemId, quantity}
 --- @field x number Current x position
 --- @field y number Current y position
 --- @field font love.Font Font for item letter
 --- @field smallFont love.Font Font for quantity
 
---- @param stack table The held stack {item_id, quantity}
+--- @param stack table The held stack {itemId, quantity}
 function HeldStackView:initialize(stack)
    self.stack = stack
    self.x = 0
@@ -74,8 +74,8 @@ function HeldStackView:draw()
    love.graphics.setLineWidth(1)
 
    -- Draw item letter (centered)
-   if self.stack.item_id then
-      local itemText = string.sub(self.stack.item_id, 1, 1)
+   if self.stack.itemId then
+      local itemText = string.sub(self.stack.itemId, 1, 1)
       love.graphics.setFont(self.font)
       love.graphics.setColor(TEXT_COLOR)
 
@@ -93,8 +93,6 @@ function HeldStackView:draw()
       love.graphics.setFont(self.smallFont)
       love.graphics.setColor(TEXT_COLOR)
 
-      local textWidth = self.smallFont:getWidth(quantityText)
-      local textHeight = self.smallFont:getHeight()
       local quantityX = x + QUANTITY_OFFSET_X
       local quantityY = y + QUANTITY_OFFSET_Y
 

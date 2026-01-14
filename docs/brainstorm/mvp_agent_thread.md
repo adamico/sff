@@ -104,21 +104,21 @@ Here's a refined data architecture for your minimum viable prototype:
   <id>bone</id>
   <name>Bone</name>
   <category>structural</category>
-  <synthesis_cost>5</synthesis_cost> <!-- mana cost to create from nothing -->
+  <synthesisCost>5</synthesisCost> <!-- mana cost to create from nothing -->
 </material>
 
 <material>
   <id>flesh</id>
   <name>Flesh</name>
   <category>organic</category>
-  <synthesis_cost>8</synthesis_cost>
+  <synthesisCost>8</synthesisCost>
 </material>
 
 <material>
   <id>essence</id>
   <name>Unlife Essence</name>
   <category>catalyst</category>
-  <synthesis_cost>12</synthesis_cost>
+  <synthesisCost>12</synthesisCost>
 </material>
 
 <!-- RECIPES -->
@@ -130,7 +130,7 @@ Here's a refined data architecture for your minimum viable prototype:
     <input material="essence" quantity="1"/>
   </inputs>
   <output creature="skeleton" quantity="1"/>
-  <processing_time>3</processing_time> <!-- seconds or ticks -->
+  <processingTime>3</processingTime> <!-- seconds or ticks -->
   <mana_cost>10</mana_cost>
 </recipe>
 
@@ -152,7 +152,7 @@ Here's a refined data architecture for your minimum viable prototype:
   <id>assembly_station</id>
   <name>Assembly Station</name>
   <processes_recipe>skeleton_assembly</processes_recipe>
-  <mana_per_tick>1</mana_per_tick> <!-- operating cost -->
+  <manaPerTick>1</manaPerTick> <!-- operating cost -->
   <build_cost>
     <cost material="bone" quantity="5"/>
     <cost mana="50"/>
@@ -172,7 +172,7 @@ Here's a refined data architecture for your minimum viable prototype:
 
 - `inputs` array supports multiple materials at different quantities
 - `output` specifies what's created
-- `processing_time` enables time-based gameplay
+- `processingTime` enables time-based gameplay
 - `mana_cost` is separate from material costs (ritual energy vs resources)
 
 **Creature Data:**

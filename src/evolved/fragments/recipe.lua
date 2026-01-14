@@ -8,9 +8,9 @@ function Recipe.new(name)
       category = data.category or "Empty category",
       inputs = data.inputs or {},
       outputs = data.outputs or {},
-      mana_per_tick = data.mana_per_tick or 0,
-      processing_time = data.processing_time or 5,
-      requires_ritual = data.requires_ritual or true,
+      manaPerTick = data.manaPerTick or 0,
+      processingTime = data.processingTime or 5,
+      requiresRitual = data.requiresRitual or true,
    }
 
    return recipe

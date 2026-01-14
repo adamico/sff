@@ -16,10 +16,10 @@ The inventory system supports two slot patterns:
 ```lua
 {
    slots = {
-      [1] = {item_id = "wood", quantity = 5},
+      [1] = {itemId = "wood", quantity = 5},
       [2] = {},  -- empty
    },
-   max_slots = 20
+   maxSlots = 20
 }
 ```
 
@@ -28,13 +28,13 @@ The inventory system supports two slot patterns:
 ```lua
 {
    input_slots = {
-      [1] = {item_id = "bone", quantity = 2},
+      [1] = {itemId = "bone", quantity = 2},
    },
    output_slots = {
-      [1] = {item_id = "skeleton", quantity = 1},
+      [1] = {itemId = "skeleton", quantity = 1},
    },
    max_input_slots = 2,
-   max_output_slots = 1
+   maxOutputSlots = 1
 }
 ```
 
@@ -54,7 +54,7 @@ Returns slot array based on type:
 
 Returns single slot from appropriate array.
 
-### `getMaxStackQuantity(item_id)`
+### `getMaxStackQuantity(itemId)`
 
 Returns max stack size for an item.
 
@@ -64,12 +64,12 @@ Returns max stack size for an item.
 
 ```lua
 -- Simple
-Inventory.new({ max_slots = 20 })
+Inventory.new({ maxSlots = 20 })
 
 -- Typed (Machine)
 Inventory.new({
    max_input_slots = 2,
-   max_output_slots = 1,
+   maxOutputSlots = 1,
 })
 ```
 

@@ -3,10 +3,10 @@ local ItemRegistry = require("src.registries.item_registry")
 local InventoryHelper = {}
 
 --- Get the maximum stack size for an item
---- @param item_id string The item ID
+--- @param itemId string The item ID
 --- @return number The max stack size
-function InventoryHelper.getMaxStackQuantity(item_id)
-   return ItemRegistry.getMaxStackSize(item_id)
+function InventoryHelper.getMaxStackQuantity(itemId)
+   return ItemRegistry.getMaxStackSize(itemId)
 end
 
 --- Get slots from an inventory, handling both typed (input/output) and simple (slots) inventories
@@ -23,9 +23,9 @@ function InventoryHelper.getSlots(inventory, slotType)
 
    -- Handle typed slots for machines
    if slotType == "input" then
-      return inventory.input_slots
+      return inventory.inputSlots
    elseif slotType == "output" then
-      return inventory.output_slots
+      return inventory.outputSlots
    end
 
    return nil

@@ -3,9 +3,9 @@ local set = Evolved.set
 local get = Evolved.get
 local FPS = 60
 
-local evolved_config = {}
+local evolvedConfig = {}
 
-evolved_config.STAGES = {
+evolvedConfig.STAGES = {
    OnSetup = builder():name("STAGES.OnSetup"):build(),
    OnUpdate = builder():name("STAGES.OnUpdate"):build(),
    OnRender = builder():name("STAGES.OnRender"):build(),
@@ -20,7 +20,7 @@ local DeltaTime = builder()
 -- Initialize singleton values
 set(DeltaTime, DeltaTime, 1.0 / FPS)
 
-evolved_config.UNIFORMS = {
+evolvedConfig.UNIFORMS = {
    DeltaTime = DeltaTime,
 
    -- Getter for DeltaTime value
@@ -34,4 +34,4 @@ evolved_config.UNIFORMS = {
    end,
 }
 
-return evolved_config
+return evolvedConfig

@@ -38,7 +38,7 @@ src/
 {
    id = "bone",
    name = "Bone",
-   max_stack_size = 64,
+   maxStackSize = 64,
    deployable = false,
 }
 ```
@@ -47,9 +47,9 @@ src/
 
 | Method | Returns |
 |:-------|:--------|
-| `getItem(item_id)` | Full item data |
-| `getMaxStackSize(item_id)` | Stack limit (default 64) |
-| `exists(item_id)` | Boolean |
+| `getItem(itemId)` | Full item data |
+| `getMaxStackSize(itemId)` | Stack limit (default 64) |
+| `exists(itemId)` | Boolean |
 | `getAll()` | All items |
 
 ---

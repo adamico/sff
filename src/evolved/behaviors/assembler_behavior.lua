@@ -21,7 +21,7 @@
 local Recipe                        = require("src.evolved.fragments.recipe")
 local ItemRegistry                  = require("src.registries.item_registry")
 local InventoryHelper               = require("src.helpers.inventory_helper")
-local input_queue                   = require("src.evolved.fragments.input_queue")
+local inputQueue                    = require("src.evolved.fragments.input_queue")
 local get                           = Evolved.get
 local set                           = Evolved.set
 local observe                       = Beholder.observe
@@ -37,15 +37,15 @@ local MANA_RESUME_THRESHOLD_SECONDS = 1.0
 
 --- Count available ingredients in input slots
 --- @param inventory table The machine inventory
---- @return table ingredientCounts Map of item_id to quantity
+--- @return table ingredientCounts Map of itemId to quantity
 local function countIngredients(inventory)
    local counts = {}
    local slots = InventoryHelper.getSlots(inventory, "input")
    if not slots then return counts end
 
    for _, slot in ipairs(slots) do
-      if slot.item_id then
-         counts[slot.item_id] = (counts[slot.item_id] or 0) + (slot.quantity or 1)
+      if slot.itemId then
+         counts[slot.itemId] = (counts[slot.itemId] or 0) + (slot.quantity or 1)
       end
    end
    return counts
@@ -78,13 +78,13 @@ local function consumeIngredients(recipe, inventory)
       local remaining = amount
       local slots = InventoryHelper.getSlots(inventory, "input")
       for _, slot in ipairs(slots or {}) do
-         if slot.item_id == ingredient and remaining > 0 then
+         if slot.itemId == ingredient and remaining > 0 then
             local toRemove = math.min(remaining, slot.quantity or 0)
             slot.quantity = slot.quantity - toRemove
             remaining = remaining - toRemove
 
             if slot.quantity <= 0 then
-               slot.item_id = nil
+               slot.itemId = nil
                slot.quantity = nil
             end
          end
@@ -118,7 +118,7 @@ end
 local function consumeManaTick(recipe, mana, dt)
    if not recipe then return true end
 
-   local manaPerTick = recipe.mana_per_tick or 0
+   local manaPerTick = recipe.manaPerTick or 0
    if manaPerTick == 0 then return true end
 
    local manaCost = manaPerTick * dt
@@ -139,7 +139,7 @@ end
 local function hasEnoughManaForTick(recipe, mana)
    if not recipe then return true end
 
-   local manaPerTick = recipe.mana_per_tick or 0
+   local manaPerTick = recipe.manaPerTick or 0
    if manaPerTick == 0 then return true end
 
    local requiredMana = manaPerTick * MANA_RESUME_THRESHOLD_SECONDS
@@ -161,17 +161,17 @@ local function hasOutputSpace(recipe, inventory)
 
    -- Check for empty slots
    for _, slot in ipairs(slots) do
-      if not slot.item_id then
+      if not slot.itemId then
          return true
       end
    end
 
    -- Check if any existing slot can stack more
    if recipe and recipe.outputs then
-      for output_id, _ in pairs(recipe.outputs) do
-         local maxStack = ItemRegistry.getMaxStackSize(output_id)
+      for outputId, _ in pairs(recipe.outputs) do
+         local maxStack = ItemRegistry.getMaxStackSize(outputId)
          for _, slot in ipairs(slots) do
-            if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
+            if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
                return true
             end
          end
@@ -190,15 +190,15 @@ local function produceOutputs(recipe, inventory)
    local slots = InventoryHelper.getSlots(inventory, "output")
    if not slots or #slots == 0 then return true end
 
-   for output_id, amount in pairs(recipe.outputs) do
+   for outputId, amount in pairs(recipe.outputs) do
       local remaining = amount
-      local maxStack = ItemRegistry.getMaxStackSize(output_id)
+      local maxStack = ItemRegistry.getMaxStackSize(outputId)
 
       -- First, try to stack with existing slots
       for _, slot in ipairs(slots) do
          if remaining <= 0 then break end
 
-         if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
+         if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
             local canAdd = math.min(remaining, maxStack - (slot.quantity or 0))
             slot.quantity = (slot.quantity or 0) + canAdd
             remaining = remaining - canAdd
@@ -209,9 +209,9 @@ local function produceOutputs(recipe, inventory)
       for _, slot in ipairs(slots) do
          if remaining <= 0 then break end
 
-         if not slot.item_id then
+         if not slot.itemId then
             local toAdd = math.min(remaining, maxStack)
-            slot.item_id = output_id
+            slot.itemId = outputId
             slot.quantity = toAdd
             remaining = remaining - toAdd
          end
@@ -225,16 +225,16 @@ local function produceOutputs(recipe, inventory)
 
    -- Handle chance-based outputs
    if recipe.output_chances then
-      for output_id, chance in pairs(recipe.output_chances) do
+      for outputId, chance in pairs(recipe.output_chances) do
          if math.random() < chance then
-            local maxStack = ItemRegistry.getMaxStackSize(output_id)
+            local maxStack = ItemRegistry.getMaxStackSize(outputId)
 
             for _, slot in ipairs(slots) do
-               if slot.item_id == output_id and (slot.quantity or 0) < maxStack then
+               if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
                   slot.quantity = (slot.quantity or 0) + 1
                   break
-               elseif not slot.item_id then
-                  slot.item_id = output_id
+               elseif not slot.itemId then
+                  slot.itemId = outputId
                   slot.quantity = 1
                   break
                end
@@ -268,7 +268,7 @@ function Assembler.blank(context)
    -- Transition to idle once we have a valid recipe
    if isValidRecipe(context.recipe) then
       context.fsm:set_recipe()
-      set(context.machineId, FRAGMENTS.ProcessingTimer, {current = recipe.processing_time, saved = 0})
+      set(context.machineId, FRAGMENTS.ProcessingTimer, {current = recipe.processingTime, saved = 0})
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." -> idle")
       end
@@ -293,7 +293,7 @@ function Assembler.ready(context)
 
    -- Check if ingredients were removed
    if not hasRequiredIngredients(context.recipe, context.inventory) then
-      context.fsm:remove_ingredients()
+      context.fsm:removeIngredients()
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." ingredients removed -> idle")
       end
@@ -310,7 +310,7 @@ function Assembler.working(context)
 
    -- Initialize timer if not set
    if timer.current <= 0 then
-      timer.current = context.recipe.processing_time or 1
+      timer.current = context.recipe.processingTime or 1
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." initialized timer: "..timer.current.."s")
       end
@@ -336,7 +336,7 @@ function Assembler.working(context)
       timer.saved = timer.current
       context.fsm:starve()
       if DEBUG then
-         Log.warn("Assembler: "..context.machineName.." mana depleted -> no_mana")
+         Log.warn("Assembler: "..context.machineName.." mana depleted -> noMana")
       end
 
       return
@@ -392,7 +392,7 @@ end
 
 --- Handle NO_MANA state (mana depleted during processing)
 --- @param context table The update context
-function Assembler.no_mana(context)
+function Assembler.noMana(context)
    if not hasEnoughManaForTick(context.recipe, context.mana) then
       return
    end
@@ -417,7 +417,7 @@ end
 --- Each handler receives the context and returns true if the action was handled
 local ACTION_HANDLERS = {
    --- Start the ritual if FSM can transition
-   start_ritual = function(context)
+   startRitual = function(context)
       -- Validate preconditions
       if not isValidRecipe(context.recipe) then
          if DEBUG then
@@ -434,8 +434,8 @@ local ACTION_HANDLERS = {
       end
 
       -- Set processing timer and transition
-      context.processingTimer.current = context.recipe.processing_time or 1
-      context.fsm:start_ritual()
+      context.processingTimer.current = context.recipe.processingTime or 1
+      context.fsm:startRitual()
 
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." ritual started")
@@ -451,7 +451,7 @@ local ACTION_HANDLERS = {
 local function drainQueue(context)
    if not context.inputQueue then return end
 
-   input_queue.drain(context.inputQueue, function(action)
+   inputQueue.drain(context.inputQueue, function(action)
       local handler = ACTION_HANDLERS[action.type]
       if handler then
          handler(context)
@@ -490,10 +490,10 @@ end
 observe(Events.RITUAL_STARTED, function(payload)
    local queue = get(payload.entityId, FRAGMENTS.InputQueue)
    if queue then
-      input_queue.push(queue, {type = "start_ritual"})
+      inputQueue.push(queue, {type = "startRitual"})
    end
    if DEBUG then
-      Log.info("Assembler: "..payload.machineName.." enqueued start_ritual")
+      Log.info("Assembler: "..payload.machineName.." enqueued startRitual")
    end
 end)
 

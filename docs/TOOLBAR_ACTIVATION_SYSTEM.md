@@ -123,7 +123,7 @@ Once activated, the player enters **placement mode** until they deploy or cancel
 │       │                                                             │
 │       ├── Checks item.deployable flag                               │
 │       │                                                             │
-│       └── Triggers: PLACEMENT_MODE_ENTERED(item_id, slot_index)     │
+│       └── Triggers: PLACEMENT_MODE_ENTERED(itemId, slot_index)     │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
                                 │
@@ -166,7 +166,7 @@ Once activated, the player enters **placement mode** until they deploy or cancel
 │   Entity spawning (existing Evolved patterns)                       │
 │       │                                                             │
 │       ├── Look up entity definition from EntityRegistry             │
-│       │   (item_id → entity_type mapping)                           │
+│       │   (itemId → entity_type mapping)                           │
 │       │                                                             │
 │       ├── Spawn entity at position                                  │
 │       │                                                             │
@@ -206,18 +206,18 @@ Deployable items need to know which entity to spawn:
 skeleton_assembler = {
    name = "Skeleton Assembler",
    category = "building",
-   max_stack_size = 10,
+   maxStackSize = 10,
    deployable = true,
-   spawns_entity = "SkeletonAssembler",  -- ADD THIS
+   spawnsEntity = "SkeletonAssembler",  -- ADD THIS
 }
 
 -- src/data/items/creature_items_data.lua
 skeleton = {
    name = "Skeleton",
    category = "creature",
-   max_stack_size = 5,
+   maxStackSize = 5,
    deployable = true,
-   spawns_entity = "skeleton",  -- ADD THIS
+   spawnsEntity = "skeleton",  -- ADD THIS
 }
 ```
 
@@ -304,7 +304,7 @@ ENTITY_DEPLOYED = "entity:deployed",
 
 | Step | Task | Dependencies |
 |:----:|:-----|:-------------|
-| 1 | Add `spawns_entity` to item data | None |
+| 1 | Add `spawnsEntity` to item data | None |
 | 2 | Add events to `events.lua` | None |
 | 3 | Add keyboard bindings | None |
 | 4 | Create `ToolbarActivationManager` | Steps 1-3 |

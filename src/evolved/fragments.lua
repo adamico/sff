@@ -2,7 +2,7 @@ local InputQueue = require("src.evolved.fragments.input_queue")
 local Inventory = require("src.evolved.fragments.inventory")
 local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipe = require("src.evolved.fragments.recipe")
-local evolved_config = require("src.evolved.evolved_config")
+local evolvedConfig = require("src.evolved.evolved_config")
 local builder = Evolved.builder
 
 local function duplicateVector(vector)
@@ -28,7 +28,7 @@ local function deepClone(original)
    return copy
 end
 
-evolved_config.FRAGMENTS = {
+evolvedConfig.FRAGMENTS = {
    Color = builder()
       :name("FRAGMENTS.Color")
       :default(Colors.WHITE)
@@ -40,7 +40,7 @@ evolved_config.FRAGMENTS = {
       :build(),
    Mana = builder()
       :name("FRAGMENTS.Mana")
-      :default({current = 0, max = 100, regen_rate = 0})
+      :default({current = 0, max = 100, regenRate = 0})
       :duplicate(deepClone)
       :build(),
    MachineClass = builder()
@@ -111,9 +111,9 @@ evolved_config.FRAGMENTS = {
       :build(),
 }
 
-local FRAGMENTS = evolved_config.FRAGMENTS
+local FRAGMENTS = evolvedConfig.FRAGMENTS
 
-evolved_config.TAGS = {
+evolvedConfig.TAGS = {
    Controllable = builder()
       :name("TAGS.Controllable")
       :tag()

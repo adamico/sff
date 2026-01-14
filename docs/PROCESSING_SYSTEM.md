@@ -48,7 +48,7 @@ src/evolved/
 | MachineClass | Machine type (e.g., "Assembler") |
 | CurrentRecipe | Active recipe data |
 | StateMachine | FSM instance |
-| Mana | `{current, max, regen_rate}` |
+| Mana | `{current, max, regenRate}` |
 | ProcessingTimer | `{current, saved}` |
 | Inventory | Input/output slots |
 
@@ -63,7 +63,7 @@ src/evolved/
                                 ▼                   │
                              [READY]                │
                                 │                   │
-                          start_ritual              │
+                          startRitual              │
                                 ▼                   │
      [NO_MANA] ◄───starve─── [WORKING] ───block───► [BLOCKED]
          │                      │                       │
@@ -79,7 +79,7 @@ src/evolved/
 - `ready` - Has ingredients, awaiting start
 - `working` - Processing, consuming mana
 - `blocked` - Output full
-- `no_mana` - Depleted mid-cycle
+- `noMana` - Depleted mid-cycle
 
 ---
 
@@ -111,7 +111,7 @@ return Assembler
    fsm = table,
    recipe = table,
    inventory = table,
-   mana = {current, max, regen_rate},
+   mana = {current, max, regenRate},
    processingTimer = {current, saved},
    dt = number,
 }
@@ -126,9 +126,9 @@ return Assembler
    name = "Create Skeleton",
    inputs = { bone = 2, essence = 1 },
    outputs = { skeleton = 1 },
-   mana_per_tick = 2,
-   processing_time = 5,
-   requires_ritual = true,
+   manaPerTick = 2,
+   processingTime = 5,
+   requiresRitual = true,
 }
 ```
 

@@ -2,8 +2,8 @@ return {
    skeleton = {
       name = "Skeleton",
       category = "creature",
-      max_stack_size = 5,
+      maxStackSize = 5,
       deployable = true,
-      spawns_entity = "skeleton",
+      spawnsEntity = "skeleton",
    },
 }

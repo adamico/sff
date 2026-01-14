@@ -14,16 +14,16 @@ require("src.helpers.text_helper")
 Evolved.debug_mode(true)
 
 local process = Evolved.process
-local evolved_config = require("src.evolved.evolved_config")
+local evolvedConfig = require("src.evolved.evolved_config")
 
 require("src.evolved.fragments")
-FRAGMENTS = evolved_config.FRAGMENTS
-TAGS = evolved_config.TAGS
+FRAGMENTS = evolvedConfig.FRAGMENTS
+TAGS = evolvedConfig.TAGS
 require("src.evolved.entities")
-ENTITIES = evolved_config.ENTITIES
+ENTITIES = evolvedConfig.ENTITIES
 
-UNIFORMS = evolved_config.UNIFORMS
-STAGES = evolved_config.STAGES
+UNIFORMS = evolvedConfig.UNIFORMS
+STAGES = evolvedConfig.STAGES
 require("src.evolved.systems")
 
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()

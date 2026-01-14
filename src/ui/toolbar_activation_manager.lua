@@ -27,17 +27,17 @@ end
 
 observe(Events.TOOLBAR_SLOT_ACTIVATED, function(slotIndex)
    local slot = ToolbarActivationManager:getSlot(slotIndex)
-   if not slot or not slot.item_id then return end
+   if not slot or not slot.itemId then return end
 
-   local item = ItemRegistry.getItem(slot.item_id)
+   local item = ItemRegistry.getItem(slot.itemId)
    if not item then
-      Log.warn("Toolbar slot activated but item not found: "..slot.item_id)
+      Log.warn("Toolbar slot activated but item not found: "..slot.itemId)
       return
    end
 
    Log.debug("Toolbar slot activated: "..slotIndex)
    Log.debug("Item: "..item.name)
-   if item.deployable and item.spawns_entity then
+   if item.deployable and item.spawnsEntity then
       trigger(Events.PLACEMENT_MODE_ENTERED, item, slotIndex)
    end
 end)

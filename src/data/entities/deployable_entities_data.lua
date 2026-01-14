@@ -8,18 +8,18 @@ return {
       color = Colors.PURPLE,
       inputQueue = InputQueue.new(),
       inventory = Inventory.new({
-         max_input_slots = 2,
-         max_output_slots = 1,
-         initial_items = {
-            {item_id = "bone", quantity = 1},
+         maxInputSlots = 2,
+         maxOutputSlots = 1,
+         initialItems = {
+            {itemId = "bone", quantity = 1},
          }
       }),
       machineClass = "Assembler",
       mana = {
          current = 100,
          max = 100,
-         regen_rate = 0,
-         consume_rate = 1,
+         regenRate = 0,
+         consumeRate = 1,
       },
       name = "Skeleton Assembler",
       processingTimer = {current = 0, saved = 0, duration = 5},
@@ -27,17 +27,17 @@ return {
       size = Vector(64, 64),
       stateMachine = StateMachine.new({
          events = {
-            {name = "set_recipe",         from = "blank",   to = "idle"},
-            {name = "prepare",            from = "idle",    to = "ready"},
-            {name = "remove_ingredients", from = "ready",   to = "idle"},
-            {name = "start_ritual",       from = "ready",   to = "working"},
-            {name = "stop_ritual",        from = "working", to = "idle"},
-            {name = "complete",           from = "working", to = "idle"},
-            {name = "stop",               from = "working", to = "idle"},
-            {name = "block",              from = "working", to = "blocked"},
-            {name = "unblock",            from = "blocked", to = "idle"},
-            {name = "starve",             from = "working", to = "no_mana"},
-            {name = "refuel",             from = "no_mana", to = "working"},
+            {name = "set_recipe",        from = "blank",   to = "idle"},
+            {name = "prepare",           from = "idle",    to = "ready"},
+            {name = "removeIngredients", from = "ready",   to = "idle"},
+            {name = "startRitual",       from = "ready",   to = "working"},
+            {name = "stop_ritual",       from = "working", to = "idle"},
+            {name = "complete",          from = "working", to = "idle"},
+            {name = "stop",              from = "working", to = "idle"},
+            {name = "block",             from = "working", to = "blocked"},
+            {name = "unblock",           from = "blocked", to = "idle"},
+            {name = "starve",            from = "working", to = "noMana"},
+            {name = "refuel",            from = "noMana",  to = "working"},
          }
       }),
       tags = {"interactable", "physical", "processing", "visual"},
@@ -46,10 +46,10 @@ return {
    creativeChest = {
       color = Colors.GOLD,
       inventory = Inventory.new({
-         max_slots = 32,
-         initial_items = {
-            {item_id = "bone",          quantity = 63},
-            {item_id = "unlifeEssence", quantity = 15}
+         maxSlots = 32,
+         initialItems = {
+            {itemId = "bone",          quantity = 63},
+            {itemId = "unlifeEssence", quantity = 15}
          }
       }),
       name = "Creative Chest",
