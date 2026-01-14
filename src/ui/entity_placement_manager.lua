@@ -1,4 +1,5 @@
 local EntityRegistry = require("src.registries.entity_registry")
+local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
@@ -40,31 +41,25 @@ end
 function EntityPlacementManager:draw()
    if not self.isPlacing or not self.ghostPosition then return end
 
-   -- Get entity data to determine size
    local entityData = EntityRegistry.getEntity(self.item.spawns_entity)
-   if not entityData then
-      return
-   end
+   if not entityData then return end
 
    local size = entityData.size or Vector(32, 32)
-   local x = self.ghostPosition.x - size.x / 2
-   local y = self.ghostPosition.y - size.y / 2
+   local shape = entityData.shape or "rectangle"
+   local color = self.isValidPlacement and VALID_GHOST_COLOR or INVALID_GHOST_COLOR
 
-   -- Set ghost color (green for valid, red for invalid)
-   if self.isValidPlacement then
-      love.graphics.setColor(VALID_GHOST_COLOR)   -- Green, semi-transparent
-   else
-      love.graphics.setColor(INVALID_GHOST_COLOR) -- Red, semi-transparent
+   -- Convert mouse position (center) to draw position:
+   -- Rectangles use top-left origin, circles use center
+   local drawPos = self.ghostPosition
+   if shape ~= "circle" then
+      drawPos = Vector(
+         self.ghostPosition.x - size.x / 2,
+         self.ghostPosition.y - size.y / 2
+      )
    end
 
-   -- Draw ghost rectangle
-   if entityData.shape == "circle" then
-      love.graphics.circle("fill", self.ghostPosition.x, self.ghostPosition.y, size.x / 2)
-   else
-      love.graphics.rectangle("fill", x, y, size.x, size.y)
-   end
+   EntityDrawHelper.drawShape(shape, drawPos, size, color)
 
-   -- Reset color
    love.graphics.setColor(1, 1, 1, 1)
 end
 

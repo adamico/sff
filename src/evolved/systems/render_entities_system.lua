@@ -1,5 +1,6 @@
 local lg = love.graphics
 local builder = Evolved.builder
+local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 
 builder()
    :name("SYSTEMS.RenderEntities")
@@ -12,22 +13,16 @@ builder()
       local names = chunk:components(Evolved.NAME)
 
       for i = 1, entityCount do
-         local px, py = positions[i]:split()
-         local size = sizes[i]
-         local visual = visuals[i]
-         local color = colors[i]
          local id = entityIds[i]
          local name = names[i]
+         local label = string.format("%s%d", name, id)
 
-         lg.setColor(color)
-         local labelX, labelY = px, py
-         if visual == "circle" then
-            labelY = labelY - size.x
-            lg.circle("fill", px, py, size.x)
-         elseif visual == "rectangle" then
-            lg.rectangle("fill", px, py, size.x, size.y)
-         end
-         local entityInfo = string.format("%s%d", name, id)
-         lg.print(entityInfo, labelX, labelY - 16)
+         EntityDrawHelper.drawShape(
+            visuals[i],
+            positions[i],
+            sizes[i],
+            colors[i],
+            label
+         )
       end
    end):build()

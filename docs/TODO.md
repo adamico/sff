@@ -22,10 +22,10 @@
 ### Pending
 
 - [x] Start Ritual button in machine UI
-- [ ] Deploy assembled creatures using EntityRegistry
-- [ ] Placement system with ghost preview
+- [x] Deploy assembled creatures using EntityRegistry
+- [x] Placement system with ghost preview
 - [ ] Collision detection for placement (red/green)
-- [ ] Toolbar item click → spawn entity
+- [x] Toolbar item click → spawn entity
 - [ ] Harvest interaction (click skeleton → harvest)
 - [ ] Harvest timer and mana yield
 - [ ] Recycle interaction to return materials
@@ -59,7 +59,6 @@
 - [x] Simplified registries
 - [ ] Replace letter rendering with sprites
 - [ ] Registry validation on startup
-- [ ] Extract UI layout to config
 
 ---
 
