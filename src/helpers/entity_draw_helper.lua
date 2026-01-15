@@ -45,6 +45,7 @@ function EntityDrawHelper.drawHitbox(bounds, color, label)
    end
 
    -- Draw label
+   lg.setColor(1, 1, 1, 1)
    if label then
       lg.print(label, labelX, labelY - HITBOX_LABEL_OFFSET)
    end
