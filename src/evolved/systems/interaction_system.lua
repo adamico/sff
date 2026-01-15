@@ -13,6 +13,36 @@ local interactableQuery = builder()
    :include(TAGS.Interactable)
    :build()
 
+local harvestableQuery = builder()
+   :name("QUERIES.Harvestable")
+   :include(TAGS.Harvestable)
+   :build()
+
+local function tryHarvesterActivate(mouseX, mouseY)
+   local playerId = ENTITIES.Player
+   local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
+   local interactionRangeSquared = playerInteractionRange ^ 2
+
+   local closestEntityId = nil
+   local closestDistanceSquared = math.huge
+
+   for chunk, entityIds, entityCount in execute(harvestableQuery) do
+      for i = 1, entityCount do
+         local entityId = entityIds[i]
+         local playerEntityDistanceSquared = EntityHelper.getDistanceSquared(playerId, entityId)
+         if playerEntityDistanceSquared <= interactionRangeSquared
+            and playerEntityDistanceSquared < closestDistanceSquared then
+            closestEntityId = entityId
+            closestDistanceSquared = playerEntityDistanceSquared
+         end
+      end
+   end
+
+   if closestEntityId then
+      Log.debug("Harvester activated on:", get(closestEntityId, Evolved.NAME), "ID:", closestEntityId)
+   end
+end
+
 local function tryMouseInteract(mouseX, mouseY)
    local playerId = ENTITIES.Player
    local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
@@ -56,5 +86,13 @@ observe(Events.INPUT_INTERACTED, function(mouseX, mouseY)
    -- Don't process mouse interactions when inventory or machine screen is open
    if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
       tryMouseInteract(mouseX, mouseY)
+   end
+end)
+
+-- Register observer for harvester activation events
+observe(Events.HARVESTER_ACTIVATED, function(mouseX, mouseY)
+   -- Don't process harvester activations when inventory or machine screen is open
+   if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+      tryHarvesterActivate(mouseX, mouseY)
    end
 end)

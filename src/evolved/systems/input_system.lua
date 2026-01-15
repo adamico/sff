@@ -82,6 +82,10 @@ local function actionDetection(playerInventory, playerToolbar, playerEquipment)
       end
    end
 
+   if actionDetector:pressed(A.HARVESTER_USE) then
+      trigger(Events.HARVESTER_ACTIVATED, mx, my)
+   end
+
    -- Debug: Toggle hitbox visibility
    if actionDetector:pressed(A.TOGGLE_HITBOXES) then
       UNIFORMS.toggleHitboxes()

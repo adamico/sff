@@ -5,9 +5,8 @@ return {
       equipment = Inventory.new({
          maxSlots = 2,
          initialItems = {
-            {itemId = "harvesterBasic",     quantity = 1},
-            {itemId = "fearExtractorBasic", quantity = 1},
-            {itemId = "armorBasic",         quantity = 1},
+            {itemId = "harvesterBasic", quantity = 1},
+            {itemId = "armorBasic",     quantity = 1},
          },
       }),
       hitbox = {

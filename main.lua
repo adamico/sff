@@ -66,11 +66,6 @@ function love.load()
    })
 
    process(STAGES.OnSetup)
-
-   -- Event Observers
-   observe(Events.CREATURE_INTERACTED, function(entityId, action)
-      print("Creature interacted: "..entityId..", action: "..action)
-   end)
 end
 
 function love.update(dt)
