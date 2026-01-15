@@ -80,6 +80,12 @@ evolvedConfig.FRAGMENTS = {
       :duplicate(deepClone)
       :build(),
 
+   Equipment = builder()
+      :name("FRAGMENTS.Equipment")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
    -- =========================================================================
    -- Machine & Processing Components
    -- =========================================================================

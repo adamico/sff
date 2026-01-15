@@ -2,7 +2,7 @@
 local items = {}
 
 local categories = {
-   require("src.data.items.tool_items_data"),
+   require("src.data.items.equipment_items_data"),
    require("src.data.items.material_items_data"),
    require("src.data.items.creature_items_data"),
    require("src.data.items.deployable_items_data"),

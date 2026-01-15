@@ -29,7 +29,7 @@ function InventoryStateManager:close()
    for _, view in ipairs(self.views) do
       if view and view.destroy then
          -- Don't destroy toolbar - it's managed separately by render_ui_system
-         if view.id ~= "toolbar" then
+         if view.id ~= "toolbar" and view.id ~= "equipment" then
             view:destroy()
          end
       end

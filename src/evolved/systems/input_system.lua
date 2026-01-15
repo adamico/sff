@@ -49,12 +49,12 @@ local function getActionDetector()
    return actionDetector
 end
 
-local function actionDetection(playerInventory, playerToolbar)
+local function actionDetection(playerInventory, playerToolbar, playerEquipment)
    local mx, my = love.mouse.getX(), love.mouse.getY()
    actionDetector = getActionDetector()
 
    if actionDetector:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
-      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar)
+      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar, playerEquipment)
    end
 
    if actionDetector:pressed(A.CLOSE_INVENTORY) then
@@ -96,8 +96,9 @@ builder()
       movementDetection(chunk, entityCount)
       local playerInventories = chunk:components(FRAGMENTS.Inventory)
       local playerToolbars = chunk:components(FRAGMENTS.Toolbar)
+      local playerEquipments = chunk:components(FRAGMENTS.Equipment)
       for i = 1, entityCount do
-         actionDetection(playerInventories[i], playerToolbars[i])
+         actionDetection(playerInventories[i], playerToolbars[i], playerEquipments[i])
       end
    end):build()
 

@@ -39,6 +39,20 @@ local CENTERED_X = SCREEN_CENTER.x - INV_WIDTH / 2
 local TOOLBAR_Y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
 local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
 
+local function getEquipmentView(equipment)
+   if not equipment then return nil end
+   if not equipmentView then
+      equipmentView = InventoryView:new(equipment, {
+         id = "equipment",
+         columns = 2,
+         rows = 1,
+         x = 16,
+         y = TOOLBAR_Y
+      })
+   end
+   return equipmentView
+end
+
 local function getToolbarView(toolbar)
    if not toolbar then return nil end
    if not toolbarView then
@@ -68,19 +82,27 @@ local function getPlayerInventoryView(playerInventory)
    return playerInventoryView
 end
 
-local function openPlayerInventory(playerInventory, playerToolbar)
+local function openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
    if not playerInventory then return end
 
    local views = {
+      getPlayerInventoryView(playerInventory),
       getToolbarView(playerToolbar),
-      getPlayerInventoryView(playerInventory)
+      getEquipmentView(playerEquipment),
    }
 
    InventoryStateManager:open(views)
 end
 
-local function openTargetInventory(playerInventory, targetInventory, playerToolbar, entityId)
+local function openTargetInventory(entityId)
+   if not entityId then return end
+
+   local playerId = ENTITIES.Player
+   local playerInventory = get(playerId, FRAGMENTS.Inventory)
    if not playerInventory or not targetInventory then return end
+
+   local playerToolbar = get(playerId, FRAGMENTS.Toolbar)
+   local playerEquipment = get(playerId, FRAGMENTS.Equipment)
 
    -- Calculate target inventory dimensions based on actual slot count
    local slots = #targetInventory.slots
@@ -111,6 +133,7 @@ local function openTargetInventory(playerInventory, targetInventory, playerToolb
    local views = {
       getToolbarView(playerToolbar),
       getPlayerInventoryView(playerInventory),
+      getEquipmentView(playerEquipment),
       targetInventoryView,
    }
 
@@ -124,6 +147,7 @@ local function openMachineScreen(entityId)
    local playerId = ENTITIES.Player
    local playerInventory = get(playerId, FRAGMENTS.Inventory)
    local playerToolbar = get(playerId, FRAGMENTS.Toolbar)
+   local playerEquipment = get(playerId, FRAGMENTS.Equipment)
 
    -- Position machine screen centered above player inventory
    local machineX = SCREEN_CENTER.x - MACHINE_WIDTH / 2
@@ -140,7 +164,8 @@ local function openMachineScreen(entityId)
    -- Create inventory views for player inventory and toolbar
    local views = {
       getToolbarView(playerToolbar),
-      getPlayerInventoryView(playerInventory)
+      getPlayerInventoryView(playerInventory),
+      getEquipmentView(playerEquipment),
    }
 
    MachineStateManager:open(machineScreen, views)
@@ -151,8 +176,8 @@ local function closeMachineScreen()
 end
 
 -- Register event observers for entity/storage interaction (inventory view)
-observe(Events.ENTITY_INTERACTED, function(playerInventory, targetInventory, playerToolbar, entityId)
-   openTargetInventory(playerInventory, targetInventory, playerToolbar, entityId)
+observe(Events.ENTITY_INTERACTED, function(entityId)
+   openTargetInventory(entityId)
 end)
 
 -- Register event observers for machine interaction (machine screen)
@@ -160,8 +185,8 @@ observe(Events.MACHINE_INTERACTED, function(entityId)
    openMachineScreen(entityId)
 end)
 
-observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar)
-   openPlayerInventory(playerInventory, playerToolbar)
+observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, playerEquipment)
+   openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
 end)
 
 observe(Events.INPUT_INVENTORY_CLOSED, function()
@@ -187,14 +212,22 @@ builder()
    :name("SYSTEMS.RenderUI")
    :group(STAGES.OnRender)
    :include(FRAGMENTS.Toolbar)
+   :include(FRAGMENTS.Equipment)
    :execute(function(chunk, _, entityCount)
       local toolbars = chunk:components(FRAGMENTS.Toolbar)
+      local equipments = chunk:components(FRAGMENTS.Equipment)
 
       for i = 1, entityCount do
          local toolbar = toolbars[i]
-         local view = getToolbarView(toolbar)
-         if view then
-            view:draw()
+         local equipment = equipments[i]
+         local views = {
+            getToolbarView(toolbar),
+            getEquipmentView(equipment)
+         }
+         for _, view in ipairs(views) do
+            if view then
+               view:draw()
+            end
          end
       end
    end)
