@@ -3,6 +3,7 @@ local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
 local Behaviors = require("src.evolved.behaviors")
 local observe = Beholder.observe
+local trigger = Beholder.trigger
 local execute = Evolved.execute
 local builder = Evolved.builder
 local get = Evolved.get
@@ -26,7 +27,7 @@ local function tryHarvesterActivate(mouseX, mouseY)
    local closestEntityId = nil
    local closestDistanceSquared = math.huge
 
-   for chunk, entityIds, entityCount in execute(harvestableQuery) do
+   for _chunk, entityIds, entityCount in execute(harvestableQuery) do
       for i = 1, entityCount do
          local entityId = entityIds[i]
          local playerEntityDistanceSquared = EntityHelper.getDistanceSquared(playerId, entityId)
@@ -39,7 +40,9 @@ local function tryHarvesterActivate(mouseX, mouseY)
    end
 
    if closestEntityId then
-      Log.debug("Harvester activated on:", get(closestEntityId, Evolved.NAME), "ID:", closestEntityId)
+      local damageComponent = get(playerId, FRAGMENTS.Damage)
+      local damage = math.random(damageComponent.min, damageComponent.max)
+      trigger(Events.ENTITY_DAMAGED, closestEntityId, damage)
    end
 end
 
@@ -52,7 +55,7 @@ local function tryMouseInteract(mouseX, mouseY)
    local closestDistanceSquared = math.huge
 
    -- Use Evolved.execute() to iterate over interactable entities on-demand
-   for chunk, entityIds, entityCount in execute(interactableQuery) do
+   for _chunk, entityIds, entityCount in execute(interactableQuery) do
       for i = 1, entityCount do
          local entityId = entityIds[i]
          -- 1. Check if mouse is over entity

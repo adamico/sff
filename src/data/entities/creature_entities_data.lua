@@ -2,6 +2,10 @@ return {
    skeleton = {
       harvestTime = 5,
       harvestYield = 25,
+      health = {
+         current = 20,
+         max = 20,
+      },
       hitbox = {
          shape = "circle",
          offsetX = 0,

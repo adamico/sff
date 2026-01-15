@@ -77,7 +77,7 @@ evolvedConfig.FRAGMENTS = {
    Toolbar = builder()
       :name("FRAGMENTS.Toolbar")
       :default(nil)
-      :duplicate(deepClone)
+      :duplicate(Inventory.duplicate)
       :build(),
 
    Equipment = builder()
@@ -120,8 +120,20 @@ evolvedConfig.FRAGMENTS = {
       :build(),
 
    -- =========================================================================
-   -- Resource Components
+   -- Stats Components
    -- =========================================================================
+
+   Damage = builder()
+      :name("FRAGMENTS.Damage")
+      :default({min = 0, max = 0})
+      :duplicate(deepClone)
+      :build(),
+
+   Health = builder()
+      :name("FRAGMENTS.Health")
+      :default({current = 100, max = 100})
+      :duplicate(deepClone)
+      :build(),
 
    Mana = builder()
       :name("FRAGMENTS.Mana")

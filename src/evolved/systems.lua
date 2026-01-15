@@ -25,6 +25,7 @@ require("src.evolved.systems.input_system") -- Process player input
 
 -- Interaction
 require("src.evolved.systems.interaction_system") -- Handle entity interactions
+require("src.evolved.systems.health_system")      -- Handle entity health
 
 -- Resources & Processing
 require("src.evolved.systems.mana_system")       -- Update mana regeneration

@@ -2,6 +2,10 @@ local Inventory = require("src.evolved.fragments.inventory")
 
 return {
    player = {
+      damage = {
+         min = 10,
+         max = 10,
+      },
       equipment = Inventory.new({
          maxSlots = 2,
          initialItems = {
