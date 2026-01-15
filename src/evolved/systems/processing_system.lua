@@ -19,7 +19,7 @@ builder()
 
       for i = 1, entityCount do
          local machineClass = machineClasses[i]
-         local behavior = Behaviors.get(machineClass)
+         local behavior = Behaviors.machines.get(machineClass)
 
          if behavior then
             local context = {

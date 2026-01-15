@@ -1,14 +1,44 @@
--- Systems are registered at module load time via builder():build()
--- This file just ensures all system modules are loaded
+-- ============================================================================
+-- ECS Systems
+-- ============================================================================
+-- Systems process entities and their fragments each frame
+-- This file loads all system modules in the correct order
+--
+-- Systems are automatically registered when their modules are loaded via
+-- the Evolved builder pattern
 
-require("src.evolved.systems.setup_systems")
-require("src.evolved.systems.interaction_system")
-require("src.evolved.systems.input_system")
-require("src.evolved.systems.mana_system")
-require("src.evolved.systems.physics_system")
-require("src.evolved.systems.collision_system")
-require("src.evolved.systems.processing_system")
-require("src.evolved.systems.spawner_system")
-require("src.evolved.systems.render_hitboxes_system")
-require("src.evolved.systems.render_debug_system")
-require("src.evolved.systems.render_ui_system")
+-- ============================================================================
+-- Setup Stage (STAGES.OnSetup)
+-- ============================================================================
+-- These systems run once during initialization
+
+require("src.evolved.systems.setup_systems")  -- Initialize entities and world state
+require("src.evolved.systems.spawner_system") -- Create entities from data files
+
+-- ============================================================================
+-- Update Stage (STAGES.OnUpdate)
+-- ============================================================================
+-- These systems run every frame during the update loop
+
+-- Input & Control
+require("src.evolved.systems.input_system") -- Process player input
+
+-- Interaction
+require("src.evolved.systems.interaction_system") -- Handle entity interactions
+
+-- Resources & Processing
+require("src.evolved.systems.mana_system")       -- Update mana regeneration
+require("src.evolved.systems.processing_system") -- Process recipes in machines
+
+-- Physics & Movement
+require("src.evolved.systems.physics_system")   -- Update positions and velocities
+require("src.evolved.systems.collision_system") -- Handle collision detection/response
+
+-- ============================================================================
+-- Render Stage (STAGES.OnRender)
+-- ============================================================================
+-- These systems run during the draw loop
+
+require("src.evolved.systems.render_ui_system")       -- Render UI elements
+require("src.evolved.systems.render_debug_system")    -- Render debug information
+require("src.evolved.systems.render_hitboxes_system") -- Render collision hitboxes

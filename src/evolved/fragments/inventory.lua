@@ -81,4 +81,59 @@ function Inventory.addItem(inventory, itemId, count)
    return false
 end
 
+--- Deep clone an inventory instance
+--- @param inventory table The inventory to duplicate
+--- @return table A deep copy of the inventory
+function Inventory.duplicate(inventory)
+   if not inventory then return nil end
+
+   local copy = {}
+
+   -- Copy max slot counts
+   if inventory.maxSlots then
+      copy.maxSlots = inventory.maxSlots
+   end
+   if inventory.maxInputSlots then
+      copy.maxInputSlots = inventory.maxInputSlots
+   end
+   if inventory.maxOutputSlots then
+      copy.maxOutputSlots = inventory.maxOutputSlots
+   end
+
+   -- Deep copy slots
+   if inventory.slots then
+      copy.slots = {}
+      for i, slot in ipairs(inventory.slots) do
+         copy.slots[i] = {
+            itemId = slot.itemId,
+            quantity = slot.quantity
+         }
+      end
+   end
+
+   -- Deep copy input slots
+   if inventory.inputSlots then
+      copy.inputSlots = {}
+      for i, slot in ipairs(inventory.inputSlots) do
+         copy.inputSlots[i] = {
+            itemId = slot.itemId,
+            quantity = slot.quantity
+         }
+      end
+   end
+
+   -- Deep copy output slots
+   if inventory.outputSlots then
+      copy.outputSlots = {}
+      for i, slot in ipairs(inventory.outputSlots) do
+         copy.outputSlots[i] = {
+            itemId = slot.itemId,
+            quantity = slot.quantity
+         }
+      end
+   end
+
+   return copy
+end
+
 return Inventory

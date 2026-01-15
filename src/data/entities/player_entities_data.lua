@@ -2,7 +2,6 @@ local Inventory = require("src.evolved.fragments.inventory")
 
 return {
    player = {
-      color = Colors.BLUE,
       hitbox = {
          shape = "circle",
          offsetX = 0,
@@ -21,8 +20,6 @@ return {
       },
       maxSpeed = 300,
       name = "Player",
-      shape = "circle",
-      size = Vector(16, 16),
       tags = {"controllable", "physical", "player", "visual"},
       toolbar = Inventory.new({
          maxSlots = 10,

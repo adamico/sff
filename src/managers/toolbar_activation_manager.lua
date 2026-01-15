@@ -1,4 +1,4 @@
-local ItemRegistry = require("src.registries.item_registry")
+local ItemRegistry = require("src.data.queries.item_query")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger

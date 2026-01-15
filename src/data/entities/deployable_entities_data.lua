@@ -5,7 +5,6 @@ local Recipes = require("src.data.recipes_data")
 
 return {
    skeletonAssembler = {
-      color = Colors.PURPLE,
       hitbox = {
          shape = "rectangle",
          offsetX = 0,
@@ -31,8 +30,6 @@ return {
       },
       name = "Skeleton Assembler",
       processingTimer = {current = 0, saved = 0, duration = 5},
-      shape = "rectangle",
-      size = Vector(64, 64),
       stateMachine = StateMachine.new({
          events = {
             {name = "set_recipe",        from = "blank",   to = "idle"},
@@ -52,7 +49,6 @@ return {
       validRecipes = {Recipes.createSkeleton},
    },
    creativeChest = {
-      color = Colors.GOLD,
       hitbox = {
          shape = "rectangle",
          offsetX = 0,
@@ -69,8 +65,6 @@ return {
       }),
       interaction = {type = "storage"},
       name = "Creative Chest",
-      shape = "rectangle",
-      size = Vector(32, 32),
       tags = {"interactable", "physical", "visual"},
    },
 }

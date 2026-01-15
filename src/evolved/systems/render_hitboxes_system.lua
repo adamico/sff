@@ -15,8 +15,10 @@ builder()
    end)
    :execute(function(chunk, entityIds, entityCount)
       local positions, hitboxes = chunk:components(FRAGMENTS.Position, FRAGMENTS.Hitbox)
-      local colors = chunk:components(FRAGMENTS.Color)
       local names = chunk:components(Evolved.NAME)
+
+      -- Use red color for all hitboxes
+      local HITBOX_COLOR = {1, 0, 0, 0.5}
 
       for i = 1, entityCount do
          local id = entityIds[i]
@@ -26,9 +28,6 @@ builder()
          -- Get world-space hitbox bounds
          local bounds = CollisionHelper.getHitboxBounds(positions[i], hitboxes[i])
 
-         -- Use color if available, otherwise default to white
-         local color = colors[i] or Colors.WHITE
-
-         EntityDrawHelper.drawHitbox(bounds, color, label)
+         EntityDrawHelper.drawHitbox(bounds, HITBOX_COLOR, label)
       end
    end):build()

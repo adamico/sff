@@ -1,5 +1,5 @@
-local InventoryStateManager = require("src.ui.inventory_state_manager")
-local MachineStateManager = require("src.ui.machine_state_manager")
+local InventoryStateManager = require("src.managers.inventory_state_manager")
+local MachineStateManager = require("src.managers.machine_state_manager")
 local InventoryView = Class("InventoryView")
 
 local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)

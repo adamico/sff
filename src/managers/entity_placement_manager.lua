@@ -1,4 +1,4 @@
-local EntityRegistry = require("src.registries.entity_registry")
+local EntityRegistry = require("src.data.queries.entity_query")
 local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 local CollisionHelper = require("src.helpers.collision_helper")
 

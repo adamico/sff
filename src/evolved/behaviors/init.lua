@@ -1,63 +1,95 @@
---[[
-   Behavior Registry
-
-   Maps machine class names to their behavior modules.
-   The processing system uses this to look up the correct
-   behavior for each entity based on its class.
-
-   Usage:
-      local Behaviors = require("src.evolved.behaviors")
-      local behavior = Behaviors.get("Assembler")
-      behavior.update(context)
-
-   Adding a new machine type:
-      1. Create a new behavior module (e.g., behaviors/furnace.lua)
-      2. Register it here with Behaviors.register("Furnace", require(...))
-]]
+-- ============================================================================
+-- Behavior Module
+-- ============================================================================
+-- Main entry point for all behaviors in the ECS
+-- Exports both machine behaviors and interaction handlers
+--
+-- Usage:
+--    local Behaviors = require("src.evolved.behaviors")
+--
+--    -- Access machine behaviors
+--    local assemblerBehavior = Behaviors.machines.get("Assembler")
+--    assemblerBehavior.update(context)
+--
+--    -- Access interaction handlers
+--    local storageHandler = Behaviors.interactions.get("storage")
+--    storageHandler(playerId, entityId, interactionData)
 
 local Behaviors = {}
 
--- Registry table: class name -> behavior module
-local registry = {}
+-- ============================================================================
+-- Sub-modules
+-- ============================================================================
 
---- Register a behavior module for a machine class
---- @param className string The machine class name (e.g., "Assembler")
---- @param behaviorModule table The behavior module with update(context) function
-function Behaviors.register(className, behaviorModule)
-   if registry[className] then
-      Log.warn("Behaviors: Overwriting existing behavior for class: "..className)
-   end
-   registry[className] = behaviorModule
-end
+--- Machine behavior registry (for processing systems)
+Behaviors.machines = require("src.evolved.behaviors.machines")
 
---- Get the behavior module for a machine class
+--- Interaction handler registry (for interaction systems)
+Behaviors.interactions = require("src.evolved.behaviors.interactions")
+
+-- ============================================================================
+-- Convenience Methods
+-- ============================================================================
+
+--- Get a machine behavior by class name
 --- @param className string The machine class name
---- @return table|nil The behavior module, or nil if not found
-function Behaviors.get(className)
-   return registry[className]
+--- @return table|nil The behavior module
+function Behaviors.getMachineBehavior(className)
+   return Behaviors.machines.get(className)
 end
 
---- Check if a behavior is registered for a class
+--- Get an interaction handler by type
+--- @param interactionType string The interaction type
+--- @return function|nil The handler function
+function Behaviors.getInteractionHandler(interactionType)
+   return Behaviors.interactions.get(interactionType)
+end
+
+--- Check if a machine behavior exists
 --- @param className string The machine class name
 --- @return boolean
-function Behaviors.has(className)
-   return registry[className] ~= nil
+function Behaviors.hasMachineBehavior(className)
+   return Behaviors.machines.has(className)
 end
 
---- Get all registered class names
---- @return table Array of registered class names
-function Behaviors.getRegisteredClasses()
-   local classes = {}
-   for className, _ in pairs(registry) do
-      table.insert(classes, className)
+--- Check if an interaction handler exists
+--- @param interactionType string The interaction type
+--- @return boolean
+function Behaviors.hasInteractionHandler(interactionType)
+   return Behaviors.interactions.has(interactionType)
+end
+
+-- ============================================================================
+-- Diagnostic Methods
+-- ============================================================================
+
+--- Get a summary of all registered behaviors
+--- @return table Summary information
+function Behaviors.getSummary()
+   return {
+      machines = Behaviors.machines.getRegisteredClasses(),
+      interactions = Behaviors.interactions.getRegisteredTypes(),
+   }
+end
+
+--- Print a summary of all registered behaviors to console
+function Behaviors.printSummary()
+   local summary = Behaviors.getSummary()
+
+   print("\n=== Behavior Registry Summary ===")
+
+   print("\nRegistered Machine Behaviors:")
+   for _, className in ipairs(summary.machines) do
+      print("  - "..className)
    end
-   return classes
+
+   print("\nRegistered Interaction Handlers:")
+   for _, interactionType in ipairs(summary.interactions) do
+      print("  - "..interactionType)
+   end
+
+   print("\nTotal: "..#summary.machines.." machines, "..#summary.interactions.." interactions")
+   print("=================================\n")
 end
-
--- =============================================================================
--- Register built-in behaviors
--- =============================================================================
-
-Behaviors.register("Assembler", require("src.evolved.behaviors.assembler_behavior"))
 
 return Behaviors

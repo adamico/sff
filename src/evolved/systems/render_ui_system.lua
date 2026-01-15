@@ -1,9 +1,9 @@
+local EntityPlacementManager = require("src.managers.entity_placement_manager")
+local InventoryStateManager = require("src.managers.inventory_state_manager")
+local MachineStateManager = require("src.managers.machine_state_manager")
+require("src.managers.toolbar_activation_manager") -- Registers TOOLBAR_SLOT_ACTIVATED observer
 local InventoryView = require("src.ui.inventory_view")
-local InventoryStateManager = require("src.ui.inventory_state_manager")
 local MachineScreen = require("src.ui.machine_screen")
-local MachineStateManager = require("src.ui.machine_state_manager")
-local EntityPlacementManager = require("src.ui.entity_placement_manager")
-require("src.ui.toolbar_activation_manager") -- Registers TOOLBAR_SLOT_ACTIVATED observer
 
 local builder = Evolved.builder
 local observe = Beholder.observe

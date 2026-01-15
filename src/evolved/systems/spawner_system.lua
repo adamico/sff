@@ -10,7 +10,7 @@
    - e.g., FRAGMENTS.MaxSpeed → entityData.maxSpeed
 ]]
 
-local EntityRegistry = require("src.registries.entity_registry")
+local EntityRegistry = require("src.data.queries.entity_query")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger

@@ -12,18 +12,27 @@ function EntityHelper.getDistanceSquared(aId, bId)
    return dx * dx + dy * dy
 end
 
---- Calculate entity center based on visual representation
---- @param entityId number Entity with position and size (Vector)
+--- Calculate entity center based on hitbox
+--- @param entityId number Entity with position and hitbox
 --- @return table Entity center (Vector)
 function EntityHelper.getEntityCenter(entityId)
    local position = Evolved.get(entityId, FRAGMENTS.Position)
-   local size = Evolved.get(entityId, FRAGMENTS.Size)
-   local shape = Evolved.get(entityId, FRAGMENTS.Shape)
-   local x, y = position.x, position.y
-   if shape == "rectangle" then
-      local width, height = size.x, size.y
-      x, y = x + width / 2, y + height / 2
+   local hitbox = Evolved.get(entityId, FRAGMENTS.Hitbox)
+
+   if not hitbox then
+      return Vector(position.x, position.y)
    end
+
+   local x = position.x + (hitbox.offsetX or 0)
+   local y = position.y + (hitbox.offsetY or 0)
+
+   -- For rectangles, add half width/height to get center
+   if hitbox.shape == "rectangle" then
+      x = x + (hitbox.width or 16) / 2
+      y = y + (hitbox.height or 16) / 2
+   end
+   -- For circles, the offset already points to center
+
    return Vector(x, y)
 end
 

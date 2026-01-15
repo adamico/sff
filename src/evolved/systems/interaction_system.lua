@@ -1,17 +1,11 @@
 local EntityHelper = require("src.helpers.entity_helper")
-local InventoryStateManager = require("src.ui.inventory_state_manager")
-local MachineStateManager = require("src.ui.machine_state_manager")
+local InventoryStateManager = require("src.managers.inventory_state_manager")
+local MachineStateManager = require("src.managers.machine_state_manager")
+local Behaviors = require("src.evolved.behaviors")
 local observe = Beholder.observe
 local execute = Evolved.execute
 local builder = Evolved.builder
 local get = Evolved.get
-
--- Interaction handler registry
-local HANDLERS = {
-   storage = require("src.evolved.behaviors.storage_interaction"),
-   machine = require("src.evolved.behaviors.machine_interaction"),
-   creature = require("src.evolved.behaviors.creature_interaction"),
-}
 
 -- Create a query for interactable entities (registered once)
 local interactableQuery = builder()
@@ -48,8 +42,11 @@ local function tryMouseInteract(mouseX, mouseY)
    -- 3. Dispatch to appropriate handler based on interaction type
    if closestEntityId then
       local interaction = get(closestEntityId, FRAGMENTS.Interaction)
-      if interaction and HANDLERS[interaction.type] then
-         HANDLERS[interaction.type](playerId, closestEntityId, interaction)
+      if interaction then
+         local handler = Behaviors.interactions.get(interaction.type)
+         if handler then
+            handler(playerId, closestEntityId, interaction)
+         end
       end
    end
 end
