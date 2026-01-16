@@ -26,9 +26,8 @@
 - [x] Placement system with ghost preview
 - [x] Collision detection for placement (red/green)
 - [x] Toolbar item click → spawn entity
-- [ ] Harvest interaction (click skeleton → harvest)
-- [ ] Harvest timer and mana yield
-- [ ] Recycle interaction to return materials
+- [x] Harvest interaction (attack skeleton with harvest weapon) to steal mana
+- [ ] Recycle interaction (attack skeleton with normal weapon) to return materials
 
 ---
 
