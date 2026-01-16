@@ -22,7 +22,7 @@ local function tryHarvesterActivate(mouseX, mouseY)
    local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
    local targetId = CombatSystem.findClosestDamageableEntity(playerId, playerInteractionRange)
    if targetId then
-      CombatSystem.applyDamage(playerId, targetId)
+      CombatSystem.executeAttack(playerId, targetId, "Mana", "harvest")
    end
 end
 

@@ -25,6 +25,13 @@ evolvedConfig.TAGS = {
       :require(FRAGMENTS.Position, FRAGMENTS.Health)
       :build(),
 
+   -- Harvestable entities can be harvested by the player
+   Harvestable = builder()
+      :name("TAGS.Harvestable")
+      :tag()
+      :require(FRAGMENTS.Position, FRAGMENTS.Mana)
+      :build(),
+
    -- Interactable entities can be interacted with by the player
    Interactable = builder()
       :name("TAGS.Interactable")

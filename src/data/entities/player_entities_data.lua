@@ -24,7 +24,7 @@ return {
          maxSlots = 40,
       }),
       mana = {
-         current = 100,
+         current = 95,
          max = 100,
          regenRate = 1,
          consumeRate = 0,

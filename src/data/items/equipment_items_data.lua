@@ -1,12 +1,7 @@
 return {
    harvesterBasic = {
       name = "Basic Harvester",
-      category = "weapon",
-      maxStackSize = 1,
-   },
-   fearExtractorBasic = {
-      name = "Basic Fear Extractor",
-      category = "utility",
+      category = "harvester",
       maxStackSize = 1,
    },
    armorBasic = {

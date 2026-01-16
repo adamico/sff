@@ -1,4 +1,21 @@
+local ItemQuery = require("src.data.queries.item_query")
 local EntityHelper = {}
+
+function EntityHelper.isEquippedWith(entityId, equipmentCategory)
+   local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
+   if not equipment then return false end
+
+   for _, slot in ipairs(equipment.slots) do
+      if slot.itemId then
+         local item = ItemQuery.getItem(slot.itemId)
+         if item and item.category == equipmentCategory then
+            return true
+         end
+      end
+   end
+
+   return false
+end
 
 --- Calculate squared distance between two entities with position components
 --- @param aId number Entity ID

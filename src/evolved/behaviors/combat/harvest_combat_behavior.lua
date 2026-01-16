@@ -11,6 +11,8 @@
 --    attackType = string,          -- e.g., "harvest", "melee", "ranged"
 -- }
 
+local EntityHelper = require("src.helpers.entity_helper")
+
 local trigger = Beholder.trigger
 local get = Evolved.get
 
@@ -32,33 +34,53 @@ end
 
 --- Check if the target can be harvested
 --- @param targetId number The target's entity ID
+--- @param damageType string The type of damage being dealt
 --- @return boolean True if the target can be harvested, false otherwise
-local function canHarvest(targetId)
-   local healthComponent = get(targetId, FRAGMENTS.Health)
-   if not healthComponent then
-      Log.warn(string.format("No health component found for target: %d", targetId))
+local function canHarvest(attackerId, targetId, damageType)
+   local damagedStatComponent = get(targetId, FRAGMENTS[damageType])
+   if not damagedStatComponent then
+      Log.warn(string.format("No %s component found for target: %d", damageType, targetId))
       return false
    end
 
-   -- Could add additional checks here:
-   -- - Check if target has required tag
-   -- - Check if attacker has required tool/equipment
-   -- - Check if target is in harvestable state
-   return healthComponent.current > 0
+   if damagedStatComponent.current <= 0 then
+      Log.warn(string.format("Target %d can't be harvested because it has no %s", targetId, damageType))
+      return false
+   end
+
+   if attackerId == targetId then
+      Log.warn(string.format("Target %d can't be harvested because it is the attacker", targetId))
+      return false
+   end
+
+   local equipment = get(attackerId, FRAGMENTS.Equipment)
+   if not equipment then
+      Log.warn(string.format("No equipment component found for attacker: %d", attackerId))
+      return false
+   end
+
+   if not EntityHelper.isEquippedWith(attackerId, "harvester") then
+      Log.warn(string.format("Target %d can't be harvested because attacker %d is not equipped with a harvester",
+         targetId, attackerId))
+      return false
+   end
+
+   return true
 end
 
 local function execute(context)
    local attackerId = context.attackerId
    local targetId = context.targetId
+   local damageType = context.damageType
 
-   if not canHarvest(targetId) then
+   if not canHarvest(attackerId, targetId, damageType) then
       Log.warn(string.format("Target %d cannot be harvested", targetId))
       return false
    end
 
    local damage = calculateDamage(attackerId)
    if damage > 0 then
-      trigger(Events.ENTITY_DAMAGED, targetId, damage)
+      trigger(Events.ENTITY_HARVESTED, attackerId, targetId, damage)
       Log.debug(string.format("Harvest: Entity %d harvested %d for %d", attackerId, targetId, damage))
 
       -- Optional: Trigger harvest-specific effects

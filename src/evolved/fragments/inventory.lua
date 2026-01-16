@@ -85,8 +85,6 @@ end
 --- @param inventory table The inventory to duplicate
 --- @return table A deep copy of the inventory
 function Inventory.duplicate(inventory)
-   if not inventory then return nil end
-
    local copy = {}
 
    -- Copy max slot counts

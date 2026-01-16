@@ -2,6 +2,10 @@ return {
    skeleton = {
       harvestTime = 5,
       harvestYield = 25,
+      mana = {
+         current = 10,
+         max = 10,
+      },
       health = {
          current = 20,
          max = 20,
@@ -18,7 +22,7 @@ return {
          bone = 1,
          unlifeEssence = 1,
       },
-      tags = {"damageable", "interactable", "physical", "visual"},
+      tags = {"damageable", "harvestable", "interactable", "physical", "visual"},
       tier = "basic",
    },
 }

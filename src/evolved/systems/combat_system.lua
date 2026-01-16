@@ -1,18 +1,16 @@
 local EntityHelper = require("src.helpers.entity_helper")
 local Behaviors = require("src.evolved.behaviors")
-local trigger = Beholder.trigger
 local execute = Evolved.execute
 local builder = Evolved.builder
-local get = Evolved.get
 
 local damageableQuery = builder()
    :name("QUERIES.Damageable")
    :include(TAGS.Damageable)
    :build()
 
-local attackerQuery = builder()
-   :name("QUERIES.Attacker")
-   :include(FRAGMENTS.Damage)
+local harvestableQuery = builder()
+   :name("QUERIES.Harvestable")
+   :include(TAGS.Harvestable)
    :build()
 
 --- Find the closest damageable entity within range
@@ -43,25 +41,21 @@ end
 --- Execute an attack from attacker to target using specified behavior
 --- @param attackerId number The attacking entity
 --- @param targetId number The target entity
+--- @param damageType string The damage type (defaults to "Health")
 --- @param attackType string The attack type (defaults to "harvest")
 --- @return boolean True if attack was successful
-local function executeAttack(attackerId, targetId, attackType)
+local function executeAttack(attackerId, targetId, damageType, attackType)
    attackType = attackType or "harvest" -- Default behavior
+   damageType = damageType or "Health"  -- Default damage type
 
    local context = {
       attackerId = attackerId,
       targetId = targetId,
+      damageType = damageType,
       attackType = attackType,
    }
 
    return Behaviors.combat.execute(attackType, context)
-end
-
---- Simple damage application (legacy support)
---- @param attackerId number The attacking entity
---- @param targetId number The target entity
-local function applyDamage(attackerId, targetId)
-   return executeAttack(attackerId, targetId, "harvest")
 end
 
 return {

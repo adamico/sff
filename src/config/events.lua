@@ -1,6 +1,9 @@
 local Events = {
    ENTITY_COLLIDED = "entity:collided",
    ENTITY_DAMAGED = "entity:damaged",
+   ENTITY_HEALTH_CHANGED = "entity:health_changed",
+   ENTITY_MANA_CHANGED = "entity:mana_changed",
+   ENTITY_HARVESTED = "entity:harvested",
    ENTITY_SPAWNED = "entity:deployed",
    ENTITY_SPAWN_REQUESTED = "entity:spawn_requested",
    ENTITY_INTERACTED = "entity:interacted",
