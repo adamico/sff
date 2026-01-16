@@ -27,7 +27,7 @@ local function tryWeaponActivate(mouseX, mouseY)
    end
 
    local combatBehavior = weapon.combatBehavior
-   local damageType = weapon.damageType or "Health"
+   local damagedStat = weapon.damagedStat or "Health"
    local attackRange = weapon.attackRange or 16
 
    if not combatBehavior then
@@ -37,7 +37,7 @@ local function tryWeaponActivate(mouseX, mouseY)
 
    local targetId = CombatSystem.findClosestDamageableEntity(playerId, attackRange)
    if targetId then
-      CombatSystem.executeAttack(playerId, targetId, damageType, combatBehavior)
+      CombatSystem.executeAttack(playerId, targetId, damagedStat, combatBehavior)
    end
 end
 

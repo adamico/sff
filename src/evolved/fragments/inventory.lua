@@ -31,7 +31,7 @@ end
 ---
 --- Configuration options:
 ---   slotGroups: table - Dictionary of slot group configurations
----     Each group: { maxSlots = number, initialItems = table }
+---     Each group: { maxSlots = number, initialItems = table, displayOrder = number, acceptedCategories = table }
 ---
 --- Legacy options (for backward compatibility):
 ---   maxSlots: number - Creates a "default" slot group
@@ -49,7 +49,7 @@ end
 ---   OR legacy: { maxInputSlots = 2, maxOutputSlots = 1 }
 ---
 ---   Equipment inventory:
----     { slotGroups = { weapon = { maxSlots = 1 }, armor = { maxSlots = 1 } } }
+---     { slotGroups = { weapon = { maxSlots = 1, displayOrder = 1 }, armor = { maxSlots = 1, displayOrder = 2 } } }
 function Inventory.new(data)
    data = data or {}
    local inventory = {
@@ -65,6 +65,7 @@ function Inventory.new(data)
             slots = initializeSlots(maxSlots, initialItems),
             maxSlots = maxSlots,
             acceptedCategories = groupConfig.acceptedCategories, -- Optional constraint
+            displayOrder = groupConfig.displayOrder,             -- Optional ordering for UI
          }
       end
       return inventory
@@ -128,16 +129,28 @@ function Inventory.getSlot(inventory, slotIndex, slotType)
    return slots[slotIndex]
 end
 
---- Get all slot group types in an inventory.
+--- Get all slot group types in an inventory, sorted by displayOrder.
 --- @param inventory table The inventory component instance.
---- @return table Array of slot type strings.
+--- @return table Array of slot type strings, sorted by displayOrder (if defined).
 function Inventory.getSlotTypes(inventory)
    if not inventory or not inventory.slotGroups then return {} end
    local types = {}
-   for groupType, _ in pairs(inventory.slotGroups) do
-      table.insert(types, groupType)
+   for groupType, group in pairs(inventory.slotGroups) do
+      table.insert(types, {
+         type = groupType,
+         order = group.displayOrder or 999
+      })
    end
-   return types
+   -- Sort by displayOrder
+   table.sort(types, function(a, b)
+      return a.order < b.order
+   end)
+   -- Extract just the type names
+   local result = {}
+   for _, entry in ipairs(types) do
+      table.insert(result, entry.type)
+   end
+   return result
 end
 
 --- Adds an item to the inventory.
@@ -193,6 +206,7 @@ function Inventory.duplicate(inventory)
       copy.slotGroups[groupType] = {
          maxSlots = group.maxSlots,
          acceptedCategories = group.acceptedCategories,
+         displayOrder = group.displayOrder,
          slots = {}
       }
 

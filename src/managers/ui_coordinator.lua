@@ -32,6 +32,7 @@ local SCREEN_CENTER = Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
 local CENTERED_X = SCREEN_CENTER.x - INV_WIDTH / 2
 local TOOLBAR_Y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
+local EQUIPMENT_X = 16
 local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
 
 local MACHINE_WIDTH = 320
@@ -70,7 +71,7 @@ local function getOrCreateEquipmentViews(equipment)
    local slotTypes = InventoryHelper.getSlotTypes(equipment)
    local views = {}
    local currentY = TOOLBAR_Y
-   local viewX = 16
+   local viewX = EQUIPMENT_X
 
    for _, slotType in ipairs(slotTypes) do
       if not equipmentViews[slotType] then
@@ -98,14 +99,6 @@ local function getOrCreateEquipmentViews(equipment)
    end
 
    return views
-end
-
---- Get a single equipment view (for backward compatibility / render_ui_system)
---- @param equipment table The equipment inventory
---- @return table|nil First equipment view or nil
-local function getOrCreateEquipmentView(equipment)
-   local views = getOrCreateEquipmentViews(equipment)
-   return views[1]
 end
 
 local function getOrCreatePlayerInventoryView(playerInventory)
@@ -215,7 +208,7 @@ function UICoordinator.openMachineScreen(entityId)
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+   for _, equipView in ipairs(equipmentViews) do
       table.insert(views, equipView)
    end
 
@@ -224,10 +217,6 @@ end
 
 function UICoordinator.getToolbarView(toolbar)
    return getOrCreateToolbarView(toolbar)
-end
-
-function UICoordinator.getEquipmentView(equipment)
-   return getOrCreateEquipmentView(equipment)
 end
 
 function UICoordinator.getEquipmentViews(equipment)

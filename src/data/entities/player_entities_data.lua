@@ -10,6 +10,7 @@ return {
          slotGroups = {
             weapon = {
                maxSlots = 1,
+               displayOrder = 2,
                acceptedCategories = {"weapon", "harvester"},
                initialItems = {
                   {itemId = "harvesterBasic", quantity = 1},
@@ -17,6 +18,7 @@ return {
             },
             armor = {
                maxSlots = 1,
+               displayOrder = 1,
                acceptedCategories = {"armor"},
                initialItems = {
                   {itemId = "armorBasic", quantity = 1},

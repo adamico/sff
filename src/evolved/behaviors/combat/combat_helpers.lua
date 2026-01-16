@@ -13,10 +13,10 @@ local CombatHelpers = {}
 --- Validate that the attacker can attack the target
 --- @param attackerId number The attacker's entity ID
 --- @param targetId number The target's entity ID
---- @param damageType string The type of damage being dealt (e.g., "Health", "Mana")
+--- @param damagedStat string The type of damage being dealt (e.g., "Health", "Mana")
 --- @return boolean success True if attack is valid
 --- @return string|nil error Error message if validation failed
-function CombatHelpers.validateAttack(attackerId, targetId, damageType)
+function CombatHelpers.validateAttack(attackerId, targetId, damagedStat)
    -- Check attacker exists
    if not attackerId then
       return false, "No attacker specified"
@@ -32,15 +32,15 @@ function CombatHelpers.validateAttack(attackerId, targetId, damageType)
       return false, string.format("Entity %d cannot attack itself", attackerId)
    end
 
-   -- Check target has the damage type component
-   local damagedStatComponent = get(targetId, FRAGMENTS[damageType])
+   -- Check target has the damaged stat component
+   local damagedStatComponent = get(targetId, FRAGMENTS[damagedStat])
    if not damagedStatComponent then
-      return false, string.format("Target %d has no %s component", targetId, damageType)
+      return false, string.format("Target %d has no %s component", targetId, damagedStat)
    end
 
    -- Check target has remaining stat to damage
    if damagedStatComponent.current <= 0 then
-      return false, string.format("Target %d has no %s remaining", targetId, damageType)
+      return false, string.format("Target %d has no %s remaining", targetId, damagedStat)
    end
 
    return true, nil
@@ -64,18 +64,18 @@ function CombatHelpers.validateEquipment(attackerId, requiredCategory)
    return true, nil
 end
 
---- Calculate damage based on attacker's damage component
+--- Calculate damage based on equipped weapon damage
 --- @param attackerId number The attacker's entity ID
 --- @return number damage The calculated damage amount (0 if no damage component)
 function CombatHelpers.calculateDamage(attackerId)
-   local damageComponent = get(attackerId, FRAGMENTS.Damage)
-   if not damageComponent then
+   local weapon = EntityHelper.getEquippedWeapon(attackerId)
+   if not weapon then
       Log.warn(string.format("No damage component found for attacker: %d", attackerId))
       return 0
    end
 
-   local min = damageComponent.min or 0
-   local max = damageComponent.max or min
+   local min = weapon.damageMin or 0
+   local max = weapon.damageMax or min
 
    if min >= max then
       return min
@@ -87,13 +87,13 @@ end
 --- Full validation for a combat action
 --- @param attackerId number The attacker's entity ID
 --- @param targetId number The target's entity ID
---- @param damageType string The type of damage being dealt
+--- @param damagedStat string The type of damage being dealt
 --- @param requiredCategory string|nil Optional required equipment category
 --- @return boolean success True if all validations pass
 --- @return string|nil error Error message if any validation failed
-function CombatHelpers.validateCombatAction(attackerId, targetId, damageType, requiredCategory)
+function CombatHelpers.validateCombatAction(attackerId, targetId, damagedStat, requiredCategory)
    -- Validate basic attack requirements
-   local attackValid, attackError = CombatHelpers.validateAttack(attackerId, targetId, damageType)
+   local attackValid, attackError = CombatHelpers.validateAttack(attackerId, targetId, damagedStat)
    if not attackValid then
       return false, attackError
    end

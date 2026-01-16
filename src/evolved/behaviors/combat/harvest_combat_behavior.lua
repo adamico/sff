@@ -8,7 +8,7 @@
 -- {
 --    attackerId = number,          -- Entity dealing damage
 --    targetId = number,            -- Entity being harvested
---    damageType = string,          -- The stat to damage (e.g., "Mana")
+--    damagedStat = string,          -- The stat to damage (e.g., "Mana")
 --    attackType = string,          -- e.g., "harvest"
 -- }
 
@@ -19,13 +19,13 @@ local trigger = Beholder.trigger
 local function execute(context)
    local attackerId = context.attackerId
    local targetId = context.targetId
-   local damageType = context.damageType or "Mana"
+   local damagedStat = context.damagedStat or "Mana"
 
    -- Validate the combat action (requires harvester equipment)
    local isValid, errorMsg = CombatHelpers.validateCombatAction(
       attackerId,
       targetId,
-      damageType,
+      damagedStat,
       "harvester"
    )
 
@@ -39,7 +39,7 @@ local function execute(context)
    if damage > 0 then
       trigger(Events.ENTITY_HARVESTED, attackerId, targetId, damage)
       Log.debug(string.format("Harvest: Entity %d harvested %d for %d %s",
-         attackerId, targetId, damage, damageType))
+         attackerId, targetId, damage, damagedStat))
       return true
    end
 

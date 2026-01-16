@@ -41,17 +41,17 @@ end
 --- Execute an attack from attacker to target using specified behavior
 --- @param attackerId number The attacking entity
 --- @param targetId number The target entity
---- @param damageType string The damage type (defaults to "Health")
+--- @param damagedStat string The damage type (defaults to "Health")
 --- @param attackType string The attack type (defaults to "harvest")
 --- @return boolean True if attack was successful
-local function executeAttack(attackerId, targetId, damageType, attackType)
-   attackType = attackType or "harvest" -- Default behavior
-   damageType = damageType or "Health"  -- Default damage type
+local function executeAttack(attackerId, targetId, damagedStat, attackType)
+   attackType = attackType or "harvest"  -- Default behavior
+   damagedStat = damagedStat or "Health" -- Default damage type
 
    local context = {
       attackerId = attackerId,
       targetId = targetId,
-      damageType = damageType,
+      damagedStat = damagedStat,
       attackType = attackType,
    }
 

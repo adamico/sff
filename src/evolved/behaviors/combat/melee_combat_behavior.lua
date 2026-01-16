@@ -7,7 +7,7 @@
 -- {
 --    attackerId = number,          -- Entity dealing damage
 --    targetId = number,            -- Entity being damaged
---    damageType = string,          -- The stat to damage (e.g., "Health")
+--    damagedStat = string,          -- The stat to damage (e.g., "Health")
 --    attackType = string,          -- e.g., "melee"
 -- }
 
@@ -18,13 +18,13 @@ local trigger = Beholder.trigger
 local function execute(context)
    local attackerId = context.attackerId
    local targetId = context.targetId
-   local damageType = context.damageType or "Health"
+   local damagedStat = context.damagedStat or "Health"
 
    -- Validate the combat action (requires weapon equipment)
    local isValid, errorMsg = CombatHelpers.validateCombatAction(
       attackerId,
       targetId,
-      damageType,
+      damagedStat,
       "weapon"
    )
 
@@ -38,7 +38,7 @@ local function execute(context)
    if damage > 0 then
       trigger(Events.ENTITY_DAMAGED, targetId, damage)
       Log.debug(string.format("Melee: Entity %d damaged %d for %d %s",
-         attackerId, targetId, damage, damageType))
+         attackerId, targetId, damage, damagedStat))
       return true
    end
 

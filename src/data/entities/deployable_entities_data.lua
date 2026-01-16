@@ -17,10 +17,12 @@ return {
          slotGroups = {
             input = {
                maxSlots = 2,
+               displayOrder = 1,
                initialItems = {},
             },
             output = {
                maxSlots = 1,
+               displayOrder = 2,
                initialItems = {},
             },
          }
