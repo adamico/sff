@@ -61,5 +61,4 @@ end
 return {
    findClosestDamageableEntity = findClosestDamageableEntity,
    executeAttack = executeAttack,
-   applyDamage = applyDamage, -- Keep for backward compatibility
 }
