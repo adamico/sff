@@ -28,7 +28,7 @@ function InventoryStateManager:close()
    -- Destroy FlexLove elements (except toolbar which is always visible)
    for _, view in ipairs(self.views) do
       if view and view.destroy then
-         -- Don't destroy toolbar - it's managed separately by render_ui_system
+         -- Don't destroy toolbar or equipment view
          if view.id ~= "toolbar" and view.id ~= "equipment" then
             view:destroy()
          end
@@ -58,6 +58,7 @@ function InventoryStateManager:getSlotUnderMouse(mouse_x, mouse_y)
          return slotInfo
       end
    end
+
    return nil
 end
 
@@ -69,7 +70,6 @@ end
 function InventoryStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
    local slotInfo
 
-   -- REVIEW: is this check still needed?
    -- If userdata provided (from slot element click), use it directly
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view

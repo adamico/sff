@@ -7,7 +7,6 @@ builder()
    :include(TAGS.Damageable)
    :execute(function(chunk, entityIds, entityCount)
       local positions, healths = chunk:components(FRAGMENTS.Position, FRAGMENTS.Health)
-      local names = chunk:components(Evolved.NAME)
 
       for i = 1, entityCount do
          local health = healths[i]

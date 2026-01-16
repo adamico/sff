@@ -1,211 +1,11 @@
 local EntityPlacementManager = require("src.managers.entity_placement_manager")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
+local UICoordinator = require("src.managers.ui_coordinator")
+
 require("src.managers.toolbar_activation_manager") -- Registers TOOLBAR_SLOT_ACTIVATED observer
-local InventoryView = require("src.ui.inventory_view")
-local MachineScreen = require("src.ui.machine_screen")
 
 local builder = Evolved.builder
-local observe = Beholder.observe
-local get = Evolved.get
-
--- Layout constants
-local SLOT_SIZE = 32
-local COLUMNS = 10
-local INV_ROWS = 4
-local TOOLBAR_ROWS = 1
-local PADDING = 4
-local GAP = 20
-
--- Calculated dimensions (matching inventory_view.lua calculateBoxDimensions)
-local INV_WIDTH = COLUMNS * SLOT_SIZE + PADDING * 2
-local INV_HEIGHT = INV_ROWS * SLOT_SIZE + PADDING * 2
-local TOOLBAR_HEIGHT = TOOLBAR_ROWS * SLOT_SIZE + PADDING * 2
-
--- Screen dimensions
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
-local SCREEN_CENTER = Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-
--- Machine screen layout constants
-local MACHINE_WIDTH = 320
-local MACHINE_HEIGHT = 240
-
--- Cached views (created lazily)
-local toolbarView = nil
--- Don't cache playerInventoryView - it gets destroyed when closed
-
--- Position presets
-local CENTERED_X = SCREEN_CENTER.x - INV_WIDTH / 2
-local TOOLBAR_Y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
-local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
-
-local function getEquipmentView(equipment)
-   if not equipment then return nil end
-   if not equipmentView then
-      equipmentView = InventoryView:new(equipment, {
-         id = "equipment",
-         columns = 2,
-         rows = 1,
-         x = 16,
-         y = TOOLBAR_Y
-      })
-   end
-   return equipmentView
-end
-
-local function getToolbarView(toolbar)
-   if not toolbar then return nil end
-   if not toolbarView then
-      toolbarView = InventoryView:new(toolbar, {
-         id = "toolbar",
-         columns = COLUMNS,
-         rows = TOOLBAR_ROWS,
-         x = CENTERED_X,
-         y = TOOLBAR_Y
-      })
-   end
-   return toolbarView
-end
-
-local function getPlayerInventoryView(playerInventory)
-   if not playerInventory then return nil end
-
-   -- Always create new view since it gets destroyed when closed
-   local playerInventoryView = InventoryView:new(playerInventory, {
-      id = "player_inventory",
-      columns = COLUMNS,
-      rows = INV_ROWS,
-      x = CENTERED_X,
-      y = PLAYER_INV_Y
-   })
-
-   return playerInventoryView
-end
-
-local function openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
-   if not playerInventory then return end
-
-   local views = {
-      getPlayerInventoryView(playerInventory),
-      getToolbarView(playerToolbar),
-      getEquipmentView(playerEquipment),
-   }
-
-   InventoryStateManager:open(views)
-end
-
-local function openTargetInventory(entityId)
-   if not entityId then return end
-
-   local playerId = ENTITIES.Player
-   local playerInventory = get(playerId, FRAGMENTS.Inventory)
-   if not playerInventory or not targetInventory then return end
-
-   local playerToolbar = get(playerId, FRAGMENTS.Toolbar)
-   local playerEquipment = get(playerId, FRAGMENTS.Equipment)
-
-   -- Calculate target inventory dimensions based on actual slot count
-   local slots = #targetInventory.slots
-
-   -- Determine columns and rows based on slot count
-   local targetColumns = math.min(slots, COLUMNS)
-   local targetRows = math.ceil(slots / targetColumns)
-
-   -- Calculate actual width and height for this inventory
-   local targetWidth = targetColumns * SLOT_SIZE + PADDING * 2
-   local targetHeight = targetRows * SLOT_SIZE + PADDING * 2
-
-   -- Center the target inventory
-   local targetX = SCREEN_CENTER.x - targetWidth / 2
-   local targetY = PLAYER_INV_Y - GAP - targetHeight
-
-   local options = {
-      id = "target_inventory",
-      columns = targetColumns,
-      rows = targetRows,
-      x = targetX,
-      y = targetY,
-      entityId = entityId or nil
-   }
-
-   local targetInventoryView = InventoryView:new(targetInventory, options)
-
-   local views = {
-      getToolbarView(playerToolbar),
-      getPlayerInventoryView(playerInventory),
-      getEquipmentView(playerEquipment),
-      targetInventoryView,
-   }
-
-   InventoryStateManager:open(views)
-end
-
-local function openMachineScreen(entityId)
-   if not entityId then return end
-
-   -- Get player data for inventory views
-   local playerId = ENTITIES.Player
-   local playerInventory = get(playerId, FRAGMENTS.Inventory)
-   local playerToolbar = get(playerId, FRAGMENTS.Toolbar)
-   local playerEquipment = get(playerId, FRAGMENTS.Equipment)
-
-   -- Position machine screen centered above player inventory
-   local machineX = SCREEN_CENTER.x - MACHINE_WIDTH / 2
-   local machineY = PLAYER_INV_Y - GAP - MACHINE_HEIGHT
-
-   local machineScreen = MachineScreen:new({
-      entityId = entityId,
-      x = machineX,
-      y = machineY,
-      width = MACHINE_WIDTH,
-      height = MACHINE_HEIGHT
-   })
-
-   -- Create inventory views for player inventory and toolbar
-   local views = {
-      getToolbarView(playerToolbar),
-      getPlayerInventoryView(playerInventory),
-      getEquipmentView(playerEquipment),
-   }
-
-   MachineStateManager:open(machineScreen, views)
-end
-
-local function closeMachineScreen()
-   MachineStateManager:close()
-end
-
--- Register event observers for entity/storage interaction (inventory view)
-observe(Events.ENTITY_INTERACTED, function(entityId)
-   openTargetInventory(entityId)
-end)
-
--- Register event observers for machine interaction (machine screen)
-observe(Events.MACHINE_INTERACTED, function(entityId)
-   openMachineScreen(entityId)
-end)
-
-observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, playerEquipment)
-   openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
-end)
-
-observe(Events.INPUT_INVENTORY_CLOSED, function()
-   -- Close whichever screen is open
-   if InventoryStateManager.isOpen then
-      InventoryStateManager:close()
-   end
-   if MachineStateManager.isOpen then
-      closeMachineScreen()
-   end
-end)
-
-observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
-   if InventoryStateManager.isOpen then
-      InventoryStateManager:handleSlotClick(mouseX, mouseY, userdata)
-   elseif MachineStateManager.isOpen then
-      MachineStateManager:handleSlotClick(mouseX, mouseY, userdata)
-   end
-end)
 
 -- Register the render system (runs every frame)
 builder()
@@ -214,26 +14,21 @@ builder()
    :include(FRAGMENTS.Toolbar)
    :include(FRAGMENTS.Equipment)
    :execute(function(chunk, _, entityCount)
+      -- Render persistent UI (toolbar, equipment) for each entity
       local toolbars = chunk:components(FRAGMENTS.Toolbar)
       local equipments = chunk:components(FRAGMENTS.Equipment)
 
       for i = 1, entityCount do
-         local toolbar = toolbars[i]
-         local equipment = equipments[i]
-         local views = {
-            getToolbarView(toolbar),
-            getEquipmentView(equipment)
-         }
-         for _, view in ipairs(views) do
-            if view then
-               view:draw()
-            end
-         end
+         local toolbarView = UICoordinator.getToolbarView(toolbars[i])
+         local equipmentView = UICoordinator.getEquipmentView(equipments[i])
+
+         if toolbarView then toolbarView:draw() end
+         if equipmentView then equipmentView:draw() end
       end
    end)
    :epilogue(function()
-      -- Update state managers (for held stack position tracking)
       local dt = UNIFORMS.getDeltaTime()
+
       if InventoryStateManager.isOpen then
          InventoryStateManager:update(dt)
          InventoryStateManager:draw()
@@ -243,9 +38,7 @@ builder()
          MachineStateManager:draw()
       end
 
-      -- Update and draw placement manager
       EntityPlacementManager:update(dt)
-      -- REFACTOR: entities are drawn elsewhere
       EntityPlacementManager:draw()
    end)
    :build()

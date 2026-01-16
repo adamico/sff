@@ -124,6 +124,10 @@ function InventoryView:createSlots()
    end
 end
 
+function InventoryView:getInventory()
+   return self.inventory
+end
+
 function InventoryView:draw()
    self:updateSlots()
 end

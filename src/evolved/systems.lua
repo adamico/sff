@@ -26,6 +26,7 @@ require("src.evolved.systems.input_system") -- Process player input
 -- Interaction
 require("src.evolved.systems.combat_system")      -- Handle entity combat
 require("src.evolved.systems.interaction_system") -- Handle entity interactions
+require("src.evolved.systems.ui_event_system")    -- Handle UI events
 
 -- Stats & Processing
 require("src.evolved.systems.health_system")     -- Handle entity health

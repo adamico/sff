@@ -3,8 +3,8 @@ local HeldStackView = require("src.ui.held_stack_view")
 
 local MachineStateManager = {
    isOpen = false,
-   screen = nil,
-   views = {}, -- Inventory views (player inventory, toolbar)
+   screen = nil, -- MachineScreen instance
+   views = {},   -- Inventory views (player inventory, toolbar)
    heldStack = nil,
    heldStackView = nil,
 }
@@ -30,7 +30,7 @@ function MachineStateManager:close()
       self.heldStackView = nil
    end
 
-   -- Destroy FlexLove elements
+   -- Destroy machine screen
    if self.screen and self.screen.destroy then
       self.screen:destroy()
    end
@@ -38,8 +38,8 @@ function MachineStateManager:close()
    -- Destroy view elements (except toolbar which is always visible)
    for _, view in ipairs(self.views) do
       if view and view.destroy then
-         -- Don't destroy toolbar - it's managed separately by render_ui_system
-         if view.id ~= "toolbar" then
+         -- Don't destroy toolbar or equipment view
+         if view.id ~= "toolbar" and view.id ~= "equipment" then
             view:destroy()
          end
       end
@@ -72,9 +72,7 @@ function MachineStateManager:getSlotUnderMouse(mouse_x, mouse_y)
    if self.screen then
       local slotInfo = self.screen:getSlotUnderMouse(mouse_x, mouse_y)
       if slotInfo then
-         -- Add inventory reference for machine screen slots
-         slotInfo.inventory = self:getMachineInventory()
-         slotInfo.source = "machine"
+         slotInfo.inventory = self.screen:getInventory()
          return slotInfo
       end
    end
@@ -84,17 +82,11 @@ function MachineStateManager:getSlotUnderMouse(mouse_x, mouse_y)
       local slotInfo = view:getSlotUnderMouse(mouse_x, mouse_y)
       if slotInfo then
          slotInfo.inventory = view.inventory
-         slotInfo.source = "inventory"
          return slotInfo
       end
    end
 
    return nil
-end
-
-function MachineStateManager:getMachineInventory()
-   if not self.screen or not self.screen.entityId then return nil end
-   return Evolved.get(self.screen.entityId, FRAGMENTS.Inventory)
 end
 
 --- Handle a click on any slot (machine or inventory)
@@ -136,7 +128,7 @@ function MachineStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
                inventory = view.inventory,
                slotIndex = slotIndex,
                slot = slots[slotIndex],
-               slotType = nil -- No slot type for simple inventories
+               slotType = nil
             }
          end
       end
@@ -148,13 +140,10 @@ function MachineStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
    if not slotInfo then return false end
 
    local inventory = slotInfo.inventory
-   if not inventory then return false end
-
    local slotIndex = slotInfo.slotIndex
    local slotType = slotInfo.slotType -- Can be nil for simple inventories
    local slot = slotInfo.slot
 
-   -- If holding an item, try to place/swap/stack
    if self.heldStack then
       return self:placeItemInSlot(slotIndex, slotType, inventory)
    elseif slot and slot.itemId then
