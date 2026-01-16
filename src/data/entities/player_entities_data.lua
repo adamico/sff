@@ -38,6 +38,7 @@ return {
             {itemId = "skeletonAssembler", quantity = 1},
             {itemId = "creativeChest",     quantity = 1},
             {itemId = "skeleton",          quantity = 1},
+            {itemId = "daggerBasic",       quantity = 1},
          },
       }),
    },

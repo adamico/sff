@@ -64,9 +64,9 @@ end
 -- ============================================================================
 
 Combat.register("harvest", require("src.evolved.behaviors.combat.harvest_combat_behavior"))
+Combat.register("melee", require("src.evolved.behaviors.combat.melee_combat_behavior"))
 
 -- Future combat types can be registered here:
--- Combat.register("melee", require("src.evolved.behaviors.combat.melee_combat_behavior"))
 -- Combat.register("ranged", require("src.evolved.behaviors.combat.ranged_combat_behavior"))
 -- Combat.register("magic", require("src.evolved.behaviors.combat.magic_combat_behavior"))
 -- Combat.register("explosive", require("src.evolved.behaviors.combat.explosive_combat_behavior"))

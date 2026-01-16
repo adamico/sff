@@ -1,6 +1,25 @@
 local ItemQuery = require("src.data.queries.item_query")
 local EntityHelper = {}
 
+--- Get the equipped weapon/tool item data that has a combat behavior
+--- @param entityId number Entity ID to check equipment
+--- @return table|nil The item data with combatBehavior, or nil if none equipped
+function EntityHelper.getEquippedWeapon(entityId)
+   local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
+   if not equipment then return nil end
+
+   for _, slot in ipairs(equipment.slots) do
+      if slot.itemId then
+         local item = ItemQuery.getItem(slot.itemId)
+         if item and item.combatBehavior then
+            return item
+         end
+      end
+   end
+
+   return nil
+end
+
 function EntityHelper.isEquippedWith(entityId, equipmentCategory)
    local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
    if not equipment then return false end

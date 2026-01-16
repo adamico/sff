@@ -82,8 +82,8 @@ local function actionDetection(playerInventory, playerToolbar, playerEquipment)
       end
    end
 
-   if actionDetector:pressed(A.HARVESTER_USE) then
-      trigger(Events.HARVESTER_ACTIVATED, mx, my)
+   if actionDetector:pressed(A.WEAPON_USE) then
+      trigger(Events.WEAPON_ACTIVATED, mx, my)
    end
 
    -- Debug: Toggle hitbox visibility

@@ -15,14 +15,29 @@ local interactableQuery = builder()
    :include(TAGS.Interactable)
    :build()
 
-local function tryHarvesterActivate(mouseX, mouseY)
+local function tryWeaponActivate(mouseX, mouseY)
    local playerId = ENTITIES.Player
    if not playerId then return end
 
-   local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
-   local targetId = CombatSystem.findClosestDamageableEntity(playerId, playerInteractionRange)
+   -- Get equipped weapon and its combat behavior
+   local weapon = EntityHelper.getEquippedWeapon(playerId)
+   if not weapon then
+      Log.debug("No weapon equipped")
+      return
+   end
+
+   local combatBehavior = weapon.combatBehavior
+   local damageType = weapon.damageType or "Health"
+   local attackRange = weapon.attackRange or 16
+
+   if not combatBehavior then
+      Log.warn("Equipped weapon has no combat behavior defined")
+      return
+   end
+
+   local targetId = CombatSystem.findClosestDamageableEntity(playerId, attackRange)
    if targetId then
-      CombatSystem.executeAttack(playerId, targetId, "Mana", "harvest")
+      CombatSystem.executeAttack(playerId, targetId, damageType, combatBehavior)
    end
 end
 
@@ -72,10 +87,10 @@ observe(Events.INPUT_INTERACTED, function(mouseX, mouseY)
    end
 end)
 
--- Register observer for harvester activation events
-observe(Events.HARVESTER_ACTIVATED, function(mouseX, mouseY)
-   -- Don't process harvester activations when inventory or machine screen is open
+-- Register observer for weapon activation events
+observe(Events.WEAPON_ACTIVATED, function(mouseX, mouseY)
+   -- Don't process weapon activations when inventory or machine screen is open
    if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
-      tryHarvesterActivate(mouseX, mouseY)
+      tryWeaponActivate(mouseX, mouseY)
    end
 end)

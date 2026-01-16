@@ -18,7 +18,7 @@ local Events = {
    PLACEMENT_MODE_EXITED = "placement_mode:exited",
    RITUAL_STARTED = "ritual:started",
    TOOLBAR_SLOT_ACTIVATED = "toolbar:slot_activated",
-   HARVESTER_ACTIVATED = "harvester:activated",
+   WEAPON_ACTIVATED = "weapon:activated",
 }
 
 return Events
