@@ -18,9 +18,9 @@ evolvedConfig.TAGS = {
       :require(FRAGMENTS.Input)
       :build(),
 
-   -- Harvestable entities can be harvested by the player
-   Harvestable = builder()
-      :name("TAGS.Harvestable")
+   -- Damageable entities can be damaged by the player
+   Damageable = builder()
+      :name("TAGS.Damageable")
       :tag()
       :require(FRAGMENTS.Position, FRAGMENTS.Health)
       :build(),

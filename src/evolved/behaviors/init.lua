@@ -21,11 +21,9 @@ local Behaviors = {}
 -- Sub-modules
 -- ============================================================================
 
---- Machine behavior registry (for processing systems)
 Behaviors.machines = require("src.evolved.behaviors.machines")
-
---- Interaction handler registry (for interaction systems)
 Behaviors.interactions = require("src.evolved.behaviors.interactions")
+Behaviors.combat = require("src.evolved.behaviors.combat")
 
 -- ============================================================================
 -- Convenience Methods

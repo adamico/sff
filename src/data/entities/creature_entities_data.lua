@@ -18,7 +18,7 @@ return {
          bone = 1,
          unlifeEssence = 1,
       },
-      tags = {"harvestable", "interactable", "physical", "visual"},
+      tags = {"damageable", "interactable", "physical", "visual"},
       tier = "basic",
    },
 }

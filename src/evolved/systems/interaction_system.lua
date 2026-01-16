@@ -2,8 +2,9 @@ local EntityHelper = require("src.helpers.entity_helper")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
 local Behaviors = require("src.evolved.behaviors")
+local CombatSystem = require("src.evolved.systems.combat_system")
+
 local observe = Beholder.observe
-local trigger = Beholder.trigger
 local execute = Evolved.execute
 local builder = Evolved.builder
 local get = Evolved.get
@@ -14,35 +15,14 @@ local interactableQuery = builder()
    :include(TAGS.Interactable)
    :build()
 
-local harvestableQuery = builder()
-   :name("QUERIES.Harvestable")
-   :include(TAGS.Harvestable)
-   :build()
-
 local function tryHarvesterActivate(mouseX, mouseY)
    local playerId = ENTITIES.Player
+   if not playerId then return end
+
    local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
-   local interactionRangeSquared = playerInteractionRange ^ 2
-
-   local closestEntityId = nil
-   local closestDistanceSquared = math.huge
-
-   for _chunk, entityIds, entityCount in execute(harvestableQuery) do
-      for i = 1, entityCount do
-         local entityId = entityIds[i]
-         local playerEntityDistanceSquared = EntityHelper.getDistanceSquared(playerId, entityId)
-         if playerEntityDistanceSquared <= interactionRangeSquared
-            and playerEntityDistanceSquared < closestDistanceSquared then
-            closestEntityId = entityId
-            closestDistanceSquared = playerEntityDistanceSquared
-         end
-      end
-   end
-
-   if closestEntityId then
-      local damageComponent = get(playerId, FRAGMENTS.Damage)
-      local damage = math.random(damageComponent.min, damageComponent.max)
-      trigger(Events.ENTITY_DAMAGED, closestEntityId, damage)
+   local targetId = CombatSystem.findClosestDamageableEntity(playerId, playerInteractionRange)
+   if targetId then
+      CombatSystem.applyDamage(playerId, targetId)
    end
 end
 

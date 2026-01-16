@@ -24,10 +24,11 @@ require("src.evolved.systems.spawner_system") -- Create entities from data files
 require("src.evolved.systems.input_system") -- Process player input
 
 -- Interaction
+require("src.evolved.systems.combat_system")      -- Handle entity combat
 require("src.evolved.systems.interaction_system") -- Handle entity interactions
-require("src.evolved.systems.health_system")      -- Handle entity health
 
--- Resources & Processing
+-- Stats & Processing
+require("src.evolved.systems.health_system")     -- Handle entity health
 require("src.evolved.systems.mana_system")       -- Update mana regeneration
 require("src.evolved.systems.processing_system") -- Process recipes in machines
 
