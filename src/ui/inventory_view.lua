@@ -1,3 +1,4 @@
+local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
 local InventoryView = Class("InventoryView")
@@ -20,6 +21,7 @@ local TEXT_SIZE = 10
 --- @field width number
 --- @field height number
 --- @field inventory table
+--- @field slotType string|nil The slot type to display (nil defaults to "default")
 --- @field containerElement table FlexLove Element
 --- @field slotElements table
 
@@ -29,6 +31,7 @@ function InventoryView:initialize(inventory, options)
    self.inventory = inventory
    options = options or {}
    self.id = options.id or "inventory_view"
+   self.slotType = options.slotType or "default"
    self.x = math.floor(options.x or 0)
    self.y = math.floor(options.y or 0)
    self.columns = options.columns or COLUMNS
@@ -84,7 +87,8 @@ function InventoryView:buildUI()
 end
 
 function InventoryView:createSlots()
-   local slots = self.inventory.slots
+   local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
+   if not slots then return end
 
    for slotIndex = 1, #slots do
       local slot = slots[slotIndex]
@@ -101,6 +105,7 @@ function InventoryView:createSlots()
          textAlign = "center",
          userdata = {
             slotIndex = slotIndex,
+            slotType = self.slotType,
             view = self
          },
          onEvent = function(element, event)
@@ -128,17 +133,23 @@ function InventoryView:getInventory()
    return self.inventory
 end
 
+function InventoryView:getSlotType()
+   return self.slotType
+end
+
 function InventoryView:draw()
    self:updateSlots()
 end
 
 function InventoryView:updateSlots()
+   local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
+   if not slots then return end
+
    for _, slotData in ipairs(self.slotElements) do
       local slotIndex = slotData.slotIndex
       local element = slotData.element
-      local slots = self.inventory.slots
 
-      if slots and slots[slotIndex] then
+      if slots[slotIndex] then
          local slot = slots[slotIndex]
          local itemText = slot.itemId and string.sub(slot.itemId, 1, 1) or ""
          element:setText(itemText)
@@ -188,11 +199,12 @@ function InventoryView:getSlotUnderMouse(mx, my)
       local slotIndex = element.userdata.slotIndex
 
       if slotIndex then
-         local slots = self.inventory.slots
+         local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
          if slots and slots[slotIndex] then
             return {
                view = self,
                slotIndex = slotIndex,
+               slotType = self.slotType,
                slot = slots[slotIndex],
             }
          end

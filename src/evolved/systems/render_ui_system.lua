@@ -20,10 +20,12 @@ builder()
 
       for i = 1, entityCount do
          local toolbarView = UICoordinator.getToolbarView(toolbars[i])
-         local equipmentView = UICoordinator.getEquipmentView(equipments[i])
+         local equipmentViews = UICoordinator.getEquipmentViews(equipments[i])
 
          if toolbarView then toolbarView:draw() end
-         if equipmentView then equipmentView:draw() end
+         for _, equipmentView in ipairs(equipmentViews) do
+            equipmentView:draw()
+         end
       end
    end)
    :epilogue(function()

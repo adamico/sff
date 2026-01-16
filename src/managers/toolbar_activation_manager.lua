@@ -1,3 +1,4 @@
+local InventoryHelper = require("src.helpers.inventory_helper")
 local ItemRegistry = require("src.data.queries.item_query")
 
 local observe = Beholder.observe
@@ -20,9 +21,9 @@ end
 
 function ToolbarActivationManager:getSlot(slotIndex)
    local toolbar = self:getToolbar()
-   if not toolbar or not toolbar.slots then return nil end
+   if not toolbar then return nil end
 
-   return toolbar.slots[slotIndex]
+   return InventoryHelper.getSlot(toolbar, slotIndex)
 end
 
 observe(Events.TOOLBAR_SLOT_ACTIVATED, function(slotIndex)

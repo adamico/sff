@@ -7,10 +7,21 @@ return {
          max = 10,
       },
       equipment = Inventory.new({
-         maxSlots = 2,
-         initialItems = {
-            {itemId = "harvesterBasic", quantity = 1},
-            {itemId = "armorBasic",     quantity = 1},
+         slotGroups = {
+            weapon = {
+               maxSlots = 1,
+               acceptedCategories = {"weapon", "harvester"},
+               initialItems = {
+                  {itemId = "harvesterBasic", quantity = 1},
+               },
+            },
+            armor = {
+               maxSlots = 1,
+               acceptedCategories = {"armor"},
+               initialItems = {
+                  {itemId = "armorBasic", quantity = 1},
+               },
+            },
          },
       }),
       hitbox = {
@@ -21,7 +32,15 @@ return {
       },
       interactionRange = 128,
       inventory = Inventory.new({
-         maxSlots = 40,
+         slotGroups = {
+            default = {
+               initialItems = {
+                  {itemId = "bone",          quantity = 32},
+                  {itemId = "unlifeEssence", quantity = 63},
+               },
+               maxSlots = 40,
+            },
+         }
       }),
       mana = {
          current = 95,
@@ -33,12 +52,16 @@ return {
       name = "Player",
       tags = {"controllable", "physical", "player", "visual"},
       toolbar = Inventory.new({
-         maxSlots = 10,
-         initialItems = {
-            {itemId = "skeletonAssembler", quantity = 1},
-            {itemId = "creativeChest",     quantity = 1},
-            {itemId = "skeleton",          quantity = 1},
-            {itemId = "daggerBasic",       quantity = 1},
+         slotGroups = {
+            default = {
+               initialItems = {
+                  {itemId = "skeletonAssembler", quantity = 1},
+                  {itemId = "creativeChest",     quantity = 1},
+                  {itemId = "skeleton",          quantity = 1},
+                  {itemId = "daggerBasic",       quantity = 1},
+               },
+               maxSlots = 10,
+            },
          },
       }),
    },

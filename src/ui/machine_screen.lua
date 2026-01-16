@@ -138,10 +138,14 @@ function MachineScreen:createSlots()
       positioning = "flex",
    })
 
-   local definedSlots = {
-      {type = "input",  slots = inventory.inputSlots},
-      {type = "output", slots = inventory.outputSlots}
-   }
+   local slotTypes = InventoryHelper.getSlotTypes(inventory)
+   local definedSlots = {}
+   for _, slotType in ipairs(slotTypes) do
+      local slots = InventoryHelper.getSlots(inventory, slotType)
+      if slots then
+         table.insert(definedSlots, {type = slotType, slots = slots})
+      end
+   end
 
    for _, typeSlotPair in ipairs(definedSlots) do
       local slotType = typeSlotPair.type

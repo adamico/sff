@@ -14,10 +14,15 @@ return {
       },
       inputQueue = InputQueue.new(),
       inventory = Inventory.new({
-         maxInputSlots = 2,
-         maxOutputSlots = 1,
-         initialItems = {
-            {itemId = "bone", quantity = 1},
+         slotGroups = {
+            input = {
+               maxSlots = 2,
+               initialItems = {},
+            },
+            output = {
+               maxSlots = 1,
+               initialItems = {},
+            },
          }
       }),
       interaction = {type = "machine"},
@@ -57,11 +62,12 @@ return {
          height = 32,
       },
       inventory = Inventory.new({
-         maxSlots = 32,
-         initialItems = {
-            {itemId = "bone",          quantity = 63},
-            {itemId = "unlifeEssence", quantity = 15}
-         }
+         slotGroups = {
+            default = {
+               initialItems = {},
+               maxSlots = 32,
+            },
+         },
       }),
       interaction = {type = "storage"},
       name = "Creative Chest",

@@ -1,6 +1,7 @@
 local EntityRegistry = require("src.data.queries.entity_query")
 local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 local CollisionHelper = require("src.helpers.collision_helper")
+local InventoryHelper = require("src.helpers.inventory_helper")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
@@ -137,9 +138,9 @@ function EntityPlacementManager:deployEntity()
    end
 
    local toolbar = get(ENTITIES.Player, FRAGMENTS.Toolbar)
-   if not toolbar or not toolbar.slots then return false end
+   if not toolbar then return false end
 
-   local slot = toolbar.slots[self.sourceSlotIndex]
+   local slot = InventoryHelper.getSlot(toolbar, self.sourceSlotIndex)
    if not slot or not slot.itemId or slot.quantity <= 0 then return false end
 
    -- Request entity spawn via event (spawner_system handles creation)

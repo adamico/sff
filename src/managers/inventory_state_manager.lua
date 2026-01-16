@@ -25,11 +25,13 @@ function InventoryStateManager:close()
       self.heldStackView = nil
    end
 
-   -- Destroy FlexLove elements (except toolbar which is always visible)
+   -- Destroy FlexLove elements (except toolbar and equipment views which are always visible)
    for _, view in ipairs(self.views) do
       if view and view.destroy then
-         -- Don't destroy toolbar or equipment view
-         if view.id ~= "toolbar" and view.id ~= "equipment" then
+         -- Don't destroy toolbar or equipment views (equipment views have id starting with "equipment_")
+         local isToolbar = view.id == "toolbar"
+         local isEquipment = view.id and string.find(view.id, "^equipment")
+         if not isToolbar and not isEquipment then
             view:destroy()
          end
       end
@@ -43,7 +45,8 @@ end
 function InventoryStateManager:returnHeldStack()
    local heldStack = self.heldStack
    if heldStack and heldStack.sourceInventory then
-      local slot = heldStack.sourceInventory.slots[heldStack.sourceSlot]
+      local slotType = heldStack.sourceSlotType
+      local slot = InventoryHelper.getSlot(heldStack.sourceInventory, heldStack.sourceSlot, slotType)
       if slot then
          slot.itemId = heldStack.itemId
          slot.quantity = heldStack.quantity
@@ -74,12 +77,15 @@ function InventoryStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view
       local slotIndex = userdata.slotIndex
-      local slots = view.inventory.slots
-      if slots and slots[slotIndex] then
+      local slotType = userdata.slotType or view:getSlotType()
+      local slot = InventoryHelper.getSlot(view.inventory, slotIndex, slotType)
+      if slot then
          slotInfo = {
             view = view,
+            inventory = view.inventory,
             slotIndex = slotIndex,
-            slot = slots[slotIndex],
+            slot = slot,
+            slotType = slotType,
          }
       end
    else
@@ -91,15 +97,16 @@ function InventoryStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
       return false
    end
 
-   local inventory = slotInfo.view.inventory
+   local inventory = slotInfo.inventory or slotInfo.view.inventory
    local slotIndex = slotInfo.slotIndex
+   local slotType = slotInfo.slotType
    local slot = slotInfo.slot
 
    -- If holding an item, try to place/swap/stack
    if self.heldStack then
-      return self:placeItemInSlot(slotIndex, inventory)
-   elseif slot.itemId then
-      return self:pickItemFromSlot(slotIndex, inventory)
+      return self:placeItemInSlot(slotIndex, slotType, inventory)
+   elseif slot and slot.itemId then
+      return self:pickItemFromSlot(slotIndex, slotType, inventory)
    end
 
    return false
@@ -107,10 +114,11 @@ end
 
 --- Pick up an item from a slot (internal method - assumes heldStack is nil)
 --- @param slotIndex number The slot index to pick from
+--- @param slotType string|nil The slot type (nil defaults to "default")
 --- @param inventory table The inventory to pick from
 --- @return boolean Success
-function InventoryStateManager:pickItemFromSlot(slotIndex, inventory)
-   local slot = inventory.slots[slotIndex]
+function InventoryStateManager:pickItemFromSlot(slotIndex, slotType, inventory)
+   local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
    if not slot or not slot.itemId then return false end
 
    -- Pick up the entire stack
@@ -119,6 +127,7 @@ function InventoryStateManager:pickItemFromSlot(slotIndex, inventory)
       quantity = slot.quantity,
       sourceInventory = inventory,
       sourceSlot = slotIndex,
+      sourceSlotType = slotType,
    }
 
    -- Create held stack view
@@ -142,11 +151,12 @@ local function clearHeldStack(self)
 end
 
 --- Update held stack with new data
-local function updateHeldStack(self, itemId, quantity, inventory, slotIndex)
+local function updateHeldStack(self, itemId, quantity, inventory, slotIndex, slotType)
    self.heldStack.itemId = itemId
    self.heldStack.quantity = quantity
    self.heldStack.sourceInventory = inventory
    self.heldStack.sourceSlot = slotIndex
+   self.heldStack.sourceSlotType = slotType
 
    if self.heldStackView then
       self.heldStackView:updateStack(self.heldStack)
@@ -154,12 +164,18 @@ local function updateHeldStack(self, itemId, quantity, inventory, slotIndex)
 end
 
 --- Place the held item into a slot (handles empty slots, stacking, and swapping)
---- @param inventory table The inventory to place into
 --- @param slotIndex number The slot index to place into
+--- @param slotType string|nil The slot type (nil defaults to "default")
+--- @param inventory table The inventory to place into
 --- @return boolean Success
-function InventoryStateManager:placeItemInSlot(slotIndex, inventory)
-   local slot = inventory.slots[slotIndex]
+function InventoryStateManager:placeItemInSlot(slotIndex, slotType, inventory)
+   local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
    if not slot then return false end
+
+   -- Check if the held item can be placed in this slot type (category constraints)
+   if not InventoryHelper.canPlaceItem(inventory, self.heldStack.itemId, slotType) then
+      return false
+   end
 
    -- Empty slot - place the item
    if not slot.itemId then
@@ -193,6 +209,7 @@ function InventoryStateManager:placeItemInSlot(slotIndex, inventory)
             self.heldStack.quantity = newHeldQuantity
             self.heldStack.sourceInventory = inventory
             self.heldStack.sourceSlot = slotIndex
+            self.heldStack.sourceSlotType = slotType
             love.mouse.setVisible(true)
          end
          return true
@@ -200,13 +217,21 @@ function InventoryStateManager:placeItemInSlot(slotIndex, inventory)
    end
 
    -- Slot has different item - swap them
+   -- First check if the swap is valid in both directions
    local tempItem = slot.itemId
    local tempQuantity = slot.quantity
+
+   -- Check if the slot item can go back to where the held item came from
+   if self.heldStack.sourceInventory and self.heldStack.sourceSlotType then
+      if not InventoryHelper.canPlaceItem(self.heldStack.sourceInventory, tempItem, self.heldStack.sourceSlotType) then
+         return false
+      end
+   end
 
    slot.itemId = self.heldStack.itemId
    slot.quantity = self.heldStack.quantity
 
-   updateHeldStack(self, tempItem, tempQuantity, inventory, slotIndex)
+   updateHeldStack(self, tempItem, tempQuantity, inventory, slotIndex, slotType)
    return true
 end
 

@@ -4,6 +4,8 @@
 -- Central coordinator for all UI screens and state
 -- Manages view creation, positioning, and lifecycle
 
+local InventoryHelper = require("src.helpers.inventory_helper")
+local Inventory = require("src.evolved.fragments.inventory")
 local InventoryView = require("src.ui.inventory_view")
 local MachineScreen = require("src.ui.machine_screen")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
@@ -40,7 +42,7 @@ local MACHINE_HEIGHT = 240
 -- ============================================================================
 
 local toolbarView = nil
-local equipmentView = nil
+local equipmentViews = {} -- Table of views keyed by slotType
 
 local function getOrCreateToolbarView(toolbar)
    if not toolbar then return nil end
@@ -58,18 +60,52 @@ local function getOrCreateToolbarView(toolbar)
    return toolbarView
 end
 
-local function getOrCreateEquipmentView(equipment)
-   if not equipment then return nil end
-   if not equipmentView then
-      equipmentView = InventoryView:new(equipment, {
-         id = "equipment",
-         columns = 2,
-         rows = 1,
-         x = 16,
-         y = TOOLBAR_Y
-      })
+--- Creates equipment views for all slot groups in the equipment inventory.
+--- Each slot group (weapon, armor, etc.) gets its own view positioned vertically.
+--- @param equipment table The equipment inventory
+--- @return table Array of InventoryView instances for all slot groups
+local function getOrCreateEquipmentViews(equipment)
+   if not equipment then return {} end
+
+   local slotTypes = InventoryHelper.getSlotTypes(equipment)
+   local views = {}
+   local currentY = TOOLBAR_Y
+   local viewX = 16
+
+   for _, slotType in ipairs(slotTypes) do
+      if not equipmentViews[slotType] then
+         local group = Inventory.getSlotGroup(equipment, slotType)
+         if group then
+            local maxSlots = group.maxSlots or 1
+            local viewHeight = SLOT_SIZE + PADDING * 2
+
+            equipmentViews[slotType] = InventoryView:new(equipment, {
+               id = "equipment_"..slotType,
+               slotType = slotType,
+               columns = maxSlots,
+               rows = 1,
+               x = viewX,
+               y = currentY
+            })
+
+            currentY = currentY - viewHeight - 4 -- Stack views vertically upward
+         end
+      end
+
+      if equipmentViews[slotType] then
+         table.insert(views, equipmentViews[slotType])
+      end
    end
-   return equipmentView
+
+   return views
+end
+
+--- Get a single equipment view (for backward compatibility / render_ui_system)
+--- @param equipment table The equipment inventory
+--- @return table|nil First equipment view or nil
+local function getOrCreateEquipmentView(equipment)
+   local views = getOrCreateEquipmentViews(equipment)
+   return views[1]
 end
 
 local function getOrCreatePlayerInventoryView(playerInventory)
@@ -86,9 +122,11 @@ end
 local function getOrCreateTargetInventoryView(targetInventory, entityId)
    if not targetInventory then return nil end
 
-   local slots = #targetInventory.slots
-   local targetColumns = math.min(slots, COLUMNS)
-   local targetRows = math.ceil(slots / targetColumns)
+   local slots = InventoryHelper.getSlots(targetInventory)
+   if not slots then return nil end
+   local slotCount = #slots
+   local targetColumns = math.min(slotCount, COLUMNS)
+   local targetRows = math.ceil(slotCount / targetColumns)
 
    local targetWidth = targetColumns * SLOT_SIZE + PADDING * 2
    local targetHeight = targetRows * SLOT_SIZE + PADDING * 2
@@ -130,8 +168,12 @@ function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playe
    local views = {
       getOrCreatePlayerInventoryView(playerInventory),
       getOrCreateToolbarView(playerToolbar),
-      getOrCreateEquipmentView(playerEquipment),
    }
+
+   -- Add all equipment views
+   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+      table.insert(views, equipView)
+   end
 
    InventoryStateManager:open(views)
 end
@@ -147,9 +189,13 @@ function UICoordinator.openTargetInventory(entityId)
    local views = {
       getOrCreateToolbarView(playerToolbar),
       getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateEquipmentView(playerEquipment),
       getOrCreateTargetInventoryView(targetInventory, entityId),
    }
+
+   -- Add all equipment views
+   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+      table.insert(views, equipView)
+   end
 
    InventoryStateManager:open(views)
 end
@@ -166,8 +212,12 @@ function UICoordinator.openMachineScreen(entityId)
    local views = {
       getOrCreateToolbarView(playerToolbar),
       getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateEquipmentView(playerEquipment),
    }
+
+   -- Add all equipment views
+   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+      table.insert(views, equipView)
+   end
 
    MachineStateManager:open(machineScreen, views)
 end
@@ -178,6 +228,10 @@ end
 
 function UICoordinator.getEquipmentView(equipment)
    return getOrCreateEquipmentView(equipment)
+end
+
+function UICoordinator.getEquipmentViews(equipment)
+   return getOrCreateEquipmentViews(equipment)
 end
 
 return UICoordinator

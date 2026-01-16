@@ -35,11 +35,13 @@ function MachineStateManager:close()
       self.screen:destroy()
    end
 
-   -- Destroy view elements (except toolbar which is always visible)
+   -- Destroy view elements (except toolbar and equipment views which are always visible)
    for _, view in ipairs(self.views) do
       if view and view.destroy then
-         -- Don't destroy toolbar or equipment view
-         if view.id ~= "toolbar" and view.id ~= "equipment" then
+         -- Don't destroy toolbar or equipment views (equipment views have id starting with "equipment_")
+         local isToolbar = view.id == "toolbar"
+         local isEquipment = view.id and string.find(view.id, "^equipment")
+         if not isToolbar and not isEquipment then
             view:destroy()
          end
       end
@@ -118,17 +120,18 @@ function MachineStateManager:handleSlotClick(mouse_x, mouse_y, userdata)
             end
          end
       elseif userdata.view then
-         -- Inventory view slot (no slotType, uses .slots)
+         -- Inventory view slot (has slotType from view)
          local view = userdata.view
          local slotIndex = userdata.slotIndex
-         local slots = view.inventory.slots
-         if slots and slots[slotIndex] then
+         local slotType = userdata.slotType or view:getSlotType()
+         local slot = InventoryHelper.getSlot(view.inventory, slotIndex, slotType)
+         if slot then
             slotInfo = {
                view = view,
                inventory = view.inventory,
                slotIndex = slotIndex,
-               slot = slots[slotIndex],
-               slotType = nil
+               slot = slot,
+               slotType = slotType
             }
          end
       end
@@ -215,6 +218,11 @@ function MachineStateManager:placeItemInSlot(slotIndex, slotType, inventory)
    local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
    if not slot then return false end
 
+   -- Check if the held item can be placed in this slot type (category constraints)
+   if not InventoryHelper.canPlaceItem(inventory, self.heldStack.itemId, slotType) then
+      return false
+   end
+
    -- Empty slot - place the item
    if not slot.itemId then
       slot.itemId = self.heldStack.itemId
@@ -255,8 +263,16 @@ function MachineStateManager:placeItemInSlot(slotIndex, slotType, inventory)
    end
 
    -- Slot has different item - swap them
+   -- First check if the swap is valid in both directions
    local tempItem = slot.itemId
    local tempQuantity = slot.quantity
+
+   -- Check if the slot item can go back to where the held item came from
+   if self.heldStack.sourceInventory and self.heldStack.sourceSlotType then
+      if not InventoryHelper.canPlaceItem(self.heldStack.sourceInventory, tempItem, self.heldStack.sourceSlotType) then
+         return false
+      end
+   end
 
    slot.itemId = self.heldStack.itemId
    slot.quantity = self.heldStack.quantity

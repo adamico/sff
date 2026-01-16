@@ -1,3 +1,4 @@
+local InventoryHelper = require("src.helpers.inventory_helper")
 local ItemQuery = require("src.data.queries.item_query")
 local EntityHelper = {}
 
@@ -8,11 +9,18 @@ function EntityHelper.getEquippedWeapon(entityId)
    local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
    if not equipment then return nil end
 
-   for _, slot in ipairs(equipment.slots) do
-      if slot.itemId then
-         local item = ItemQuery.getItem(slot.itemId)
-         if item and item.combatBehavior then
-            return item
+   -- Check all slot types in the equipment inventory
+   local slotTypes = InventoryHelper.getSlotTypes(equipment)
+   for _, slotType in ipairs(slotTypes) do
+      local slots = InventoryHelper.getSlots(equipment, slotType)
+      if slots then
+         for _, slot in ipairs(slots) do
+            if slot.itemId then
+               local item = ItemQuery.getItem(slot.itemId)
+               if item and item.combatBehavior then
+                  return item
+               end
+            end
          end
       end
    end
@@ -24,11 +32,18 @@ function EntityHelper.isEquippedWith(entityId, equipmentCategory)
    local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
    if not equipment then return false end
 
-   for _, slot in ipairs(equipment.slots) do
-      if slot.itemId then
-         local item = ItemQuery.getItem(slot.itemId)
-         if item and item.category == equipmentCategory then
-            return true
+   -- Check all slot types in the equipment inventory
+   local slotTypes = InventoryHelper.getSlotTypes(equipment)
+   for _, slotType in ipairs(slotTypes) do
+      local slots = InventoryHelper.getSlots(equipment, slotType)
+      if slots then
+         for _, slot in ipairs(slots) do
+            if slot.itemId then
+               local item = ItemQuery.getItem(slot.itemId)
+               if item and item.category == equipmentCategory then
+                  return true
+               end
+            end
          end
       end
    end
