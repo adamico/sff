@@ -6,7 +6,6 @@
 
 local Recipe = require("src.evolved.fragments.recipe")
 local helpers = require("src.evolved.behaviors.machines.assembler.helpers")
-local get = Evolved.get
 local set = Evolved.set
 
 local states = {}

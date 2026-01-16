@@ -1,11 +1,9 @@
+local Inventory = require("src.evolved.fragments.inventory")
+local StateMachine = require("src.evolved.fragments.state_machine")
+
 return {
    skeleton = {
-      harvestTime = 5,
-      harvestYield = 25,
-      mana = {
-         current = 10,
-         max = 10,
-      },
+      creatureClass = "DamageDealer",
       health = {
          current = 20,
          max = 20,
@@ -17,11 +15,31 @@ return {
          radius = 8,
       },
       interaction = {type = "creature", action = "inspect"},
-      name = "Skeleton",
-      recycleReturns = {
-         bone = 1,
-         unlifeEssence = 1,
+      loot = Inventory.new({
+         slotGroups = {
+            default = {
+               maxSlots = 2,
+               initialItems = {
+                  {itemId = "bone",          quantity = 1},
+                  {itemId = "unlifeEssence", quantity = 1},
+               },
+            }
+         }
+      }),
+      mana = {
+         current = 25,
+         max = 25,
       },
+      name = "Skeleton",
+      stateMachine = StateMachine.new({
+         events = {
+            {name = "spawn",  from = "blank",   to = "idle"},
+            {name = "alert",  from = "idle",    to = "alert"},
+            {name = "chase",  from = "alert",   to = "chasing"},
+            {name = "attack", from = "chasing", to = "attacking"},
+            {name = "reset",  from = "*",       to = "idle"},
+         }
+      }),
       tags = {"damageable", "harvestable", "interactable", "physical", "visual"},
       tier = "basic",
    },

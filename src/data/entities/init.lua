@@ -2,8 +2,9 @@
 local entities = {}
 
 local categories = {
-   require("src.data.entities.deployable_entities_data"),
+   require("src.data.entities.corpse_entities_data"),
    require("src.data.entities.creature_entities_data"),
+   require("src.data.entities.deployable_entities_data"),
    require("src.data.entities.player_entities_data"),
 }
 

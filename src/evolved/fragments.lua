@@ -68,20 +68,26 @@ evolvedConfig.FRAGMENTS = {
    -- Inventory & Storage Components
    -- =========================================================================
 
+   Equipment = builder()
+      :name("FRAGMENTS.Equipment")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
    Inventory = builder()
       :name("FRAGMENTS.Inventory")
       :default(nil)
       :duplicate(Inventory.duplicate)
       :build(),
 
-   Toolbar = builder()
-      :name("FRAGMENTS.Toolbar")
+   Loot = builder()
+      :name("FRAGMENTS.Loot")
       :default(nil)
       :duplicate(Inventory.duplicate)
       :build(),
 
-   Equipment = builder()
-      :name("FRAGMENTS.Equipment")
+   Toolbar = builder()
+      :name("FRAGMENTS.Toolbar")
       :default(nil)
       :duplicate(Inventory.duplicate)
       :build(),
@@ -113,10 +119,13 @@ evolvedConfig.FRAGMENTS = {
       :duplicate(deepClone)
       :build(),
 
-   StateMachine = builder()
-      :name("FRAGMENTS.State")
-      :default(StateMachine.new())
-      :duplicate(StateMachine.duplicate)
+   -- =========================================================================
+   -- Creature Components
+   -- =========================================================================
+
+   CreatureClass = builder()
+      :name("FRAGMENTS.CreatureClass")
+      :default(nil)
       :build(),
 
    -- =========================================================================
@@ -154,5 +163,15 @@ evolvedConfig.FRAGMENTS = {
       :name("FRAGMENTS.Interaction")
       :default(nil)
       :duplicate(deepClone)
+      :build(),
+
+   -- =========================================================================
+   -- Common Components
+   -- =========================================================================
+
+   StateMachine = builder()
+      :name("FRAGMENTS.State")
+      :default(StateMachine.new())
+      :duplicate(StateMachine.duplicate)
       :build(),
 }

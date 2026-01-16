@@ -28,17 +28,24 @@ end
 --- Iterates over FRAGMENTS and checks for matching entity data fields
 --- @param entityData table The entity data from the registry
 --- @param position table The position vector to spawn at
+--- @param overrides table|nil Optional overrides for component values
 --- @return table The component map
-local function buildComponents(entityData, position)
+local function buildComponents(entityData, position, overrides)
+   overrides = overrides or {}
+
    local components = {
-      [Evolved.NAME] = entityData.name or entityData.id,
+      [Evolved.NAME] = overrides.name or entityData.name or entityData.id,
       [FRAGMENTS.Position] = Vector(position.x, position.y),
    }
 
    -- Iterate over all defined fragments
    for fragmentName, fragment in pairs(FRAGMENTS) do
       local fieldName = fragmentNameToFieldName(fragmentName)
-      local value = entityData[fieldName]
+      -- Check overrides first, then entity data
+      local value = overrides[fieldName]
+      if value == nil then
+         value = entityData[fieldName]
+      end
 
       if value ~= nil then
          components[fragment] = value
@@ -74,16 +81,17 @@ end
 --- Spawn an entity at a given position
 --- @param entityId string The entity ID from the registry
 --- @param position table The position vector to spawn at
+--- @param overrides table|nil Optional overrides for component values
 --- @return number|nil The spawned entity ID, or nil on failure
-local function spawnEntity(entityId, position)
+local function spawnEntity(entityId, position, overrides)
    local entityData = EntityRegistry.getEntity(entityId)
    if not entityData then
       Log.warn("SpawnerSystem: No entity data found for: "..tostring(entityId))
       return nil
    end
 
-   -- Build components from entity data
-   local components = buildComponents(entityData, position)
+   -- Build components from entity data (with optional overrides)
+   local components = buildComponents(entityData, position, overrides)
 
    -- Get tags to apply
    local tags = getTags(entityData)
@@ -111,7 +119,7 @@ end
 
 -- Listen for spawn requests
 observe(Events.ENTITY_SPAWN_REQUESTED, function(request)
-   local spawnedId = spawnEntity(request.entityId, request.position)
+   local spawnedId = spawnEntity(request.entityId, request.position, request.overrides)
 
    if spawnedId then
       trigger(Events.ENTITY_SPAWNED, spawnedId, request.position, request.sourceSlotIndex)

@@ -13,7 +13,7 @@ return {
                displayOrder = 2,
                acceptedCategories = {"weapon", "harvester"},
                initialItems = {
-                  {itemId = "harvesterBasic", quantity = 1},
+                  {itemId = "daggerBasic", quantity = 1},
                },
             },
             armor = {
@@ -36,11 +36,11 @@ return {
       inventory = Inventory.new({
          slotGroups = {
             default = {
+               maxSlots = 40,
                initialItems = {
                   {itemId = "bone",          quantity = 32},
                   {itemId = "unlifeEssence", quantity = 63},
                },
-               maxSlots = 40,
             },
          }
       }),
@@ -56,13 +56,13 @@ return {
       toolbar = Inventory.new({
          slotGroups = {
             default = {
+               maxSlots = 10,
                initialItems = {
                   {itemId = "skeletonAssembler", quantity = 1},
                   {itemId = "creativeChest",     quantity = 1},
                   {itemId = "skeleton",          quantity = 1},
-                  {itemId = "daggerBasic",       quantity = 1},
+                  {itemId = "harvesterBasic",    quantity = 1},
                },
-               maxSlots = 10,
             },
          },
       }),
