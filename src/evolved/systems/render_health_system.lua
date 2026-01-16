@@ -1,5 +1,15 @@
-local lg = love.graphics
+-- ============================================================================
+-- Render Health System
+-- ============================================================================
+-- Renders health bars above entities with the Damageable tag
+-- Uses HealthBarView for consistent, customizable rendering
+
+local HealthBarView = require("src.ui.health_bar_view")
 local builder = Evolved.builder
+
+-- Create a shared health bar renderer with default options
+-- Can be customized by passing options: HealthBarView:new({ width = 60, ... })
+local healthBarRenderer = HealthBarView:new()
 
 builder()
    :name("SYSTEMS.RenderHealth")
@@ -9,23 +19,9 @@ builder()
       local positions, healths = chunk:components(FRAGMENTS.Position, FRAGMENTS.Health)
 
       for i = 1, entityCount do
+         local position = positions[i]
          local health = healths[i]
-         local currentHealth = health.current
-         local maxHealth = health.max
-         local healthBarWidth = 50
-         local healthBarHeight = 10
-         local healthBarX = positions[i].x - healthBarWidth / 2
-         local healthBarY = positions[i].y - healthBarHeight - 5
 
-         lg.setColor(1, 0, 0)
-         lg.rectangle("fill", healthBarX, healthBarY, healthBarWidth, healthBarHeight)
-
-         lg.setColor(0, 1, 0)
-         lg.rectangle("fill", healthBarX, healthBarY, healthBarWidth * currentHealth / maxHealth, healthBarHeight)
-
-         local borderGap = 1
-         lg.setColor(1, 1, 1)
-         lg.rectangle("line", healthBarX - borderGap, healthBarY - borderGap, healthBarWidth + borderGap * 2,
-            healthBarHeight + borderGap * 2)
+         healthBarRenderer:draw(position, health.current, health.max)
       end
    end):build()
