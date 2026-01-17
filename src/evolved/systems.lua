@@ -43,6 +43,7 @@ require("src.evolved.systems.collision_system") -- Handle collision detection/re
 -- ============================================================================
 -- These systems run during the draw loop
 
+require("src.evolved.systems.render_entities_system") -- Render entity sprites
 require("src.evolved.systems.render_ui_system")       -- Render UI elements
 require("src.evolved.systems.render_debug_system")    -- Render debug information
 require("src.evolved.systems.render_health_system")   -- Render entity health bars

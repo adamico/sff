@@ -27,7 +27,7 @@
 - [x] Collision detection for placement (red/green)
 - [x] Toolbar item click → spawn entity
 - [x] Harvest interaction (attack skeleton with harvest weapon) to steal mana
-- [ ] Recycle interaction (attack skeleton with normal weapon) to return materials
+- [x] Recycle interaction (attack skeleton with normal weapon) to return materials
 
 ---
 
@@ -66,7 +66,6 @@
 - [ ] Save/Load system
 - [ ] Multiple creature types
 - [ ] Automation buildings (conveyors, pipes)
-- [ ] Global mana pool
 
 ---
 

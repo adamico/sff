@@ -1,4 +1,5 @@
 local Inventory = require("src.evolved.fragments.inventory")
+local Visual = require("src.evolved.fragments.visual")
 
 return {
    player = {
@@ -52,6 +53,11 @@ return {
       },
       maxSpeed = 300,
       name = "Player",
+      visual = Visual.new({
+         spriteSheets = {
+            sword = "player_sword.png",
+         }
+      }),
       tags = {"controllable", "physical", "player", "visual"},
       toolbar = Inventory.new({
          slotGroups = {

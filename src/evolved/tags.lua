@@ -55,10 +55,11 @@ evolvedConfig.TAGS = {
       )
       :build(),
 
-   -- Visual entities can be rendered (currently just a marker tag)
+   -- Visual entities can be rendered with animated sprites
    Visual = builder()
       :name("TAGS.Visual")
       :tag()
+      :require(FRAGMENTS.Position, FRAGMENTS.Visual)
       :build(),
 
    -- Processing entities can process recipes (machines, crafters, etc.)
