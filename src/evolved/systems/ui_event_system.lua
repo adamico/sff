@@ -34,10 +34,12 @@ observe(Events.INPUT_INVENTORY_CLOSED, function()
 end)
 
 observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
-   if InventoryStateManager.isOpen then
-      InventoryStateManager:handleSlotClick(mouseX, mouseY, userdata)
-   elseif MachineStateManager.isOpen then
-      MachineStateManager:handleSlotClick(mouseX, mouseY, userdata)
+   local manager = InventoryStateManager.isOpen and InventoryStateManager
+      or MachineStateManager.isOpen and MachineStateManager
+      or nil
+
+   if manager then
+      manager:handleAction(mouseX, mouseY, userdata)
    end
 end)
 

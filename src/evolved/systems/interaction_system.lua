@@ -43,6 +43,8 @@ end
 
 local function tryMouseInteract(mouseX, mouseY)
    local playerId = ENTITIES.Player
+   if not playerId then return end
+
    local playerInteractionRange = get(playerId, FRAGMENTS.InteractionRange)
    local interactionRangeSquared = playerInteractionRange ^ 2
 

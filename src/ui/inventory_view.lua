@@ -1,7 +1,9 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
+local InventoryInputHandler = require("src.ui.inventory_input_handler")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
 local UI = require("src.config.ui_constants")
+
 local InventoryView = Class("InventoryView")
 
 local BACKGROUND_COLOR = Color.new(unpack(UI.BACKGROUND_COLOR))
@@ -107,15 +109,7 @@ function InventoryView:createSlots()
             view = self
          },
          onEvent = function(element, event)
-            if event.type == "click" then
-               local mx, my = love.mouse.getPosition()
-
-               if self.id == "toolbar" and not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
-                  Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
-               else
-                  Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
-               end
-            end
+            self:handleSlotClick(element, event)
          end,
          parent = self.slotsContainer
       })
@@ -124,6 +118,31 @@ function InventoryView:createSlots()
          element = slotElement,
          slotIndex = slotIndex,
       })
+   end
+end
+
+function InventoryView:handleSlotClick(element, event)
+   if event.type ~= "click" then return end
+
+   local mx, my = love.mouse.getPosition()
+   local button = event.button or 1
+   local slotIndex = element.userdata.slotIndex
+
+   if self.id == "toolbar" and not InventoryStateManager.isOpen
+      and not MachineStateManager.isOpen then
+      Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
+   else
+      local modifiers = InventoryInputHandler.getModifiers()
+      local action = InventoryInputHandler.getAction(button, modifiers)
+
+      if action then
+         Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
+            action = action,
+            slotIndex = slotIndex,
+            slotType = self.slotType,
+            view = self
+         })
+      end
    end
 end
 

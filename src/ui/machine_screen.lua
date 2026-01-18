@@ -1,5 +1,7 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
+local InventoryInputHandler = require("src.ui.inventory_input_handler")
 local UI = require("src.config.ui_constants")
+
 local MachineScreen = Class("MachineScreen")
 local get = Evolved.get
 local trigger = Beholder.trigger
@@ -171,8 +173,15 @@ function MachineScreen:createSlots()
             userdata = {},
             onEvent = function(element, event)
                if event.type == "click" then
+                  local modifiers = InventoryInputHandler.getModifiers()
+                  local action = InventoryInputHandler.getAction(event.button or 1, modifiers)
                   local mx, my = love.mouse.getPosition()
-                  trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
+                  trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
+                     action = action,
+                     slotIndex = slotIndex,
+                     slotType = slotType,
+                     screen = self
+                  })
                end
             end,
             parent = slotTypeContainer
