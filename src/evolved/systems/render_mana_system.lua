@@ -13,7 +13,7 @@ local manaBarRenderer = ManaBarView:new()
 
 builder()
    :name("SYSTEMS.RenderMana")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderEntities)
    :include(FRAGMENTS.Mana)
    :execute(function(chunk, entityIds, entityCount)
       local positions, manas = chunk:components(FRAGMENTS.Position, FRAGMENTS.Mana)

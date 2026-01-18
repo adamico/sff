@@ -78,7 +78,7 @@ builder()
 -- Render system - draws sprites
 builder()
    :name("SYSTEMS.RenderEntities")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderEntities)
    :include(TAGS.Visual)
    :execute(function(chunk, entityIds, entityCount)
       local visuals, positions = chunk:components(

@@ -10,7 +10,7 @@ local builder = Evolved.builder
 -- Register the render system (runs every frame)
 builder()
    :name("SYSTEMS.RenderUI")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderEntities)
    :include(FRAGMENTS.Toolbar)
    :include(FRAGMENTS.Equipment)
    :execute(function(chunk, _, entityCount)

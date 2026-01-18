@@ -22,7 +22,7 @@ src/evolved/
 
 ### `evolved_config.lua`
 Central configuration hub that exports:
-- **STAGES**: Lifecycle stages (OnSetup, OnUpdate, OnRender)
+- **STAGES**: Lifecycle stages (OnSetup, OnUpdate, OnRenderEntities)
 - **UNIFORMS**: Global singleton values (DeltaTime, ShowHitboxes)
 - **FRAGMENTS**: Empty table populated by fragments.lua
 - **TAGS**: Empty table populated by tags.lua

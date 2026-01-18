@@ -40,7 +40,7 @@ require("src.evolved.systems.physics_system")   -- Update positions and velociti
 require("src.evolved.systems.collision_system") -- Handle collision detection/response
 
 -- ============================================================================
--- Render Stage (STAGES.OnRender)
+-- Render Stage (STAGES.OnRenderEntities)
 -- ============================================================================
 -- These systems run during the draw loop
 

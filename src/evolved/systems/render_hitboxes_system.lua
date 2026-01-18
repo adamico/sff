@@ -6,7 +6,7 @@ local HITBOX_COLOR = {1, 0, 0, 0.5}
 
 builder()
    :name("SYSTEMS.RenderHitboxes")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderDebug)
    :include(TAGS.Physical)
    :execute(function(chunk, entityIds, entityCount)
       -- Skip hitbox rendering if disabled

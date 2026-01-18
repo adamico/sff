@@ -11,8 +11,9 @@ local evolvedConfig = {}
 evolvedConfig.STAGES = {
    OnSetup = builder():name("STAGES.OnSetup"):build(),
    OnUpdate = builder():name("STAGES.OnUpdate"):build(),
+   OnRenderBackground = builder():name("STAGES.OnRenderBackground"):build(),
+   OnRenderEntities = builder():name("STAGES.OnRenderEntities"):build(),
    OnRenderDebug = builder():name("STAGES.OnRenderDebug"):build(),
-   OnRender = builder():name("STAGES.OnRender"):build(),
 }
 
 -- ============================================================================

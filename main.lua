@@ -52,12 +52,15 @@ local InventoryStateManager = require("src.managers.inventory_state_manager")
 -- Local References
 -- ============================================================================
 local process = Evolved.process
-
+local sti = require("lib.sti")
+local map
 -- ============================================================================
 -- Love2D Callbacks
 -- ============================================================================
 
 function love.load()
+   map = sti("src/data/maps/dungeon.lua")
+
    Flexlove.init({
       baseScale = {width = 400, height = 300}, -- Design at game resolution
       immediateMode = false,
@@ -70,13 +73,15 @@ function love.load()
    })
    shove.setWindowMode(800, 600, {resizable = true})
 
-   -- Create game layer (scaled at 400x300)
-   shove.createLayer("game", {zIndex = 1})
+   shove.createLayer("background", {zIndex = 10})
+   shove.createLayer("entities", {zIndex = 20})
+   shove.createLayer("debug", {zIndex = 1000})
 
    process(STAGES.OnSetup)
 end
 
 function love.update(dt)
+   map:update(dt)
    UNIFORMS.setDeltaTime(dt)
    Flexlove.update(dt)
    process(STAGES.OnUpdate)
@@ -85,9 +90,16 @@ end
 function love.draw()
    shove.beginDraw()
 
-   -- Game layer: rendered at 400x300, scaled by shove
-   shove.beginLayer("game")
-   process(STAGES.OnRender)
+   shove.beginLayer("background")
+   map:draw()
+
+   shove.endLayer()
+
+   shove.beginLayer("entities")
+   process(STAGES.OnRenderEntities)
+   shove.endLayer()
+
+   shove.beginLayer("debug")
    process(STAGES.OnRenderDebug)
    shove.endLayer()
 

@@ -13,7 +13,7 @@ local healthBarRenderer = HealthBarView:new()
 
 builder()
    :name("SYSTEMS.RenderHealth")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderEntities)
    :include(TAGS.Damageable)
    :execute(function(chunk, entityIds, entityCount)
       local positions, healths = chunk:components(FRAGMENTS.Position, FRAGMENTS.Health)
