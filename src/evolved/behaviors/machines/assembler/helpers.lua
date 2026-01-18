@@ -4,7 +4,6 @@
 -- Utility functions for managing ingredients, mana, and outputs in Assemblers
 
 local Recipe = require("src.evolved.fragments.recipe")
-local ItemRegistry = require("src.data.queries.item_query")
 local InventoryHelper = require("src.helpers.inventory_helper")
 
 local helpers = {}
@@ -150,7 +149,7 @@ function helpers.hasOutputSpace(recipe, inventory)
    -- Check if any existing slot can stack more
    if recipe and recipe.outputs then
       for outputId, _ in pairs(recipe.outputs) do
-         local maxStack = ItemRegistry.getMaxStackSize(outputId)
+         local maxStack = InventoryHelper.getMaxStackQuantity(outputId)
          for _, slot in ipairs(slots) do
             if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
                return true
@@ -168,38 +167,13 @@ end
 --- @return boolean success
 function helpers.produceOutputs(recipe, inventory)
    if not recipe or not recipe.outputs then return true end
-   local slots = InventoryHelper.getSlots(inventory, "output")
-   if not slots or #slots == 0 then return true end
 
+   -- Add each output item using the canonical addItem function
    for outputId, amount in pairs(recipe.outputs) do
-      local remaining = amount
-      local maxStack = ItemRegistry.getMaxStackSize(outputId)
-
-      -- First, try to stack with existing slots
-      for _, slot in ipairs(slots) do
-         if remaining <= 0 then break end
-
-         if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
-            local canAdd = math.min(remaining, maxStack - (slot.quantity or 0))
-            slot.quantity = (slot.quantity or 0) + canAdd
-            remaining = remaining - canAdd
-         end
-      end
-
-      -- Then, fill empty slots
-      for _, slot in ipairs(slots) do
-         if remaining <= 0 then break end
-
-         if not slot.itemId then
-            local toAdd = math.min(remaining, maxStack)
-            slot.itemId = outputId
-            slot.quantity = toAdd
-            remaining = remaining - toAdd
-         end
-      end
+      local amountAdded = InventoryHelper.addItem(inventory, outputId, amount, "output")
 
       -- If we couldn't place all outputs, fail
-      if remaining > 0 then
+      if amountAdded < amount then
          return false
       end
    end
@@ -208,19 +182,8 @@ function helpers.produceOutputs(recipe, inventory)
    if recipe.output_chances then
       for outputId, chance in pairs(recipe.output_chances) do
          if math.random() < chance then
-            local maxStack = ItemRegistry.getMaxStackSize(outputId)
-
-            for _, slot in ipairs(slots) do
-               if slot.itemId == outputId and (slot.quantity or 0) < maxStack then
-                  slot.quantity = (slot.quantity or 0) + 1
-                  break
-               elseif not slot.itemId then
-                  slot.itemId = outputId
-                  slot.quantity = 1
-                  break
-               end
-            end
-            -- If no space for bonus, silently skip
+            -- Try to add 1 bonus item, silently skip if no space
+            InventoryHelper.addItem(inventory, outputId, 1, "output")
          end
       end
    end

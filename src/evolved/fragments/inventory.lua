@@ -129,6 +129,22 @@ function Inventory.getSlot(inventory, slotIndex, slotType)
    return slots[slotIndex]
 end
 
+--- Get the first free slot index in an inventory.
+--- @param inventory table The inventory component instance.
+--- @return number|nil The first free slot index, or nil if no free slots
+function Inventory.getFreeSlot(inventory)
+   local slotType = Inventory.getSlotTypes(inventory)[1]
+   local slots = Inventory.getSlots(inventory, slotType)
+   if not slots then return nil end
+
+   for slotIndex = 1, #slots do
+      if not slots[slotIndex].itemId then
+         return slotIndex
+      end
+   end
+   return nil
+end
+
 --- Get all slot group types in an inventory, sorted by displayOrder.
 --- @param inventory table The inventory component instance.
 --- @return table Array of slot type strings, sorted by displayOrder (if defined).
@@ -153,14 +169,17 @@ function Inventory.getSlotTypes(inventory)
    return result
 end
 
---- Adds an item to the inventory.
+--- Adds an item to the inventory with proper stacking support.
+--- Respects max stack size limits and handles partial additions.
 --- @param inventory table The inventory component instance.
 --- @param itemId string The ID of the item to add.
 --- @param count number The number of items to add.
 --- @param slotType string|nil The slot type to add to (nil defaults to "default", or "input" for machines).
---- @return boolean True if the item was added successfully, false otherwise.
+--- @return number The number of items actually added (may be less than count if not enough space).
 function Inventory.addItem(inventory, itemId, count, slotType)
    count = count or 1
+   local ItemQuery = require("src.data.queries.item_query")
+   local maxStack = ItemQuery.getMaxStackSize(itemId)
 
    -- Determine which slot group to use
    if not slotType then
@@ -173,21 +192,69 @@ function Inventory.addItem(inventory, itemId, count, slotType)
    end
 
    local slots = Inventory.getSlots(inventory, slotType)
-   if not slots then return false end
+   if not slots then return 0 end
 
-   for slotIndex, slot in ipairs(slots) do
-      -- Find existing stack
-      if slot.itemId == itemId then
-         slot.quantity = (slot.quantity or 1) + count
-         return true
-         -- Find empty slot
-      elseif not slot.itemId then
-         slots[slotIndex] = {itemId = itemId, quantity = count}
-         return true
+   local remaining = count
+
+   -- First pass: try to stack onto existing stacks of the same item
+   for _, slot in ipairs(slots) do
+      if remaining <= 0 then break end
+
+      if slot.itemId == itemId and (slot.quantity or 0) < maxStack then
+         local canAdd = math.min(remaining, maxStack - (slot.quantity or 0))
+         slot.quantity = (slot.quantity or 0) + canAdd
+         remaining = remaining - canAdd
       end
    end
 
-   return false
+   -- Second pass: fill empty slots
+   for i, slot in ipairs(slots) do
+      if remaining <= 0 then break end
+
+      if not slot.itemId then
+         local toAdd = math.min(remaining, maxStack)
+         slots[i] = {itemId = itemId, quantity = toAdd}
+         remaining = remaining - toAdd
+      end
+   end
+
+   return count - remaining -- Return how many were actually added
+end
+
+--- Stack items into a specific slot, respecting max stack limits.
+--- Use this when you need to add items to a specific slot rather than finding the first available.
+--- @param slot table The slot to stack into (must already contain the same itemId or be empty).
+--- @param itemId string The item ID to add.
+--- @param count number The quantity to add.
+--- @return number The number of items actually added (may be less than count if stack limit reached).
+function Inventory.stackIntoSlot(slot, itemId, count)
+   if not slot then return 0 end
+
+   local ItemQuery = require("src.data.queries.item_query")
+   local maxStack = ItemQuery.getMaxStackSize(itemId)
+
+   -- Empty slot - just place the item
+   if not slot.itemId then
+      local toAdd = math.min(count, maxStack)
+      slot.itemId = itemId
+      slot.quantity = toAdd
+      return toAdd
+   end
+
+   -- Different item - can't stack
+   if slot.itemId ~= itemId then
+      return 0
+   end
+
+   -- Same item - stack up to max
+   local currentQuantity = slot.quantity or 0
+   if currentQuantity >= maxStack then
+      return 0 -- Already at max
+   end
+
+   local canAdd = math.min(count, maxStack - currentQuantity)
+   slot.quantity = currentQuantity + canAdd
+   return canAdd
 end
 
 --- Deep clone an inventory instance.

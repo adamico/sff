@@ -29,6 +29,13 @@ function InventoryHelper.getSlot(inventory, slotIndex, slotType)
    return Inventory.getSlot(inventory, slotIndex, slotType)
 end
 
+--- Get the first free slot index in an inventory.
+--- @param inventory table The inventory component
+--- @return number|nil The first free slot index, or nil if no free slots
+function InventoryHelper.getFreeSlot(inventory)
+   return Inventory.getFreeSlot(inventory)
+end
+
 --- Get a slot group by type.
 --- Delegates to the Inventory fragment's getSlotGroup function.
 --- @param inventory table The inventory component
@@ -55,15 +62,25 @@ function InventoryHelper.getMaxSlots(inventory, slotType)
    return group and group.maxSlots or 0
 end
 
---- Add an item to the inventory.
---- Delegates to the Inventory fragment's addItem function.
+--- Add an item to the inventory with proper stacking support.
+--- Respects max stack size limits and handles partial additions.
 --- @param inventory table The inventory component
 --- @param itemId string The item ID to add
 --- @param count number The quantity to add
 --- @param slotType string|nil The slot type to add to (nil defaults to "default" or "input")
---- @return boolean True if added successfully
+--- @return number The number of items actually added (may be less than count if not enough space)
 function InventoryHelper.addItem(inventory, itemId, count, slotType)
    return Inventory.addItem(inventory, itemId, count, slotType)
+end
+
+--- Stack items into a specific slot, respecting max stack limits.
+--- Use this when you need to add items to a specific slot rather than finding first available.
+--- @param slot table The slot to stack into
+--- @param itemId string The item ID to add
+--- @param count number The quantity to add
+--- @return number The number of items actually added
+function InventoryHelper.stackIntoSlot(slot, itemId, count)
+   return Inventory.stackIntoSlot(slot, itemId, count)
 end
 
 --- Check if an item can be placed in a slot group based on category constraints.

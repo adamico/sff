@@ -52,14 +52,13 @@ end
 --- @param userdata table Userdata from clicked element
 --- @return boolean Success
 function InventoryStateManager:handleAction(mouseX, mouseY, userdata)
-   Log.debug("handleAction", mouseX, mouseY, inspect(userdata.action))
    local slotInfo = self:resolveSlotInfo(mouseX, mouseY, userdata)
    if not slotInfo then return false end
 
    local action = userdata and userdata.action
    local handler = InventoryHandlers[action]
    if handler then
-      return handler(self, slotInfo)
+      return handler(self, slotInfo, userdata)
    end
 
    return false
