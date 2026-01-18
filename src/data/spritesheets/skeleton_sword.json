@@ -20,7 +20,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 1.aseprite",
@@ -42,7 +42,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 2.aseprite",
@@ -64,7 +64,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 3.aseprite",
@@ -86,7 +86,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 4.aseprite",
@@ -108,7 +108,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 5.aseprite",
@@ -130,7 +130,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 6.aseprite",
@@ -152,7 +152,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 7.aseprite",
@@ -174,7 +174,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordAttack 8.aseprite",
@@ -196,7 +196,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 0.aseprite",
@@ -218,7 +218,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 1.aseprite",
@@ -240,7 +240,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 2.aseprite",
@@ -262,7 +262,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 3.aseprite",
@@ -284,7 +284,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 4.aseprite",
@@ -306,7 +306,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 5.aseprite",
@@ -328,7 +328,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 6.aseprite",
@@ -350,7 +350,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 7.aseprite",
@@ -372,7 +372,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordAttack 8.aseprite",
@@ -394,7 +394,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 0.aseprite",
@@ -416,7 +416,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 1.aseprite",
@@ -438,7 +438,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 2.aseprite",
@@ -460,7 +460,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 3.aseprite",
@@ -482,7 +482,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 4.aseprite",
@@ -504,7 +504,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 5.aseprite",
@@ -526,7 +526,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 6.aseprite",
@@ -548,7 +548,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 7.aseprite",
@@ -570,7 +570,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordAttack 8.aseprite",
@@ -592,7 +592,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 0.aseprite",
@@ -614,7 +614,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 1.aseprite",
@@ -636,7 +636,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 2.aseprite",
@@ -658,7 +658,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 3.aseprite",
@@ -680,7 +680,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 4.aseprite",
@@ -702,7 +702,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 5.aseprite",
@@ -724,7 +724,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 6.aseprite",
@@ -746,7 +746,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 7.aseprite",
@@ -768,7 +768,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordAttack 8.aseprite",
@@ -790,7 +790,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 0.aseprite",
@@ -812,7 +812,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 1.aseprite",
@@ -834,7 +834,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 2.aseprite",
@@ -856,7 +856,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 3.aseprite",
@@ -878,7 +878,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 4.aseprite",
@@ -900,7 +900,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordDeath 5.aseprite",
@@ -922,7 +922,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 300
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 0.aseprite",
@@ -944,7 +944,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 1.aseprite",
@@ -966,7 +966,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 2.aseprite",
@@ -988,7 +988,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 3.aseprite",
@@ -1010,7 +1010,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 4.aseprite",
@@ -1032,7 +1032,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordDeath 5.aseprite",
@@ -1054,7 +1054,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 300
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 0.aseprite",
@@ -1076,7 +1076,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 1.aseprite",
@@ -1098,7 +1098,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 2.aseprite",
@@ -1120,7 +1120,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 3.aseprite",
@@ -1142,7 +1142,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 4.aseprite",
@@ -1164,7 +1164,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordDeath 5.aseprite",
@@ -1186,7 +1186,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 300
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 0.aseprite",
@@ -1208,7 +1208,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 1.aseprite",
@@ -1230,7 +1230,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 2.aseprite",
@@ -1252,7 +1252,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 3.aseprite",
@@ -1274,7 +1274,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 4.aseprite",
@@ -1296,7 +1296,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordDeath 5.aseprite",
@@ -1318,7 +1318,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 300
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #BackSwordHurt 0.aseprite",
@@ -1340,7 +1340,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordHurt 1.aseprite",
@@ -1362,7 +1362,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordHurt 2.aseprite",
@@ -1384,7 +1384,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordHurt 3.aseprite",
@@ -1406,7 +1406,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordHurt 0.aseprite",
@@ -1428,7 +1428,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordHurt 1.aseprite",
@@ -1450,7 +1450,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordHurt 2.aseprite",
@@ -1472,7 +1472,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #FrontSwordHurt 3.aseprite",
@@ -1494,7 +1494,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordHurt 0.aseprite",
@@ -1516,7 +1516,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordHurt 1.aseprite",
@@ -1538,7 +1538,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordHurt 2.aseprite",
@@ -1560,7 +1560,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #LeftSwordHurt 3.aseprite",
@@ -1582,7 +1582,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordHurt 0.aseprite",
@@ -1604,7 +1604,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordHurt 1.aseprite",
@@ -1626,7 +1626,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordHurt 2.aseprite",
@@ -1648,7 +1648,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #RightSwordHurt 3.aseprite",
@@ -1670,7 +1670,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 150
     },
     {
       "filename": "skeleton_sword #BackSwordIdle 0.aseprite",
@@ -1692,7 +1692,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #BackSwordIdle 1.aseprite",
@@ -1714,7 +1714,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #BackSwordIdle 2.aseprite",
@@ -1736,7 +1736,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #BackSwordIdle 3.aseprite",
@@ -1758,7 +1758,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #FrontSwordIdle 0.aseprite",
@@ -1780,7 +1780,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #FrontSwordIdle 1.aseprite",
@@ -1802,7 +1802,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #FrontSwordIdle 2.aseprite",
@@ -1824,7 +1824,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #FrontSwordIdle 3.aseprite",
@@ -1846,7 +1846,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #LeftSwordIdle 0.aseprite",
@@ -1868,7 +1868,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #LeftSwordIdle 1.aseprite",
@@ -1890,7 +1890,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #LeftSwordIdle 2.aseprite",
@@ -1912,7 +1912,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #LeftSwordIdle 3.aseprite",
@@ -1934,7 +1934,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #RightSwordIdle 0.aseprite",
@@ -1956,7 +1956,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #RightSwordIdle 1.aseprite",
@@ -1978,7 +1978,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #RightSwordIdle 2.aseprite",
@@ -2000,7 +2000,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #RightSwordIdle 3.aseprite",
@@ -2022,7 +2022,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 200
     },
     {
       "filename": "skeleton_sword #BackSwordRun 0.aseprite",
@@ -2044,7 +2044,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 1.aseprite",
@@ -2066,7 +2066,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 2.aseprite",
@@ -2088,7 +2088,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 3.aseprite",
@@ -2110,7 +2110,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 4.aseprite",
@@ -2132,7 +2132,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 5.aseprite",
@@ -2154,7 +2154,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 6.aseprite",
@@ -2176,7 +2176,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #BackSwordRun 7.aseprite",
@@ -2198,7 +2198,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 0.aseprite",
@@ -2220,7 +2220,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 1.aseprite",
@@ -2242,7 +2242,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 2.aseprite",
@@ -2264,7 +2264,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 3.aseprite",
@@ -2286,7 +2286,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 4.aseprite",
@@ -2308,7 +2308,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 5.aseprite",
@@ -2330,7 +2330,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 6.aseprite",
@@ -2352,7 +2352,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #FrontSwordRun 7.aseprite",
@@ -2374,7 +2374,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 0.aseprite",
@@ -2396,7 +2396,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 1.aseprite",
@@ -2418,7 +2418,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 2.aseprite",
@@ -2440,7 +2440,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 3.aseprite",
@@ -2462,7 +2462,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 4.aseprite",
@@ -2484,7 +2484,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 5.aseprite",
@@ -2506,7 +2506,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 6.aseprite",
@@ -2528,7 +2528,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #LeftSwordRun 7.aseprite",
@@ -2550,7 +2550,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 0.aseprite",
@@ -2572,7 +2572,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 1.aseprite",
@@ -2594,7 +2594,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 2.aseprite",
@@ -2616,7 +2616,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 3.aseprite",
@@ -2638,7 +2638,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 4.aseprite",
@@ -2660,7 +2660,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 5.aseprite",
@@ -2682,7 +2682,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 6.aseprite",
@@ -2704,7 +2704,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "skeleton_sword #RightSwordRun 7.aseprite",
@@ -2726,7 +2726,7 @@
         "w": 64,
         "h": 64
       },
-      "duration": 100
+      "duration": 75
     }
   ],
   "meta": {

@@ -7,7 +7,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 1.aseprite",
@@ -16,7 +16,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 2.aseprite",
@@ -25,7 +25,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 3.aseprite",
@@ -34,7 +34,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 4.aseprite",
@@ -43,7 +43,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 5.aseprite",
@@ -52,7 +52,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordDeath 6.aseprite",
@@ -61,7 +61,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 300
+      "duration": 150
     },
     {
       "filename": "player_sword #FrontSwordHurt 0.aseprite",
@@ -70,7 +70,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordHurt 1.aseprite",
@@ -79,7 +79,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordHurt 2.aseprite",
@@ -88,7 +88,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordHurt 3.aseprite",
@@ -97,7 +97,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordHurt 4.aseprite",
@@ -106,7 +106,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 0.aseprite",
@@ -115,7 +115,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 1.aseprite",
@@ -124,7 +124,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 2.aseprite",
@@ -133,7 +133,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 3.aseprite",
@@ -142,7 +142,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 4.aseprite",
@@ -151,7 +151,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordAttack 5.aseprite",
@@ -160,7 +160,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 0.aseprite",
@@ -187,7 +187,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 3.aseprite",
@@ -196,7 +196,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 4.aseprite",
@@ -205,7 +205,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 5.aseprite",
@@ -223,7 +223,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 7.aseprite",
@@ -241,7 +241,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 9.aseprite",
@@ -250,7 +250,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 10.aseprite",
@@ -259,7 +259,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordIdle 11.aseprite",
@@ -277,7 +277,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 0.aseprite",
@@ -286,7 +286,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 1.aseprite",
@@ -295,7 +295,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 2.aseprite",
@@ -304,7 +304,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 3.aseprite",
@@ -313,7 +313,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 4.aseprite",
@@ -322,7 +322,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalk 5.aseprite",
@@ -331,7 +331,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 0.aseprite",
@@ -340,7 +340,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 1.aseprite",
@@ -349,7 +349,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 2.aseprite",
@@ -358,7 +358,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 3.aseprite",
@@ -367,7 +367,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 4.aseprite",
@@ -376,7 +376,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordWalkAttack 5.aseprite",
@@ -385,7 +385,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 0.aseprite",
@@ -394,7 +394,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 1.aseprite",
@@ -403,7 +403,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 2.aseprite",
@@ -412,7 +412,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 3.aseprite",
@@ -421,7 +421,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 4.aseprite",
@@ -430,7 +430,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 5.aseprite",
@@ -439,7 +439,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 6.aseprite",
@@ -448,7 +448,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 7.aseprite",
@@ -457,7 +457,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRun 8.aseprite",
@@ -466,7 +466,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 0.aseprite",
@@ -475,7 +475,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 1.aseprite",
@@ -484,7 +484,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 2.aseprite",
@@ -493,7 +493,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 3.aseprite",
@@ -502,7 +502,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 4.aseprite",
@@ -511,7 +511,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 5.aseprite",
@@ -520,7 +520,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #FrontSwordRunAttack 6.aseprite",
@@ -529,7 +529,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 0.aseprite",
@@ -538,7 +538,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 1.aseprite",
@@ -547,7 +547,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 2.aseprite",
@@ -556,7 +556,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 3.aseprite",
@@ -565,7 +565,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 4.aseprite",
@@ -574,7 +574,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 5.aseprite",
@@ -583,7 +583,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordDeath 6.aseprite",
@@ -601,7 +601,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordHurt 1.aseprite",
@@ -610,7 +610,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordHurt 2.aseprite",
@@ -619,7 +619,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordHurt 3.aseprite",
@@ -628,7 +628,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordHurt 4.aseprite",
@@ -637,7 +637,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 0.aseprite",
@@ -646,7 +646,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 1.aseprite",
@@ -655,7 +655,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 2.aseprite",
@@ -664,7 +664,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 3.aseprite",
@@ -673,7 +673,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 4.aseprite",
@@ -682,7 +682,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 5.aseprite",
@@ -691,7 +691,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordAttack 6.aseprite",
@@ -700,7 +700,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordIdle 0.aseprite",
@@ -718,7 +718,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordIdle 2.aseprite",
@@ -736,7 +736,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 0.aseprite",
@@ -745,7 +745,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 1.aseprite",
@@ -754,7 +754,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 2.aseprite",
@@ -763,7 +763,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 3.aseprite",
@@ -772,7 +772,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 4.aseprite",
@@ -781,7 +781,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 5.aseprite",
@@ -790,7 +790,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalk 6.aseprite",
@@ -799,7 +799,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalkAttack 0.aseprite",
@@ -808,7 +808,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalkAttack 1.aseprite",
@@ -817,7 +817,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalkAttack 2.aseprite",
@@ -826,7 +826,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalkAttack 3.aseprite",
@@ -835,7 +835,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordWalkAttack 4.aseprite",
@@ -844,7 +844,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 0.aseprite",
@@ -853,7 +853,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 1.aseprite",
@@ -862,7 +862,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 2.aseprite",
@@ -871,7 +871,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 3.aseprite",
@@ -880,7 +880,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 4.aseprite",
@@ -889,7 +889,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 5.aseprite",
@@ -898,7 +898,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 6.aseprite",
@@ -907,7 +907,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRun 7.aseprite",
@@ -916,7 +916,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 0.aseprite",
@@ -925,7 +925,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 1.aseprite",
@@ -934,7 +934,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 2.aseprite",
@@ -943,7 +943,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 3.aseprite",
@@ -952,7 +952,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 4.aseprite",
@@ -961,7 +961,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 5.aseprite",
@@ -970,7 +970,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 6.aseprite",
@@ -979,7 +979,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #BackSwordRunAttack 7.aseprite",
@@ -988,7 +988,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 0.aseprite",
@@ -997,7 +997,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 1.aseprite",
@@ -1006,7 +1006,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 2.aseprite",
@@ -1015,7 +1015,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 3.aseprite",
@@ -1024,7 +1024,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 4.aseprite",
@@ -1033,7 +1033,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 5.aseprite",
@@ -1042,7 +1042,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordDeath 6.aseprite",
@@ -1051,7 +1051,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordHurt 0.aseprite",
@@ -1060,7 +1060,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordHurt 1.aseprite",
@@ -1069,7 +1069,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordHurt 2.aseprite",
@@ -1078,7 +1078,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordHurt 3.aseprite",
@@ -1087,7 +1087,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordHurt 4.aseprite",
@@ -1105,7 +1105,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 1.aseprite",
@@ -1114,7 +1114,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 2.aseprite",
@@ -1123,7 +1123,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 3.aseprite",
@@ -1132,7 +1132,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 4.aseprite",
@@ -1141,7 +1141,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 5.aseprite",
@@ -1150,7 +1150,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 6.aseprite",
@@ -1159,7 +1159,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordAttack 7.aseprite",
@@ -1168,7 +1168,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 0.aseprite",
@@ -1186,7 +1186,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 2.aseprite",
@@ -1195,7 +1195,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 3.aseprite",
@@ -1204,7 +1204,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 4.aseprite",
@@ -1222,7 +1222,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 6.aseprite",
@@ -1240,7 +1240,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 8.aseprite",
@@ -1249,7 +1249,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 9.aseprite",
@@ -1258,7 +1258,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordIdle 10.aseprite",
@@ -1276,7 +1276,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 0.aseprite",
@@ -1285,7 +1285,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 1.aseprite",
@@ -1294,7 +1294,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 2.aseprite",
@@ -1303,7 +1303,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 3.aseprite",
@@ -1312,7 +1312,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 4.aseprite",
@@ -1321,7 +1321,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalk 5.aseprite",
@@ -1330,7 +1330,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 0.aseprite",
@@ -1339,7 +1339,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 1.aseprite",
@@ -1348,7 +1348,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 2.aseprite",
@@ -1357,7 +1357,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 3.aseprite",
@@ -1366,7 +1366,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 4.aseprite",
@@ -1375,7 +1375,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordWalkAttack 5.aseprite",
@@ -1384,7 +1384,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 0.aseprite",
@@ -1393,7 +1393,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 1.aseprite",
@@ -1402,7 +1402,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 2.aseprite",
@@ -1411,7 +1411,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 3.aseprite",
@@ -1420,7 +1420,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 4.aseprite",
@@ -1429,7 +1429,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 5.aseprite",
@@ -1438,7 +1438,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 6.aseprite",
@@ -1447,7 +1447,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRun 7.aseprite",
@@ -1456,7 +1456,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 0.aseprite",
@@ -1465,7 +1465,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 1.aseprite",
@@ -1474,7 +1474,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 2.aseprite",
@@ -1483,7 +1483,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 3.aseprite",
@@ -1492,7 +1492,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 4.aseprite",
@@ -1501,7 +1501,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 5.aseprite",
@@ -1510,7 +1510,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 6.aseprite",
@@ -1519,7 +1519,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #LeftSwordRunAttack 7.aseprite",
@@ -1528,7 +1528,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 0.aseprite",
@@ -1537,7 +1537,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 1.aseprite",
@@ -1546,7 +1546,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 2.aseprite",
@@ -1555,7 +1555,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 3.aseprite",
@@ -1564,7 +1564,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 4.aseprite",
@@ -1573,7 +1573,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 5.aseprite",
@@ -1582,7 +1582,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordDeath 6.aseprite",
@@ -1591,7 +1591,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordHurt 0.aseprite",
@@ -1600,7 +1600,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordHurt 1.aseprite",
@@ -1609,7 +1609,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordHurt 2.aseprite",
@@ -1618,7 +1618,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordHurt 3.aseprite",
@@ -1627,7 +1627,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordHurt 4.aseprite",
@@ -1645,7 +1645,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 1.aseprite",
@@ -1654,7 +1654,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 2.aseprite",
@@ -1663,7 +1663,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 3.aseprite",
@@ -1672,7 +1672,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 4.aseprite",
@@ -1681,7 +1681,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 5.aseprite",
@@ -1690,7 +1690,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 6.aseprite",
@@ -1699,7 +1699,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 7.aseprite",
@@ -1708,7 +1708,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordAttack 8.aseprite",
@@ -1726,7 +1726,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 1.aseprite",
@@ -1735,7 +1735,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 2.aseprite",
@@ -1744,7 +1744,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 3.aseprite",
@@ -1762,7 +1762,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 5.aseprite",
@@ -1780,7 +1780,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 7.aseprite",
@@ -1789,7 +1789,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 8.aseprite",
@@ -1798,7 +1798,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordIdle 9.aseprite",
@@ -1816,7 +1816,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 0.aseprite",
@@ -1825,7 +1825,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 1.aseprite",
@@ -1834,7 +1834,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 2.aseprite",
@@ -1843,7 +1843,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 3.aseprite",
@@ -1852,7 +1852,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 4.aseprite",
@@ -1861,7 +1861,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalk 5.aseprite",
@@ -1870,7 +1870,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 0.aseprite",
@@ -1879,7 +1879,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 1.aseprite",
@@ -1888,7 +1888,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 2.aseprite",
@@ -1897,7 +1897,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 3.aseprite",
@@ -1906,7 +1906,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 4.aseprite",
@@ -1915,7 +1915,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordWalkAttack 5.aseprite",
@@ -1924,7 +1924,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 0.aseprite",
@@ -1933,7 +1933,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 1.aseprite",
@@ -1942,7 +1942,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 2.aseprite",
@@ -1951,7 +1951,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 3.aseprite",
@@ -1960,7 +1960,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 4.aseprite",
@@ -1969,7 +1969,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 5.aseprite",
@@ -1978,7 +1978,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 6.aseprite",
@@ -1987,7 +1987,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRun 7.aseprite",
@@ -1996,7 +1996,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 0.aseprite",
@@ -2005,7 +2005,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 1.aseprite",
@@ -2014,7 +2014,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 2.aseprite",
@@ -2023,7 +2023,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 3.aseprite",
@@ -2032,7 +2032,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 4.aseprite",
@@ -2041,7 +2041,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 5.aseprite",
@@ -2050,7 +2050,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 6.aseprite",
@@ -2059,7 +2059,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     },
     {
       "filename": "player_sword #RightSwordRunAttack 7.aseprite",
@@ -2068,7 +2068,7 @@
       "trimmed": false,
       "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
       "sourceSize": { "w": 64, "h": 64 },
-      "duration": 100
+      "duration": 75
     }
   ],
   "meta": {

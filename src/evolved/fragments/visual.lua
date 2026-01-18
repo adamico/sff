@@ -18,10 +18,6 @@ local Visual = {}
 
 local SPRITESHEETS_PATH = "src/data/spritesheets/"
 
--- Valid directions and states for animation tag building
-local DIRECTIONS = {"Front", "Back", "Left", "Right"}
-local STATES = {"Death", "Hurt", "Attack", "Idle", "Walk", "WalkAttack", "Run", "RunAttack"}
-
 -- Default values
 local DEFAULT_DIRECTION = "Front"
 local DEFAULT_STATE = "Idle"
