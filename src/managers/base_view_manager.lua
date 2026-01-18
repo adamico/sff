@@ -16,7 +16,7 @@ function BaseSlotManager:pickOrPlace(slotInfo)
       return self:placeItemInSlot(slotIndex, slotType, inventory)
       -- If slot has an item, pick it up
    elseif slot.itemId then
-      return self:pickItemFromSlot(slotIndex, slotType, inventory)
+      return self:pickItemFromSlot(slotIndex, slotType, inventory, slot.quantity)
    end
 
    return false
@@ -27,14 +27,18 @@ end
 --- @param slotType string|nil The slot type (nil defaults to "default")
 --- @param inventory table The inventory to pick from
 --- @return boolean Success
-function BaseSlotManager:pickItemFromSlot(slotIndex, slotType, inventory)
+function BaseSlotManager:pickItemFromSlot(slotIndex, slotType, inventory, quantity)
    local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
    if not slot or not slot.itemId then return false end
 
+   local pickedQuantity = quantity
+   local remainingQuantity = slot.quantity - pickedQuantity
+   Log.info(string.format("Picked up %d %s", pickedQuantity, slot.itemId))
+   Log.info(string.format("Remaining quantity: %d", remainingQuantity))
    -- Pick up the entire stack
    self.heldStack = {
       itemId = slot.itemId,
-      quantity = slot.quantity,
+      quantity = pickedQuantity,
       sourceInventory = inventory,
       sourceSlot = slotIndex,
       sourceSlotType = slotType,
@@ -44,8 +48,10 @@ function BaseSlotManager:pickItemFromSlot(slotIndex, slotType, inventory)
    self.heldStackView = HeldStackView:new(self.heldStack)
 
    -- Clear the slot
-   slot.itemId = nil
-   slot.quantity = 0
+   if remainingQuantity <= 0 then
+      slot.itemId = nil
+   end
+   slot.quantity = remainingQuantity
    love.mouse.setVisible(false)
    return true
 end
@@ -158,37 +164,43 @@ function BaseSlotManager:returnHeldStack()
 end
 
 function BaseSlotManager:pickHalf(slotInfo)
-   local inventory = slotInfo.inventory
-   local slotIndex = slotInfo.slotIndex
-   local slotType = slotInfo.slotType
-   local slot = slotInfo.slot
-   if self.heldStack then return false end
-
-   if not slot or not slot.itemId then return false end
-   if slot.quantity <= 1 then return false end
-
-   local pickedQuantity = math.floor(slot.quantity / 2)
-   local remainingQuantity = slot.quantity - pickedQuantity
-
-   self.heldStack = {
-      itemId = slot.itemId,
-      quantity = pickedQuantity,
-      sourceInventory = inventory,
-      sourceSlot = slotIndex,
-      sourceSlotType = slotType,
-   }
-
-   -- Create held stack view
-   self.heldStackView = HeldStackView:new(self.heldStack)
-
-   -- Update the slot with remaining quantity
-   slot.quantity = remainingQuantity
-   love.mouse.setVisible(false)
-   return true
+   local slotQuantity = slotInfo.slot.quantity
+   if slotQuantity <= 1 then return false end
+   local quantity = math.floor(slotQuantity / 2)
+   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.slotType, slotInfo.inventory, quantity)
 end
 
 function BaseSlotManager:pickOne(slotInfo)
+   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.slotType, slotInfo.inventory, 1)
 end
+
+-- local inventory = slotInfo.inventory
+-- local slotIndex = slotInfo.slotIndex
+-- local slotType = slotInfo.slotType
+-- local slot = slotInfo.slot
+-- if self.heldStack then return false end
+
+-- if not slot or not slot.itemId then return false end
+-- if slot.quantity <= 1 then return false end
+
+-- local pickedQuantity = math.floor(slot.quantity / 2)
+-- local remainingQuantity = slot.quantity - pickedQuantity
+
+-- self.heldStack = {
+--    itemId = slot.itemId,
+--    quantity = pickedQuantity,
+--    sourceInventory = inventory,
+--    sourceSlot = slotIndex,
+--    sourceSlotType = slotType,
+-- }
+
+-- -- Create held stack view
+-- self.heldStackView = HeldStackView:new(self.heldStack)
+
+-- -- Update the slot with remaining quantity
+-- slot.quantity = remainingQuantity
+-- love.mouse.setVisible(false)
+-- return true
 
 function BaseSlotManager:quickTransfer(slotInfo)
 end
