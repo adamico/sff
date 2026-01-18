@@ -48,7 +48,7 @@ function InputHelper.isActionPressed(action)
    if binding.type == "key" then
       return lk.isScancodeDown(binding.scancode)
    elseif binding.type == "mouse" then
-      return love.mouse.isDown(binding.button)
+      return love.mouse.isDown(binding.buttons)
    end
 
    return false

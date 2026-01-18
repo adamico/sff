@@ -28,11 +28,11 @@ Bindings.actionsToKeys = {
    move_down        = {type = "key", scancode = "s"},
    move_left        = {type = "key", scancode = "a"},
    move_right       = {type = "key", scancode = "d"},
-   interact         = {type = "mouse", button = 1},
+   interact         = {type = "mouse", buttons = {1, 2, 3}},
    open_inventory   = {type = "key", scancode = "e"},
    close_inventory  = {type = "key", scancode = "q"},
    -- REFACTOR: we need to support multiple bindings for each action
-   cancel_placement = {type = "mouse", button = 2},
+   cancel_placement = {type = "mouse", buttons = {2}},
    toolbar_use_0    = {type = "key", scancode = "0"},
    toolbar_use_1    = {type = "key", scancode = "1"},
    toolbar_use_2    = {type = "key", scancode = "2"},

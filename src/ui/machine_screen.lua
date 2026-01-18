@@ -172,7 +172,8 @@ function MachineScreen:createSlots()
             textAlign = "center",
             userdata = {},
             onEvent = function(element, event)
-               if event.type == "click" then
+               -- FlexLove uses "click" for left button, "rightclick" for right button
+               if event.type == "click" or event.type == "rightclick" then
                   local modifiers = InventoryInputHandler.getModifiers()
                   local action = InventoryInputHandler.getAction(event.button or 1, modifiers)
                   local mx, my = love.mouse.getPosition()

@@ -2,8 +2,6 @@ local SpawnerSystem = require("src.evolved.systems.spawner_system")
 
 local builder = Evolved.builder
 
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
-
 builder()
    :name("SYSTEMS.Startup")
    :group(STAGES.OnSetup)

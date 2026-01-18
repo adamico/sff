@@ -157,6 +157,42 @@ function BaseSlotManager:returnHeldStack()
    end
 end
 
+function BaseSlotManager:pickHalf(slotInfo)
+   local inventory = slotInfo.inventory
+   local slotIndex = slotInfo.slotIndex
+   local slotType = slotInfo.slotType
+   local slot = slotInfo.slot
+   if self.heldStack then return false end
+
+   if not slot or not slot.itemId then return false end
+   if slot.quantity <= 1 then return false end
+
+   local pickedQuantity = math.floor(slot.quantity / 2)
+   local remainingQuantity = slot.quantity - pickedQuantity
+
+   self.heldStack = {
+      itemId = slot.itemId,
+      quantity = pickedQuantity,
+      sourceInventory = inventory,
+      sourceSlot = slotIndex,
+      sourceSlotType = slotType,
+   }
+
+   -- Create held stack view
+   self.heldStackView = HeldStackView:new(self.heldStack)
+
+   -- Update the slot with remaining quantity
+   slot.quantity = remainingQuantity
+   love.mouse.setVisible(false)
+   return true
+end
+
+function BaseSlotManager:pickOne(slotInfo)
+end
+
+function BaseSlotManager:quickTransfer(slotInfo)
+end
+
 function BaseSlotManager:getSlotUnderMouse(mouseX, mouseY)
    -- Check machine screen first
    if self.screen then

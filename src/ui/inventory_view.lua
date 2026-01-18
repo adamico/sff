@@ -122,10 +122,12 @@ function InventoryView:createSlots()
 end
 
 function InventoryView:handleSlotClick(element, event)
-   if event.type ~= "click" then return end
+   -- FlexLove uses "click" for left button, "rightclick" for right button
+   if event.type ~= "click" and event.type ~= "rightclick" then return end
 
    local mx, my = love.mouse.getPosition()
    local button = event.button or 1
+   Log.debug("handleSlotClick", mx, my, button)
    local slotIndex = element.userdata.slotIndex
 
    if self.id == "toolbar" and not InventoryStateManager.isOpen
@@ -136,6 +138,7 @@ function InventoryView:handleSlotClick(element, event)
       local action = InventoryInputHandler.getAction(button, modifiers)
 
       if action then
+         Log.debug("handleSlotClick", mx, my, button, action)
          Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
             action = action,
             slotIndex = slotIndex,

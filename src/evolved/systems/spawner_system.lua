@@ -112,8 +112,6 @@ local function spawnEntity(entityId, position, overrides)
    -- Spawn the entity
    local spawnedId = entityBuilder:spawn()
 
-   Log.debug("SpawnerSystem: Spawned entity '"..entityId.."' at ("..position.x..", "..position.y..")")
-
    return spawnedId
 end
 

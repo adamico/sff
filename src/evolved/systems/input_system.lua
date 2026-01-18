@@ -50,7 +50,7 @@ local function getActionDetector()
 end
 
 local function actionDetection(playerInventory, playerToolbar, playerEquipment)
-   local inViewport, mx, my = shove.mouseToViewport()
+   local _, mx, my = shove.mouseToViewport()
    actionDetector = getActionDetector()
 
    if actionDetector:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then

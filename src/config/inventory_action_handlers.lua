@@ -6,17 +6,17 @@ local InventoryActions = {
 }
 
 local ActionHandlers = {
-   [InventoryActions.QUICK_TRANSFER] = function(self, slotInfo)
-      return self:quickTransfer(slotInfo)
-   end,
    [InventoryActions.PICK_OR_PLACE] = function(self, slotInfo)
       return self:pickOrPlace(slotInfo)
+   end,
+   [InventoryActions.PICK_HALF] = function(self, slotInfo)
+      return self:pickHalf(slotInfo)
    end,
    [InventoryActions.PICK_ONE] = function(self, slotInfo)
       return self:pickOne(slotInfo)
    end,
-   [InventoryActions.PICK_HALF] = function(self, slotInfo)
-      return self:pickHalf(slotInfo)
+   [InventoryActions.QUICK_TRANSFER] = function(self, slotInfo)
+      return self:quickTransfer(slotInfo)
    end,
 }
 
