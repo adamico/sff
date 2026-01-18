@@ -46,9 +46,9 @@
 ## 🟢 MEDIUM: UX Polish
 
 - [x] Machine state in inventory view
-- [ ] Right-click split stack
-- [ ] Shift-click transfer
-- [ ] Item tooltips
+- [x] Right-click split stack
+- [x] Shift-click transfer
+- [x] Item tooltips
 
 ---
 
