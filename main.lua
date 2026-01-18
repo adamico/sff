@@ -9,6 +9,7 @@ Events = require("src.config.events")
 Log = require("lib.log")
 Vector = require("lib.brinevector")
 Color = Flexlove.Color
+shove = require("lib.shove")
 
 -- ============================================================================
 -- ECS Setup (Evolved)
@@ -51,8 +52,6 @@ local InventoryStateManager = require("src.managers.inventory_state_manager")
 -- Local References
 -- ============================================================================
 local process = Evolved.process
-local observe = Beholder.observe
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
 -- ============================================================================
 -- Love2D Callbacks
@@ -60,10 +59,19 @@ local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
 function love.load()
    Flexlove.init({
-      baseScale = {width = SCREEN_WIDTH, height = SCREEN_HEIGHT},
+      baseScale = {width = 400, height = 300}, -- Design at game resolution
       immediateMode = false,
       theme = "metal"
    })
+
+   shove.setResolution(400, 300, {
+      fitMethod = "pixel",
+      renderMode = "layer"
+   })
+   shove.setWindowMode(800, 600, {resizable = true})
+
+   -- Create game layer (scaled at 400x300)
+   shove.createLayer("game", {zIndex = 1})
 
    process(STAGES.OnSetup)
 end
@@ -75,10 +83,18 @@ function love.update(dt)
 end
 
 function love.draw()
-   Flexlove.draw(function()
-      process(STAGES.OnRender)
-   end, function()
-      -- Post-draw: render held stack AFTER FlexLove UI (so it doesn't block events)
+   shove.beginDraw()
+
+   -- Game layer: rendered at 400x300, scaled by shove
+   shove.beginLayer("game")
+   process(STAGES.OnRender)
+   process(STAGES.OnRenderDebug)
+   shove.endLayer()
+
+   shove.endDraw()
+
+   -- UI: rendered at native window resolution (no transform)
+   Flexlove.draw(nil, function()
       if InventoryStateManager.isOpen then
          InventoryStateManager:drawHeldStack()
       elseif MachineStateManager.isOpen then
@@ -88,6 +104,7 @@ function love.draw()
 end
 
 function love.resize(w, h)
+   shove.resize(w, h)
    Flexlove.resize()
 end
 

@@ -16,27 +16,12 @@ local get = Evolved.get
 -- Layout Constants (centralized)
 -- ============================================================================
 
-local SLOT_SIZE = 32
-local COLUMNS = 10
-local INV_ROWS = 4
-local TOOLBAR_ROWS = 1
-local PADDING = 4
-local GAP = 20
+local UI = require("src.config.ui_constants")
 
-local INV_WIDTH = COLUMNS * SLOT_SIZE + PADDING * 2
-local INV_HEIGHT = INV_ROWS * SLOT_SIZE + PADDING * 2
-local TOOLBAR_HEIGHT = TOOLBAR_ROWS * SLOT_SIZE + PADDING * 2
-
-local SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
-local SCREEN_CENTER = Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-
-local CENTERED_X = SCREEN_CENTER.x - INV_WIDTH / 2
-local TOOLBAR_Y = SCREEN_HEIGHT - TOOLBAR_HEIGHT - 4
-local EQUIPMENT_X = 16
-local PLAYER_INV_Y = TOOLBAR_Y - GAP - INV_HEIGHT
-
-local MACHINE_WIDTH = 320
-local MACHINE_HEIGHT = 240
+local CENTERED_X = UI.VIEWPORT_WIDTH / 2 - UI.INV_WIDTH / 2
+local TOOLBAR_Y = UI.VIEWPORT_HEIGHT - UI.TOOLBAR_HEIGHT - 4
+local EQUIPMENT_X = 4
+local PLAYER_INV_Y = TOOLBAR_Y - UI.GAP - UI.INV_HEIGHT
 
 -- ============================================================================
 -- Cached Views (persistent)
@@ -51,8 +36,8 @@ local function getOrCreateToolbarView(toolbar)
    if not toolbarView then
       toolbarView = InventoryView:new(toolbar, {
          id = "toolbar",
-         columns = COLUMNS,
-         rows = TOOLBAR_ROWS,
+         columns = UI.COLUMNS,
+         rows = UI.TOOLBAR_ROWS,
          x = CENTERED_X,
          y = TOOLBAR_Y
       })
@@ -78,7 +63,7 @@ local function getOrCreateEquipmentViews(equipment)
          local group = Inventory.getSlotGroup(equipment, slotType)
          if group then
             local maxSlots = group.maxSlots or 1
-            local viewHeight = SLOT_SIZE + PADDING * 2
+            local viewHeight = UI.SLOT_SIZE + UI.PADDING * 2
 
             equipmentViews[slotType] = InventoryView:new(equipment, {
                id = "equipment_"..slotType,
@@ -105,8 +90,8 @@ local function getOrCreatePlayerInventoryView(playerInventory)
    if not playerInventory then return nil end
    return InventoryView:new(playerInventory, {
       id = "player_inventory",
-      columns = COLUMNS,
-      rows = INV_ROWS,
+      columns = UI.COLUMNS,
+      rows = UI.INV_ROWS,
       x = CENTERED_X,
       y = PLAYER_INV_Y
    })
@@ -118,13 +103,13 @@ local function getOrCreateTargetInventoryView(targetInventory, entityId)
    local slots = InventoryHelper.getSlots(targetInventory)
    if not slots then return nil end
    local slotCount = #slots
-   local targetColumns = math.min(slotCount, COLUMNS)
+   local targetColumns = math.min(slotCount, UI.COLUMNS)
    local targetRows = math.ceil(slotCount / targetColumns)
 
-   local targetWidth = targetColumns * SLOT_SIZE + PADDING * 2
-   local targetHeight = targetRows * SLOT_SIZE + PADDING * 2
-   local targetX = SCREEN_CENTER.x - targetWidth / 2
-   local targetY = PLAYER_INV_Y - GAP - targetHeight
+   local targetWidth = targetColumns * UI.SLOT_SIZE + UI.PADDING * 2
+   local targetHeight = targetRows * UI.SLOT_SIZE + UI.PADDING * 2
+   local targetX = UI.VIEWPORT_WIDTH / 2 - targetWidth / 2
+   local targetY = PLAYER_INV_Y - UI.GAP - targetHeight
 
    return InventoryView:new(targetInventory, {
       id = "target_inventory",
@@ -137,15 +122,15 @@ local function getOrCreateTargetInventoryView(targetInventory, entityId)
 end
 
 local function getOrCreateMachineScreenView(entityId)
-   local machineX = SCREEN_CENTER.x - MACHINE_WIDTH / 2
-   local machineY = PLAYER_INV_Y - GAP - MACHINE_HEIGHT
+   local machineX = UI.VIEWPORT_WIDTH / 2 - UI.MACHINE_WIDTH / 2
+   local machineY = PLAYER_INV_Y - UI.GAP - UI.MACHINE_HEIGHT
 
    return MachineScreen:new({
       entityId = entityId,
       x = machineX,
       y = machineY,
-      width = MACHINE_WIDTH,
-      height = MACHINE_HEIGHT
+      width = UI.MACHINE_WIDTH,
+      height = UI.MACHINE_HEIGHT
    })
 end
 

@@ -31,7 +31,7 @@ observe(Events.PLACEMENT_MODE_ENTERED, function(item, slotIndex)
    EntityPlacementManager.item = item
    EntityPlacementManager.sourceSlotIndex = slotIndex
 
-   local mx, my = love.mouse.getPosition()
+   local _, mx, my = shove.mouseToViewport()
    EntityPlacementManager.ghostPosition = Vector(mx, my)
 end)
 
@@ -92,7 +92,7 @@ end
 function EntityPlacementManager:update(dt)
    if not self.isPlacing then return end
 
-   local mx, my = love.mouse.getPosition()
+   local _, mx, my = shove.mouseToViewport()
    self.ghostPosition = Vector(mx, my)
 
    -- Check for collisions with existing entities

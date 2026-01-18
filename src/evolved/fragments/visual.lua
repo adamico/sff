@@ -34,18 +34,18 @@ local function capitalize(str)
 end
 
 --- Get JSON path from image filename
---- @param imageFilename string e.g., "player_sword.png"
---- @return string e.g., "src/data/spritesheets/player_sword.json"
+--- @param imageFilename string e.g. "player_sword.png"
+--- @return string e.g. "src/data/spritesheets/player_sword.json"
 local function getJsonPath(imageFilename)
    local baseName = imageFilename:gsub("%.png$", "")
    return SPRITESHEETS_PATH..baseName..".json"
 end
 
 --- Build an animation tag name from components
---- @param direction string "Front", "Back", "Left", or "Right"
---- @param weapon string Weapon/spritesheet type e.g., "Sword"
---- @param state string Animation state e.g., "Idle", "Walk", "Attack"
---- @return string The animation tag e.g., "FrontSwordIdle"
+--- @param direction string "Front" "Back" "Left" or "Right"
+--- @param weapon string Weapon/spritesheet type e.g. "Sword"
+--- @param state string Animation state e.g. "Idle" "Walk", "Attack"
+--- @return string The animation tag e.g. "FrontSwordIdle"
 local function buildAnimationTag(direction, weapon, state)
    return direction..capitalize(weapon)..state
 end
@@ -134,8 +134,8 @@ end
 
 --- Set the animation state and/or direction
 --- @param visual table Visual component
---- @param direction string|nil Direction ("Front", "Back", "Left", "Right")
---- @param state string|nil Animation state ("Idle", "Walk", "Attack", etc.)
+--- @param direction string|nil Direction ("Front" "Back" "Left" "Right")
+--- @param state string|nil Animation state ("Idle" "Walk" "Attack" etc.)
 function Visual.setAnimation(visual, direction, state)
    direction = direction or visual.direction
    state = state or visual.state

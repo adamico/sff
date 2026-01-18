@@ -33,6 +33,7 @@ require("src.evolved.systems.health_system")     -- Handle entity health
 require("src.evolved.systems.loot_system")       -- Handle loot drops on entity death
 require("src.evolved.systems.mana_system")       -- Update mana regeneration
 require("src.evolved.systems.processing_system") -- Process recipes in machines
+require("src.evolved.systems.creature_system")   -- Process creature AI behaviors
 
 -- Physics & Movement
 require("src.evolved.systems.physics_system")   -- Update positions and velocities

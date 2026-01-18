@@ -9,5 +9,6 @@ builder()
    :group(STAGES.OnSetup)
    :prologue(function()
       -- Spawn player and store ID for global access
-      ENTITIES.Player = SpawnerSystem.spawnEntity("player", Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+      local px, py = shove.getViewportWidth() / 2, shove.getViewportHeight() / 2
+      ENTITIES.Player = SpawnerSystem.spawnEntity("player", Vector(px, py))
    end):build()

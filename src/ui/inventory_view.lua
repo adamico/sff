@@ -1,19 +1,12 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
+local UI = require("src.config.ui_constants")
 local InventoryView = Class("InventoryView")
 
-local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)
-local BORDER_COLOR = Color.new(1, 1, 1)
-local BORDER_WIDTH = 2
-local COLUMNS = 10
-local HEADER_SIZE = 14
-local PADDING = 4
-local QUANTITY_OFFSET = 18
-local ROWS = 4
-local SLOT_SIZE = 32
-local TEXT_COLOR = Color.new(1, 1, 1)
-local TEXT_SIZE = 10
+local BACKGROUND_COLOR = Color.new(unpack(UI.BACKGROUND_COLOR))
+local BORDER_COLOR = Color.new(unpack(UI.BORDER_COLOR))
+local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 
 --- @class InventoryView
 --- @field x number
@@ -34,11 +27,11 @@ function InventoryView:initialize(inventory, options)
    self.slotType = options.slotType or "default"
    self.x = math.floor(options.x or 0)
    self.y = math.floor(options.y or 0)
-   self.columns = options.columns or COLUMNS
-   self.rows = options.rows or ROWS
-   self.slotSize = options.slotSize or SLOT_SIZE
-   self.padding = options.padding or PADDING
-   self.borderWidth = BORDER_WIDTH
+   self.columns = options.columns or UI.COLUMNS
+   self.rows = options.rows or UI.INV_ROWS
+   self.slotSize = options.slotSize or UI.SLOT_SIZE
+   self.padding = options.padding or UI.PADDING
+   self.borderWidth = UI.BORDER_WIDTH
    self.entityId = options.entityId or nil
 
    -- FlexLove elements
@@ -62,20 +55,25 @@ function InventoryView:buildUI()
       backgroundColor = BACKGROUND_COLOR,
       border = self.borderWidth,
       borderColor = BORDER_COLOR,
+      flexDirection = "horizontal",
+      justifyContent = "center",
+      alignItems = "center",
       padding = {
          top = self.padding,
          right = self.padding,
          bottom = self.padding,
          left = self.padding
       },
-      positioning = "absolute",
+      positioning = "flex",
       userdata = {view = self}
    })
 
    local slotsWidth = self.columns * self.slotSize
+   local slotsHeight = self.rows * self.slotSize -- Explicit height for proper centering
    self.slotsContainer = Flexlove.new({
       id = self.id.."_slots_container",
       width = slotsWidth,
+      height = slotsHeight,
       positioning = "flex",
       flexDirection = "horizontal",
       flexWrap = "wrap",
@@ -101,7 +99,7 @@ function InventoryView:createSlots()
          borderColor = BORDER_COLOR,
          text = slot.itemId and string.sub(slot.itemId, 1, 1) or "",
          textColor = TEXT_COLOR,
-         textSize = HEADER_SIZE,
+         textSize = UI.HEADER_TEXT_SIZE,
          textAlign = "center",
          userdata = {
             slotIndex = slotIndex,
@@ -161,11 +159,11 @@ function InventoryView:updateSlots()
          if slot.quantity and slot.quantity > 1 then
             Flexlove.new({
                id = self.id.."_qty_"..slotIndex.."_update",
-               x = QUANTITY_OFFSET,
-               y = QUANTITY_OFFSET,
+               x = UI.QUANTITY_OFFSET,
+               y = UI.QUANTITY_OFFSET,
                text = tostring(slot.quantity),
                textColor = TEXT_COLOR,
-               textSize = TEXT_SIZE,
+               textSize = UI.TEXT_SIZE,
                positioning = "absolute",
                parent = element
             })

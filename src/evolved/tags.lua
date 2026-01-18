@@ -75,4 +75,15 @@ evolvedConfig.TAGS = {
          FRAGMENTS.ValidRecipes
       )
       :build(),
+
+   -- Creature entities have AI behaviors controlled by their CreatureClass
+   Creature = builder()
+      :name("TAGS.Creature")
+      :tag()
+      :require(
+         FRAGMENTS.CreatureClass,
+         FRAGMENTS.Position,
+         FRAGMENTS.StateMachine
+      )
+      :build(),
 }

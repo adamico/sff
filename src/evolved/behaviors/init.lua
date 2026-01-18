@@ -24,6 +24,7 @@ local Behaviors = {}
 Behaviors.machines = require("src.evolved.behaviors.machines")
 Behaviors.interactions = require("src.evolved.behaviors.interactions")
 Behaviors.combat = require("src.evolved.behaviors.combat")
+Behaviors.creatures = require("src.evolved.behaviors.creatures")
 
 -- ============================================================================
 -- Convenience Methods

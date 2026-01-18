@@ -12,6 +12,7 @@ local HITBOX_LABEL_OFFSET = 16
 --- @param color table {r, g, b, a} color values
 --- @param label? string Optional label to draw above the hitbox
 function EntityDrawHelper.drawHitbox(bounds, color, label)
+   label = label or nil
    local x, y = bounds.x, bounds.y
 
    -- Store original line width to restore later

@@ -23,6 +23,6 @@ builder()
          -- Get world-space hitbox bounds
          local bounds = CollisionHelper.getHitboxBounds(positions[i], hitboxes[i])
 
-         EntityDrawHelper.drawHitbox(bounds, HITBOX_COLOR, label)
+         EntityDrawHelper.drawHitbox(bounds, HITBOX_COLOR)
       end
    end):build()

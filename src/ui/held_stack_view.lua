@@ -1,16 +1,17 @@
+local UI = require("src.config.ui_constants")
 local HeldStackView = Class("HeldStackView")
 
-local SLOT_SIZE = 32
-local BORDER_WIDTH = 2
-local BACKGROUND_COLOR = {0.5, 0.45, 0.5, 0.8}
-local BORDER_COLOR = {1, 1, 1, 0.8}
-local TEXT_COLOR = {1, 1, 1, 1}
-local HEADER_SIZE = 14
-local TEXT_SIZE = 10
+local SLOT_SIZE = UI.SLOT_SIZE
+local BORDER_WIDTH = UI.BORDER_WIDTH
+local BACKGROUND_COLOR = UI.BACKGROUND_COLOR
+local BORDER_COLOR = UI.BORDER_COLOR
+local TEXT_COLOR = UI.TEXT_COLOR
+local HEADER_SIZE = UI.HEADER_TEXT_SIZE
+local TEXT_SIZE = UI.TEXT_SIZE
 
 -- Quantity label offset from bottom-right corner of held stack
-local QUANTITY_OFFSET_X = 18
-local QUANTITY_OFFSET_Y = 18
+local QUANTITY_OFFSET_X = UI.QUANTITY_OFFSET
+local QUANTITY_OFFSET_Y = UI.QUANTITY_OFFSET
 
 --- @class HeldStackView
 --- @field stack table The held stack data {itemId, quantity}

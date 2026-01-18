@@ -1,22 +1,23 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
+local UI = require("src.config.ui_constants")
 local MachineScreen = Class("MachineScreen")
 local get = Evolved.get
 local trigger = Beholder.trigger
 
-local BACKGROUND_COLOR = Color.new(0.5, 0.45, 0.5)
-local BORDER_COLOR = Color.new(1, 1, 1, 1)
-local BORDER_WIDTH = 2
-local BUTTON_BACKGROUND_COLOR = Color.new(0.2, 0.2, 0.2)
-local HEADER_TEXT_SIZE = 14
-local MANA_BACKGROUND_COLOR = Color.new(0.2, 0.2, 0.3)
-local MANA_FILL_COLOR = Color.new(0.3, 0.5, 0.9)
-local PROGRESS_BACKGROUND_COLOR = Color.new(0.2, 0.2, 0.2)
-local PROGRESS_FILL_COLOR = Color.new(0.2, 0.8, 0.9)
-local QUANTITY_OFFSET = 18
+local BACKGROUND_COLOR = Color.new(unpack(UI.BACKGROUND_COLOR))
+local BORDER_COLOR = Color.new(unpack(UI.BORDER_COLOR))
+local BORDER_WIDTH = UI.BORDER_WIDTH
+local BUTTON_BACKGROUND_COLOR = Color.new(unpack(UI.BUTTON_BACKGROUND_COLOR))
+local HEADER_TEXT_SIZE = UI.HEADER_TEXT_SIZE
+local MANA_BACKGROUND_COLOR = Color.new(unpack(UI.MANA_BACKGROUND_COLOR))
+local MANA_FILL_COLOR = Color.new(unpack(UI.MANA_FILL_COLOR))
+local PROGRESS_BACKGROUND_COLOR = Color.new(unpack(UI.PROGRESS_BACKGROUND_COLOR))
+local PROGRESS_FILL_COLOR = Color.new(unpack(UI.PROGRESS_FILL_COLOR))
 local RITUAL_BUTTON_LABEL = "Start Ritual"
-local SLOT_SIZE = 32
-local TEXT_COLOR = Color.new(1, 1, 1, 1)
-local TEXT_SIZE = 12
+local SLOT_SIZE = UI.SLOT_SIZE
+local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
+local TEXT_SIZE = UI.TEXT_SIZE
+local QUANTITY_OFFSET = UI.QUANTITY_OFFSET
 
 --- @class MachineScreen
 --- @field borderWidth number

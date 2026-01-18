@@ -60,17 +60,16 @@ builder()
          local velocity = velocities[i]
 
          if visual and visual.spritesheets then
-            -- Update direction based on velocity
             if velocity then
                Visual.setDirectionFromVelocity(visual, velocity.x, velocity.y)
 
-               -- Update state based on movement
                local moving = isMoving(velocity)
                local running = isRunning(velocity)
-               Visual.setStateFromMovement(visual, moving, running, false)
+
+               local attacking = visual.isAttacking or false
+               Visual.setStateFromMovement(visual, moving, running, attacking)
             end
 
-            -- Update animation frame
             Visual.update(visual, dt)
          end
       end
@@ -90,9 +89,8 @@ builder()
       for i = 1, entityCount do
          local visual = visuals[i]
          local position = positions[i]
-
          if visual and position and visual.spritesheets then
-            Visual.draw(visual, position.x, position.y)
+            Visual.draw(visual, math.ceil(position.x), math.ceil(position.y))
          end
       end
    end):build()

@@ -11,13 +11,11 @@ function BarDrawHelper.draw(options)
    local max = options.max
    local backgroundColor = options.backgroundColor
    local fillColor = options.fillColor
-   local borderColor = options.borderColor
-   local borderWidth = options.borderWidth
-   local borderGap = options.borderGap
+   local border = options.border
 
    -- Calculate bar position (centered above entity)
-   local barX = position.x - width / 2
-   local barY = position.y - height - offsetY
+   local barX = math.ceil(position.x) - width / 2
+   local barY = math.ceil(position.y) - height - offsetY
 
    -- Calculate fill width based on health ratio
    local healthRatio = math.max(0, math.min(1, current / max))
@@ -38,15 +36,17 @@ function BarDrawHelper.draw(options)
    end
 
    -- Draw border
-   lg.setColor(borderColor)
-   lg.setLineWidth(borderWidth)
-   lg.rectangle(
-      "line",
-      barX - borderGap,
-      barY - borderGap,
-      width + borderGap * 2,
-      height + borderGap * 2
-   )
+   if border then
+      lg.setColor(border.color)
+      lg.setLineWidth(border.width)
+      lg.rectangle(
+         "line",
+         barX - border.gap,
+         barY - border.gap,
+         width + border.gap * 2,
+         height + border.gap * 2
+      )
+   end
 
    -- Restore previous graphics state
    lg.setLineWidth(prevLineWidth)

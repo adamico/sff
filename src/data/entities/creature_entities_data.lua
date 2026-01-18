@@ -1,5 +1,6 @@
 local Inventory = require("src.evolved.fragments.inventory")
 local StateMachine = require("src.evolved.fragments.state_machine")
+local Visual = require("src.evolved.fragments.visual")
 
 return {
    skeleton = {
@@ -30,6 +31,7 @@ return {
          current = 25,
          max = 25,
       },
+      maxSpeed = 120,
       name = "Skeleton",
       stateMachine = StateMachine.new({
          events = {
@@ -40,7 +42,12 @@ return {
             {name = "reset",  from = "*",       to = "idle"},
          }
       }),
-      tags = {"damageable", "harvestable", "interactable", "physical", "visual"},
+      tags = {"creature", "damageable", "harvestable", "interactable", "physical", "visual"},
       tier = "basic",
+      visual = Visual.new({
+         spriteSheets = {
+            sword = "skeleton_sword.png",
+         }
+      }),
    },
 }

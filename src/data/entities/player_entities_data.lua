@@ -51,13 +51,8 @@ return {
          regenRate = 1,
          consumeRate = 0,
       },
-      maxSpeed = 300,
+      maxSpeed = 170,
       name = "Player",
-      visual = Visual.new({
-         spriteSheets = {
-            sword = "player_sword.png",
-         }
-      }),
       tags = {"controllable", "physical", "player", "visual"},
       toolbar = Inventory.new({
          slotGroups = {
@@ -71,6 +66,11 @@ return {
                },
             },
          },
+      }),
+      visual = Visual.new({
+         spriteSheets = {
+            sword = "player_sword.png",
+         }
       }),
    },
 }

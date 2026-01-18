@@ -3,7 +3,7 @@ local lg = love.graphics
 
 builder()
    :name("SYSTEMS.RenderDebug")
-   :group(STAGES.OnRender)
+   :group(STAGES.OnRenderDebug)
    :epilogue(function()
       local fps = love.timer.getFPS()
       local mem = collectgarbage("count")
