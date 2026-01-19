@@ -55,11 +55,18 @@ evolvedConfig.TAGS = {
       )
       :build(),
 
-   -- Visual entities can be rendered with animated sprites
-   Visual = builder()
-      :name("TAGS.Visual")
+   -- Animated entities have peachy-based sprite animations
+   Animated = builder()
+      :name("TAGS.Animated")
       :tag()
-      :require(FRAGMENTS.Position, FRAGMENTS.Visual)
+      :require(FRAGMENTS.Position, FRAGMENTS.Animation)
+      :build(),
+
+   -- Static entities have simple quad-based sprites
+   Static = builder()
+      :name("TAGS.Static")
+      :tag()
+      :require(FRAGMENTS.Position, FRAGMENTS.Sprite)
       :build(),
 
    -- Processing entities can process recipes (machines, crafters, etc.)

@@ -19,7 +19,7 @@ return {
          }
       }),
       name = "Corpse",
-      tags = {"interactable", "physical", "visual"},
+      tags = {"interactable", "physical", "animated"},
       -- Optional: decay timer in seconds (corpse despawns after this time)
       decayTime = 60,
    },

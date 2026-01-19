@@ -1,7 +1,7 @@
 --[[
    Render Entities System
 
-   Handles animation updates and rendering for entities with the Visual tag.
+   Handles animation updates and rendering for entities with the Animated tag.
    Uses peachy library for Aseprite spritesheet animation support.
 
    Responsibilities:
@@ -10,7 +10,7 @@
    - Draw sprites at entity positions
 ]]
 
-local Visual = require("src.evolved.fragments.visual")
+local Animation = require("src.evolved.fragments.animation")
 local builder = Evolved.builder
 
 -- Movement threshold for determining if entity is moving
@@ -36,19 +36,19 @@ local function isRunning(velocity)
 end
 
 -- Create query for visual entities
-local visualQuery = builder()
-   :name("QUERIES.Visual")
-   :include(TAGS.Visual)
+local animatedQuery = builder()
+   :name("QUERIES.Animated")
+   :include(TAGS.Animated)
    :build()
 
 -- Update system - handles animation state updates
 builder()
    :name("SYSTEMS.UpdateEntityAnimations")
    :group(STAGES.OnUpdate)
-   :include(TAGS.Visual)
+   :include(TAGS.Animated)
    :execute(function(chunk, entityIds, entityCount)
-      local visuals, velocities, positions = chunk:components(
-         FRAGMENTS.Visual,
+      local animations, velocities, positions = chunk:components(
+         FRAGMENTS.Animation,
          FRAGMENTS.Velocity,
          FRAGMENTS.Position
       )
@@ -56,41 +56,63 @@ builder()
       local dt = love.timer.getDelta()
 
       for i = 1, entityCount do
-         local visual = visuals[i]
+         local animation = animations[i]
          local velocity = velocities[i]
 
-         if visual and visual.spritesheets then
+         if animation and animation.spritesheets then
             if velocity then
-               Visual.setDirectionFromVelocity(visual, velocity.x, velocity.y)
+               Animation.setDirectionFromVelocity(animation, velocity.x, velocity.y)
 
                local moving = isMoving(velocity)
                local running = isRunning(velocity)
 
-               local attacking = visual.isAttacking or false
-               Visual.setStateFromMovement(visual, moving, running, attacking)
+               local attacking = animation.isAttacking or false
+               Animation.setStateFromMovement(animation, moving, running, attacking)
             end
 
-            Visual.update(visual, dt)
+            Animation.update(animation, dt)
          end
       end
    end):build()
 
--- Render system - draws sprites
+-- Render animated entities - draws peachy sprites
 builder()
-   :name("SYSTEMS.RenderEntities")
+   :name("SYSTEMS.RenderAnimatedEntities")
    :group(STAGES.OnRenderEntities)
-   :include(TAGS.Visual)
+   :include(TAGS.Animated)
    :execute(function(chunk, entityIds, entityCount)
-      local visuals, positions = chunk:components(
-         FRAGMENTS.Visual,
+      local animations, positions = chunk:components(
+         FRAGMENTS.Animation,
          FRAGMENTS.Position
       )
 
       for i = 1, entityCount do
-         local visual = visuals[i]
+         local animation = animations[i]
          local position = positions[i]
-         if visual and position and visual.spritesheets then
-            Visual.draw(visual, math.ceil(position.x), math.ceil(position.y))
+         if animation and position and animation.spritesheets then
+            Animation.draw(animation, math.ceil(position.x), math.ceil(position.y))
+         end
+      end
+   end):build()
+
+-- Render static entities - draws quad-based sprites
+local Sprite = require("src.evolved.fragments.sprite")
+
+builder()
+   :name("SYSTEMS.RenderStaticSprites")
+   :group(STAGES.OnRenderEntities)
+   :include(TAGS.Static)
+   :execute(function(chunk, entityIds, entityCount)
+      local sprites, positions = chunk:components(
+         FRAGMENTS.Sprite,
+         FRAGMENTS.Position
+      )
+
+      for i = 1, entityCount do
+         local sprite = sprites[i]
+         local position = positions[i]
+         if sprite and position then
+            Sprite.draw(sprite, math.ceil(position.x), math.ceil(position.y))
          end
       end
    end):build()

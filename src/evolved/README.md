@@ -21,7 +21,9 @@ src/evolved/
 ## File Purposes
 
 ### `evolved_config.lua`
+
 Central configuration hub that exports:
+
 - **STAGES**: Lifecycle stages (OnSetup, OnUpdate, OnRenderEntities)
 - **UNIFORMS**: Global singleton values (DeltaTime, ShowHitboxes)
 - **FRAGMENTS**: Empty table populated by fragments.lua
@@ -29,7 +31,9 @@ Central configuration hub that exports:
 - **ENTITIES**: Empty table populated at runtime by systems
 
 ### `fragments.lua`
+
 Defines all ECS fragments (data components) organized by category:
+
 - **Visual Components**: Color, Shape, Size
 - **Physics Components**: Position, Velocity, MaxSpeed, Hitbox
 - **Input & Control**: Input, InputQueue
@@ -39,22 +43,27 @@ Defines all ECS fragments (data components) organized by category:
 - **Interaction Components**: InteractionRange, Interaction
 
 ### `tags.lua`
+
 Defines entity type markers with required fragments:
+
 - **Controllable**: Entities that accept player input
 - **Interactable**: Entities that can be interacted with
 - **Player**: The player entity
 - **Physical**: Entities with physics (position, velocity, collision)
-- **Visual**: Entities that can be rendered
-- **Processing**: Entities that process recipes (machines)
+- **Animated**: Entities with peachy-based animated sprites
+- **Static**: Entities with simple quad-based static sprites
 
 ### `systems.lua`
+
 Loads all system modules in execution order:
 
 **Setup Stage:**
+
 - setup_systems - Initialize world state
 - spawner_system - Create entities from data
 
 **Update Stage:**
+
 - input_system - Process player input
 - interaction_system - Handle entity interactions
 - mana_system - Update resource regeneration
@@ -63,12 +72,15 @@ Loads all system modules in execution order:
 - collision_system - Handle collisions
 
 **Render Stage:**
+
 - render_ui_system - Draw UI elements
 - render_debug_system - Draw debug info
 - render_hitboxes_system - Draw collision boxes
 
 ### `utils/duplication.lua`
+
 Helper functions for cloning data:
+
 - `duplicateVector(vector)` - Clone Vector objects
 - `clone(table)` - Shallow array clone
 - `deepClone(value)` - Recursive deep clone with metatable preservation
@@ -96,7 +108,7 @@ set(entity, FRAGMENTS.Velocity, Vector(0, 0))
 
 -- Tags
 add(entity, TAGS.Physical)
-add(entity, TAGS.Visual)
+add(entity, TAGS.Animated)
 
 -- Uniforms
 local dt = UNIFORMS.getDeltaTime()
@@ -121,7 +133,7 @@ NewFragment = builder()
    :build(),
 ```
 
-2. If the fragment requires custom duplication logic, add it to `utils/duplication.lua`
+1. If the fragment requires custom duplication logic, add it to `utils/duplication.lua`
 
 ### Adding New Tags
 

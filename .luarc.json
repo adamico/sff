@@ -7,7 +7,12 @@
     "lua-ls-addons/luassert/module/library",
     "lua-ls-addons/love2d/module/library"
   ],
-  "workspace.ignoreDir": [".vscode", "lib", "lib/vudu"],
+  "workspace.ignoreDir": [
+    ".vscode",
+    "lib",
+    "lib/vudu",
+    "src/data/maps"
+  ],
   "diagnostics.disable": [
     "lowercase-global",
     "err-esc",

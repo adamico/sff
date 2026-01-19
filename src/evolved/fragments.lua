@@ -8,7 +8,8 @@ local InputQueue = require("src.evolved.fragments.input_queue")
 local Inventory = require("src.evolved.fragments.inventory")
 local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipe = require("src.evolved.fragments.recipe")
-local Visual = require("src.evolved.fragments.visual")
+local Animation = require("src.evolved.fragments.animation")
+local Sprite = require("src.evolved.fragments.sprite")
 local duplication = require("src.evolved.utils.duplication")
 local evolvedConfig = require("src.evolved.evolved_config")
 local builder = Evolved.builder
@@ -176,9 +177,15 @@ evolvedConfig.FRAGMENTS = {
       :duplicate(StateMachine.duplicate)
       :build(),
 
-   Visual = builder()
-      :name("FRAGMENTS.Visual")
-      :default(Visual.new())
-      :duplicate(Visual.duplicate)
+   Animation = builder()
+      :name("FRAGMENTS.Animation")
+      :default(Animation.new())
+      :duplicate(Animation.duplicate)
+      :build(),
+
+   Sprite = builder()
+      :name("FRAGMENTS.Sprite")
+      :default(Sprite.new())
+      :duplicate(Sprite.duplicate)
       :build(),
 }

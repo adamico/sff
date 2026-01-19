@@ -16,7 +16,7 @@
       fsm = table,             -- State machine instance
       position = table,        -- Current position vector
       velocity = table,        -- Current velocity vector (if exists)
-      visual = table,          -- Visual component (if exists)
+      animation = table,        -- Animation component (if exists)
       health = table,          -- Health component (if exists)
       dt = number,             -- Delta time
    }
@@ -34,7 +34,7 @@ builder()
       local creatureClasses = chunk:components(FRAGMENTS.CreatureClass)
       local positions = chunk:components(FRAGMENTS.Position)
       local velocities = chunk:components(FRAGMENTS.Velocity)
-      local visuals = chunk:components(FRAGMENTS.Visual)
+      local animations = chunk:components(FRAGMENTS.Animation)
       local healths = chunk:components(FRAGMENTS.Health)
       local names = chunk:components(Evolved.NAME)
 
@@ -51,7 +51,7 @@ builder()
                fsm = stateMachines[i],
                position = positions[i],
                velocity = velocities[i],
-               visual = visuals[i],
+               animation = animations[i],
                health = healths[i],
                dt = dt,
             }

@@ -1,5 +1,5 @@
 --[[
-   Visual Fragment
+   Animation Fragment
 
    Manages animated sprites using peachy for entities.
    Supports multiple spritesheets (e.g., "sword", "unarmed") with automatic
@@ -14,7 +14,7 @@
 
 local peachy = require("lib.peachy")
 
-local Visual = {}
+local Animation = {}
 
 local SPRITESHEETS_PATH = "src/data/spritesheets/"
 
@@ -46,13 +46,13 @@ local function buildAnimationTag(direction, weapon, state)
    return direction..capitalize(weapon)..state
 end
 
---- Create a new Visual component
+--- Create a new Animation component
 --- @param data table|nil Configuration data
---- @return table Visual component instance
-function Visual.new(data)
+--- @return table Animation component instance
+function Animation.new(data)
    data = data or {}
 
-   local visual = {
+   local animation = {
       -- Table of peachy animation objects, keyed by spritesheet name
       spritesheets = {},
 
@@ -87,7 +87,7 @@ function Visual.new(data)
       -- We don't set an initial tag yet - we'll set it after we know the weapon name
       local anim = peachy.new(jsonPath, image)
 
-      visual.spritesheets[name] = anim
+      animation.spritesheets[name] = anim
 
       -- Track first sheet for default
       if not firstSheet then
@@ -97,56 +97,56 @@ function Visual.new(data)
 
    -- Set the first loaded sheet as active
    if firstSheet then
-      visual.activeSheet = firstSheet
+      animation.activeSheet = firstSheet
       -- Set initial animation tag
-      local initialTag = buildAnimationTag(visual.direction, firstSheet, visual.state)
-      visual.spritesheets[firstSheet]:setTag(initialTag)
-      visual.spritesheets[firstSheet]:play()
+      local initialTag = buildAnimationTag(animation.direction, firstSheet, animation.state)
+      animation.spritesheets[firstSheet]:setTag(initialTag)
+      animation.spritesheets[firstSheet]:play()
    end
 
-   return visual
+   return animation
 end
 
 --- Get the currently active peachy animation object
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @return table|nil Peachy animation object or nil
-function Visual.getActiveAnimation(visual)
-   if visual.activeSheet and visual.spritesheets[visual.activeSheet] then
-      return visual.spritesheets[visual.activeSheet]
+function Animation.getActiveAnimation(animation)
+   if animation.activeSheet and animation.spritesheets[animation.activeSheet] then
+      return animation.spritesheets[animation.activeSheet]
    end
    return nil
 end
 
 --- Set the active spritesheet
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param sheetName string Name of the spritesheet to activate
-function Visual.setActiveSheet(visual, sheetName)
-   if visual.spritesheets[sheetName] then
-      visual.activeSheet = sheetName
+function Animation.setActiveSheet(animation, sheetName)
+   if animation.spritesheets[sheetName] then
+      animation.activeSheet = sheetName
       -- Apply current direction and state to new sheet
-      Visual.setAnimation(visual, visual.direction, visual.state)
+      Animation.setAnimation(animation, animation.direction, animation.state)
    end
 end
 
 --- Set the animation state and/or direction
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param direction string|nil Direction ("Front" "Back" "Left" "Right")
 --- @param state string|nil Animation state ("Idle" "Walk" "Attack" etc.)
-function Visual.setAnimation(visual, direction, state)
-   direction = direction or visual.direction
-   state = state or visual.state
+function Animation.setAnimation(animation, direction, state)
+   direction = direction or animation.direction
+   state = state or animation.state
 
    -- Only update if something changed
-   if direction == visual.direction and state == visual.state then
+   if direction == animation.direction and state == animation.state then
       return
    end
 
-   visual.direction = direction
-   visual.state = state
+   animation.direction = direction
+   animation.state = state
 
-   local anim = Visual.getActiveAnimation(visual)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
-      local tag = buildAnimationTag(direction, visual.activeSheet, state)
+      local tag = buildAnimationTag(direction, animation.activeSheet, state)
       -- Check if the tag exists before setting
       if anim.frameTags and anim.frameTags[tag] then
          anim:setTag(tag)
@@ -156,10 +156,10 @@ function Visual.setAnimation(visual, direction, state)
 end
 
 --- Set animation direction based on velocity vector
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param velocityX number X velocity
 --- @param velocityY number Y velocity
-function Visual.setDirectionFromVelocity(visual, velocityX, velocityY)
+function Animation.setDirectionFromVelocity(animation, velocityX, velocityY)
    -- Only update direction if there's significant movement
    local threshold = 0.1
    if math.abs(velocityX) < threshold and math.abs(velocityY) < threshold then
@@ -177,15 +177,15 @@ function Visual.setDirectionFromVelocity(visual, velocityX, velocityY)
       direction = velocityY > 0 and "Front" or "Back"
    end
 
-   Visual.setAnimation(visual, direction, nil)
+   Animation.setAnimation(animation, direction, nil)
 end
 
 --- Set animation state based on movement state
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param isMoving boolean Whether the entity is moving
 --- @param isRunning boolean Whether the entity is running (vs walking)
 --- @param isAttacking boolean Whether the entity is attacking
-function Visual.setStateFromMovement(visual, isMoving, isRunning, isAttacking)
+function Animation.setStateFromMovement(animation, isMoving, isRunning, isAttacking)
    local state
 
    if isAttacking then
@@ -200,111 +200,111 @@ function Visual.setStateFromMovement(visual, isMoving, isRunning, isAttacking)
       state = "Idle"
    end
 
-   Visual.setAnimation(visual, nil, state)
+   Animation.setAnimation(animation, nil, state)
 end
 
 --- Update the animation (should be called every frame)
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param dt number Delta time
-function Visual.update(visual, dt)
-   local anim = Visual.getActiveAnimation(visual)
+function Animation.update(animation, dt)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
       anim:update(dt)
    end
 end
 
 --- Draw the current animation frame
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param x number World X position
 --- @param y number World Y position
-function Visual.draw(visual, x, y)
-   local anim = Visual.getActiveAnimation(visual)
+function Animation.draw(animation, x, y)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
       anim:draw(
          x, y,
          0, -- rotation
-         visual.scaleX, visual.scaleY,
-         visual.offsetX, visual.offsetY
+         animation.scaleX, animation.scaleY,
+         animation.offsetX, animation.offsetY
       )
    end
 end
 
---- Duplicate a Visual component (for ECS cloning)
---- @param visual table Visual component to duplicate
---- @return table New Visual component
-function Visual.duplicate(visual)
-   local newVisual = {
+--- Duplicate an Animation component (for ECS cloning)
+--- @param animation table Animation component to duplicate
+--- @return table New Animation component
+function Animation.duplicate(animation)
+   local newAnimation = {
       spritesheets = {},
-      activeSheet = visual.activeSheet,
-      direction = visual.direction,
-      state = visual.state,
-      offsetX = visual.offsetX,
-      offsetY = visual.offsetY,
-      scaleX = visual.scaleX,
-      scaleY = visual.scaleY,
+      activeSheet = animation.activeSheet,
+      direction = animation.direction,
+      state = animation.state,
+      offsetX = animation.offsetX,
+      offsetY = animation.offsetY,
+      scaleX = animation.scaleX,
+      scaleY = animation.scaleY,
    }
 
    -- Recreate peachy objects for each spritesheet
-   for name, anim in pairs(visual.spritesheets) do
+   for name, anim in pairs(animation.spritesheets) do
       local jsonPath = anim:getJSON()
       local newAnim = peachy.new(jsonPath, anim.image)
 
       -- Restore current animation state
-      if name == visual.activeSheet then
-         local tag = buildAnimationTag(visual.direction, name, visual.state)
+      if name == animation.activeSheet then
+         local tag = buildAnimationTag(animation.direction, name, animation.state)
          if newAnim.frameTags and newAnim.frameTags[tag] then
             newAnim:setTag(tag)
             newAnim:play()
          end
       end
 
-      newVisual.spritesheets[name] = newAnim
+      newAnimation.spritesheets[name] = newAnim
    end
 
-   return newVisual
+   return newAnimation
 end
 
 --- Check if a specific animation tag exists
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param direction string Direction
 --- @param state string Animation state
 --- @return boolean
-function Visual.hasAnimation(visual, direction, state)
-   local anim = Visual.getActiveAnimation(visual)
+function Animation.hasAnimation(animation, direction, state)
+   local anim = Animation.getActiveAnimation(animation)
    if anim and anim.frameTags then
-      local tag = buildAnimationTag(direction, visual.activeSheet, state)
+      local tag = buildAnimationTag(direction, animation.activeSheet, state)
       return anim.frameTags[tag] ~= nil
    end
    return false
 end
 
 --- Set a callback for when the animation loops
---- @param visual table Visual component
+--- @param animation table Animation component
 --- @param callback function Callback function
 --- @param ... any Additional arguments to pass to callback
-function Visual.onLoop(visual, callback, ...)
-   local anim = Visual.getActiveAnimation(visual)
+function Animation.onLoop(animation, callback, ...)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
       anim:onLoop(callback, ...)
    end
 end
 
 --- Pause the animation
---- @param visual table Visual component
-function Visual.pause(visual)
-   local anim = Visual.getActiveAnimation(visual)
+--- @param animation table Animation component
+function Animation.pause(animation)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
       anim:pause()
    end
 end
 
 --- Resume playing the animation
---- @param visual table Visual component
-function Visual.play(visual)
-   local anim = Visual.getActiveAnimation(visual)
+--- @param animation table Animation component
+function Animation.play(animation)
+   local anim = Animation.getActiveAnimation(animation)
    if anim then
       anim:play()
    end
 end
 
-return Visual
+return Animation

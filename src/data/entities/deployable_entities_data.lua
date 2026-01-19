@@ -52,7 +52,7 @@ return {
             {name = "refuel",            from = "noMana",  to = "working"},
          }
       }),
-      tags = {"interactable", "physical", "processing", "visual"},
+      tags = {"interactable", "physical", "processing", "static"},
       validRecipes = {Recipes.createSkeleton},
    },
    creativeChest = {
@@ -73,6 +73,6 @@ return {
       }),
       interaction = {type = "storage"},
       name = "Creative Chest",
-      tags = {"interactable", "physical", "visual"},
+      tags = {"interactable", "physical", "static"},
    },
 }
