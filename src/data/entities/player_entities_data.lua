@@ -30,8 +30,8 @@ return {
       hitbox = {
          shape = "circle",
          offsetX = 0,
-         offsetY = 0,
-         radius = 8,
+         offsetY = -4,
+         radius = 4,
       },
       interactionRange = 128,
       inventory = Inventory.new({

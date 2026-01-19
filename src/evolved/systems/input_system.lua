@@ -2,6 +2,7 @@ local InputHelper = require("src.helpers.input_helper")
 local InventoryStateManager = require("src.managers.inventory_state_manager")
 local MachineStateManager = require("src.managers.machine_state_manager")
 local EntityPlacementManager = require("src.managers.entity_placement_manager")
+local CameraHelper = require("src.helpers.camera_helper")
 local builder = Evolved.builder
 local execute = Evolved.execute
 local get = Evolved.get
@@ -50,7 +51,8 @@ local function getActionDetector()
 end
 
 local function actionDetection(playerInventory, playerToolbar, playerEquipment)
-   local _, mx, my = shove.mouseToViewport()
+   local _, screenX, screenY = shove.mouseToViewport()
+   local mx, my = CameraHelper.screenToWorld(screenX, screenY)
    actionDetector = getActionDetector()
 
    if actionDetector:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then

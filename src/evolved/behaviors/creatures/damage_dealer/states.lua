@@ -49,8 +49,8 @@ end
 --- @param context table The update context
 function states.idle(context)
    -- Clear attacking flag
-   if context.visual then
-      context.visual.isAttacking = false
+   if context.animation then
+      context.animation.isAttacking = false
    end
 
    -- Stop movement while idle
@@ -88,8 +88,8 @@ end
 --- @param context table The update context
 function states.alert(context)
    -- Clear attacking flag
-   if context.visual then
-      context.visual.isAttacking = false
+   if context.animation then
+      context.animation.isAttacking = false
    end
 
    -- Stop movement during alert
@@ -120,8 +120,8 @@ end
 --- @param context table The update context
 function states.chasing(context)
    -- Clear attacking flag (we're running now)
-   if context.visual then
-      context.visual.isAttacking = false
+   if context.animation then
+      context.animation.isAttacking = false
    end
 
    local distance = helpers.getDistanceToPlayer(context.position)
@@ -170,8 +170,8 @@ end
 --- @param context table The update context
 function states.attacking(context)
    -- Set attacking flag for animation
-   if context.visual then
-      context.visual.isAttacking = true
+   if context.animation then
+      context.animation.isAttacking = true
    end
 
    -- Stop movement during attack
