@@ -60,7 +60,7 @@ return {
                maxSlots = 10,
                initialItems = {
                   {itemId = "skeletonAssembler", quantity = 1},
-                  {itemId = "creativeChest",     quantity = 1},
+                  {itemId = "chest",             quantity = 1},
                   {itemId = "skeleton",          quantity = 1},
                   {itemId = "harvesterBasic",    quantity = 1},
                },

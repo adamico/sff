@@ -6,11 +6,11 @@ return {
       deployable = true,
       spawnsEntity = "skeletonAssembler",
    },
-   creativeChest = {
+   chest = {
       name = "Creative Chest",
       category = "building",
       maxStackSize = 10,
       deployable = true,
-      spawnsEntity = "creativeChest",
+      spawnsEntity = "chest",
    },
 }

@@ -2,6 +2,7 @@ local Inventory = require("src.evolved.fragments.inventory")
 local InputQueue = require("src.evolved.fragments.input_queue")
 local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipes = require("src.data.recipes_data")
+local Sprite = require("src.evolved.fragments.sprite")
 
 return {
    skeletonAssembler = {
@@ -55,13 +56,13 @@ return {
       tags = {"interactable", "physical", "processing", "static"},
       validRecipes = {Recipes.createSkeleton},
    },
-   creativeChest = {
+   chest = {
       hitbox = {
          shape = "rectangle",
          offsetX = 0,
-         offsetY = 0,
-         width = 32,
-         height = 32,
+         offsetY = 4,
+         width = 16,
+         height = 12,
       },
       inventory = Inventory.new({
          slotGroups = {
@@ -72,7 +73,16 @@ return {
          },
       }),
       interaction = {type = "storage"},
-      name = "Creative Chest",
+      name = "Chest",
+      sprite = Sprite.new({
+         texture = "chest_lever.png",
+         offsetX = -16,
+         offsetY = -16,
+         x = 0,
+         y = 80,
+         width = 32,
+         height = 32,
+      }),
       tags = {"interactable", "physical", "static"},
    },
 }
