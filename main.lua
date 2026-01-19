@@ -59,7 +59,7 @@ local map
 -- ============================================================================
 
 function love.load()
-   map = sti("src/data/maps/dungeon.lua")
+   map = sti("src/data/maps/dungeon_big.lua")
 
    Flexlove.init({
       baseScale = {width = 400, height = 300}, -- Design at game resolution
