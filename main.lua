@@ -41,6 +41,7 @@ require("src.evolved.systems")
 -- Helpers
 -- ============================================================================
 require("src.helpers.text_helper")
+local CameraHelper = require("src.helpers.camera_helper")
 
 -- ============================================================================
 -- Managers
@@ -53,13 +54,15 @@ local InventoryStateManager = require("src.managers.inventory_state_manager")
 -- ============================================================================
 local process = Evolved.process
 local sti = require("lib.sti")
-local map
+local lg = love.graphics
+
 -- ============================================================================
 -- Love2D Callbacks
 -- ============================================================================
 
 function love.load()
-   map = sti("src/data/maps/dungeon_big.lua")
+   -- Global map for systems to access dimensions, tiles, objects
+   Map = sti("src/data/maps/dungeon_big.lua")
 
    Flexlove.init({
       baseScale = {width = 400, height = 300}, -- Design at game resolution
@@ -81,26 +84,32 @@ function love.load()
 end
 
 function love.update(dt)
-   map:update(dt)
+   Map:update(dt)
    UNIFORMS.setDeltaTime(dt)
    Flexlove.update(dt)
    process(STAGES.OnUpdate)
 end
 
 function love.draw()
+   local tx, ty = CameraHelper.getOffset()
+
    shove.beginDraw()
 
    shove.beginLayer("background")
-   map:draw()
+   Map:draw(-tx, -ty)
 
    shove.endLayer()
 
    shove.beginLayer("entities")
+   lg.push()
+   lg.translate(-tx, -ty)
    process(STAGES.OnRenderEntities)
+
    shove.endLayer()
 
    shove.beginLayer("debug")
    process(STAGES.OnRenderDebug)
+   lg.pop()
    shove.endLayer()
 
    shove.endDraw()
@@ -113,6 +122,11 @@ function love.draw()
          MachineStateManager:drawHeldStack()
       end
    end)
+
+   local fps = love.timer.getFPS()
+   local mem = collectgarbage("count")
+   lg.print(string.format("FPS: %d", fps), 10, 10)
+   lg.print(string.format("Memory: %d KB", mem), 10, 30)
 end
 
 function love.resize(w, h)

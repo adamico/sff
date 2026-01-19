@@ -46,7 +46,6 @@ require("src.evolved.systems.collision_system") -- Handle collision detection/re
 
 require("src.evolved.systems.render_entities_system") -- Render entity sprites
 require("src.evolved.systems.render_ui_system")       -- Render UI elements
-require("src.evolved.systems.render_debug_system")    -- Render debug information
 require("src.evolved.systems.render_health_system")   -- Render entity health bars
 require("src.evolved.systems.render_mana_system")     -- Render entity mana bars
 require("src.evolved.systems.render_hitboxes_system") -- Render collision hitboxes

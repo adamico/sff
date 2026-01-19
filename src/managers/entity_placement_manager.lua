@@ -2,6 +2,7 @@ local EntityRegistry = require("src.data.queries.entity_query")
 local EntityDrawHelper = require("src.helpers.entity_draw_helper")
 local CollisionHelper = require("src.helpers.collision_helper")
 local InventoryHelper = require("src.helpers.inventory_helper")
+local CameraHelper = require("src.helpers.camera_helper")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
@@ -32,7 +33,8 @@ observe(Events.PLACEMENT_MODE_ENTERED, function(item, slotIndex)
    EntityPlacementManager.sourceSlotIndex = slotIndex
 
    local _, mx, my = shove.mouseToViewport()
-   EntityPlacementManager.ghostPosition = Vector(mx, my)
+   local worldX, worldY = CameraHelper.screenToWorld(mx, my)
+   EntityPlacementManager.ghostPosition = Vector(worldX, worldY)
 end)
 
 observe(Events.INPUT_INVENTORY_OPENED, function()
@@ -93,7 +95,8 @@ function EntityPlacementManager:update(dt)
    if not self.isPlacing then return end
 
    local _, mx, my = shove.mouseToViewport()
-   self.ghostPosition = Vector(mx, my)
+   local worldX, worldY = CameraHelper.screenToWorld(mx, my)
+   self.ghostPosition = Vector(worldX, worldY)
 
    -- Check for collisions with existing entities
    local ghostBounds = getGhostBounds(self)
