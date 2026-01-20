@@ -75,3 +75,4 @@
 - Machine screens need non-slot widgets (buttons, dropdowns)
 - Consider more complex machine visuals like Minecraft mod UIs
 - <https://github.com/BlackMATov/evolved.lua/tree/main?tab=readme-ov-file#singletons>
+- the huge dungeon map uses 16-24Mb, maybe load map chunks? or is this very low for a 2d game? maybe only freeze far entities?

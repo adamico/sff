@@ -1,6 +1,6 @@
 # Super Fantasy Factory - MVP Architecture
 
-> **Last Updated:** 2026-01-13
+> **Last Updated:** 2026-01-20
 
 Core gameplay loop: **Player → Creative Chest → Toolbar → Assembly Station → Ritual → Skeleton Spawn**
 
@@ -72,16 +72,32 @@ src/
 ## ECS Systems
 
 | System | Purpose |
-|:-------|:--------|
+| :------- | :-------- |
 | Setup | Spawns initial entities |
 | Input | Player input, emits events |
 | Interaction | Entity interactions |
+| UpdateZIndex | Syncs ZIndex from Y position for depth sorting |
 | Physics | Position updates |
 | Mana | Mana regeneration |
 | Processing | Machine behaviors |
-| Render Entities | Entity drawing |
+| SortEntities | Collects entities with ZIndex for rendering |
+| RenderSortedEntities | Sorts by ZIndex and draws in order |
 | Render Debug | Debug overlays |
 | Render UI | Inventory UI |
+
+---
+
+## Rendering Architecture
+
+Entities use **ZIndex-based Y-sorting** for 2.5D depth ordering:
+
+1. `UpdateZIndex` system sets `ZIndex = Position.y` each frame
+2. `SortEntities` collects all entities with ZIndex into a render list
+3. `RenderSortedEntities` sorts by ZIndex (lower Y = further back) and draws
+
+**Tags:** `Animated` and `Static` require `ZIndex` fragment.
+
+**Extension:** Add `ZOffset` fragment for flying entities or elevated platforms.
 
 ---
 

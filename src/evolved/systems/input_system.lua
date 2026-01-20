@@ -1,8 +1,7 @@
 local InputHelper = require("src.helpers.input_helper")
-local InventoryStateManager = require("src.managers.inventory_state_manager")
-local MachineStateManager = require("src.managers.machine_state_manager")
-local EntityPlacementManager = require("src.managers.entity_placement_manager")
 local CameraHelper = require("src.helpers.camera_helper")
+local UIState = require("src.helpers.ui_state_machine")
+
 local builder = Evolved.builder
 local execute = Evolved.execute
 local get = Evolved.get
@@ -11,22 +10,92 @@ local observe = Beholder.observe
 local trigger = Beholder.trigger
 
 local TOOLBAR_KEYS_MAX = 9
-
 local A = require("src.config.input_bindings").actions
 
+-------------------------------------------------------------------------------
+-- ACTION DETECTOR
+-------------------------------------------------------------------------------
+local actionDetector
+
+local function getActionDetector()
+   if not actionDetector then
+      actionDetector = InputHelper.createActionDetector()
+   end
+   return actionDetector
+end
+
+-------------------------------------------------------------------------------
+-- STATE-SPECIFIC ACTION HANDLERS
+-------------------------------------------------------------------------------
+
+--- Handle actions when in "exploring" state (normal gameplay)
+local function handleExploringActions(mx, my, playerInventory, playerToolbar, playerEquipment)
+   if actionDetector:pressed(A.OPEN_INVENTORY) then
+      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar, playerEquipment)
+   end
+
+   if actionDetector:pressed(A.INTERACT) then
+      trigger(Events.INPUT_INTERACTED, mx, my)
+   end
+
+   for i = 0, TOOLBAR_KEYS_MAX do
+      if actionDetector:pressed(A["TOOLBAR_USE_"..i]) then
+         trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
+      end
+   end
+end
+
+--- Handle actions when in "placing" state (entity placement mode)
+local function handlePlacingActions()
+   if actionDetector:pressed(A.CANCEL_PLACEMENT) then
+      trigger(Events.PLACEMENT_CLICKED, 2)
+   elseif actionDetector:pressed(A.INTERACT) then
+      trigger(Events.PLACEMENT_CLICKED, 1)
+   end
+end
+
+--- Handle actions available in all states
+local function handleGlobalActions(mx, my)
+   if actionDetector:pressed(A.CLOSE_INVENTORY) then
+      trigger(Events.UI_MODAL_CLOSED)
+   end
+
+   if actionDetector:pressed(A.WEAPON_USE) then
+      trigger(Events.WEAPON_ACTIVATED, mx, my)
+   end
+
+   if actionDetector:pressed(A.TOGGLE_HITBOXES) then
+      UNIFORMS.toggleHitboxes()
+   end
+end
+
+-------------------------------------------------------------------------------
+-- STATE DISPATCH TABLE
+-------------------------------------------------------------------------------
+local stateHandlers = {
+   exploring = handleExploringActions,
+   placing = handlePlacingActions,
+}
+
+-------------------------------------------------------------------------------
+-- MOVEMENT DETECTION
+-------------------------------------------------------------------------------
 local function movementDetection(chunk, entityCount)
    local vector = Vector()
 
-   if InputHelper.isActionPressed(A.MOVE_UP) then
-      vector.y = -1
-   elseif InputHelper.isActionPressed(A.MOVE_DOWN) then
-      vector.y = 1
-   end
+   -- Only allow movement in exploring state
+   if UIState:is("exploring") then
+      if InputHelper.isActionPressed(A.MOVE_UP) then
+         vector.y = -1
+      elseif InputHelper.isActionPressed(A.MOVE_DOWN) then
+         vector.y = 1
+      end
 
-   if InputHelper.isActionPressed(A.MOVE_LEFT) then
-      vector.x = -1
-   elseif InputHelper.isActionPressed(A.MOVE_RIGHT) then
-      vector.x = 1
+      if InputHelper.isActionPressed(A.MOVE_LEFT) then
+         vector.x = -1
+      elseif InputHelper.isActionPressed(A.MOVE_RIGHT) then
+         vector.x = 1
+      end
    end
 
    local inputVectors = chunk:components(FRAGMENTS.Input)
@@ -40,60 +109,27 @@ local function movementDetection(chunk, entityCount)
    trigger(Events.INPUT_VECTOR_CHANGED)
 end
 
-local actionDetector
-
-local function getActionDetector()
-   if not actionDetector then
-      actionDetector = InputHelper.createActionDetector()
-   end
-
-   return actionDetector
-end
-
+-------------------------------------------------------------------------------
+-- ACTION DETECTION (main entry point)
+-------------------------------------------------------------------------------
 local function actionDetection(playerInventory, playerToolbar, playerEquipment)
    local _, screenX, screenY = shove.mouseToViewport()
    local mx, my = CameraHelper.screenToWorld(screenX, screenY)
    actionDetector = getActionDetector()
 
-   if actionDetector:pressed(A.OPEN_INVENTORY) and not InventoryStateManager.isOpen then
-      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar, playerEquipment)
+   -- Dispatch to current state handler
+   local handler = stateHandlers[UIState.current]
+   if handler then
+      handler(mx, my, playerInventory, playerToolbar, playerEquipment)
    end
 
-   if actionDetector:pressed(A.CLOSE_INVENTORY) then
-      trigger(Events.INPUT_INVENTORY_CLOSED)
-   end
-
-   if actionDetector:pressed(A.INTERACT) then
-      if EntityPlacementManager.isPlacing then
-         EntityPlacementManager:handleClick(1)
-      elseif not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
-         trigger(Events.INPUT_INTERACTED, mx, my)
-      end
-   end
-
-   if actionDetector:pressed(A.CANCEL_PLACEMENT) then
-      if EntityPlacementManager.isPlacing then
-         EntityPlacementManager:handleClick(2)
-      end
-   end
-
-   for i = 0, TOOLBAR_KEYS_MAX do
-      if actionDetector:pressed(A["TOOLBAR_USE_"..i])
-         and not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
-         trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
-      end
-   end
-
-   if actionDetector:pressed(A.WEAPON_USE) then
-      trigger(Events.WEAPON_ACTIVATED, mx, my)
-   end
-
-   -- Debug: Toggle hitbox visibility
-   if actionDetector:pressed(A.TOGGLE_HITBOXES) then
-      UNIFORMS.toggleHitboxes()
-   end
+   -- Always-available actions
+   handleGlobalActions(mx, my)
 end
 
+-------------------------------------------------------------------------------
+-- SYSTEM REGISTRATION
+-------------------------------------------------------------------------------
 builder()
    :name("SYSTEMS.PlayerInput")
    :group(STAGES.OnUpdate)
@@ -108,6 +144,9 @@ builder()
       end
    end):build()
 
+-------------------------------------------------------------------------------
+-- VELOCITY UPDATE (observes INPUT_VECTOR_CHANGED)
+-------------------------------------------------------------------------------
 local controllableQuery = builder()
    :name("QUERIES.Controllable")
    :include(TAGS.Controllable)

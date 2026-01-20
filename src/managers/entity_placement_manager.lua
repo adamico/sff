@@ -27,6 +27,11 @@ local physicalQuery = builder()
    :include(TAGS.Physical)
    :build()
 
+
+observe(Events.PLACEMENT_CLICKED, function(button)
+   EntityPlacementManager:handleClick(button)
+end)
+
 observe(Events.PLACEMENT_MODE_ENTERED, function(item, slotIndex)
    EntityPlacementManager.isPlacing = true
    EntityPlacementManager.item = item
@@ -171,7 +176,7 @@ function EntityPlacementManager:cancelPlacement()
    self.sourceSlotIndex = nil
    self.ghostPosition = nil
 
-   trigger(Events.PLACEMENT_MODE_EXITED, "cancelled")
+   trigger(Events.PLACEMENT_MODE_EXITED)
    return true
 end
 

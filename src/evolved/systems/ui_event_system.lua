@@ -23,7 +23,7 @@ observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, 
    UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
 end)
 
-observe(Events.INPUT_INVENTORY_CLOSED, function()
+observe(Events.UI_MODAL_CLOSED, function()
    -- Close whichever screen is open
    if InventoryStateManager.isOpen then
       InventoryStateManager:close()
