@@ -12,11 +12,8 @@ return {
       interaction = {type = "storage", action = "loot"},
       -- Inventory will be populated dynamically from the creature's loot component
       inventory = Inventory.new({
-         slotGroups = {
-            default = {
-               maxSlots = 8,
-            }
-         }
+         maxSlots = 8,
+         accessMode = "io",
       }),
       name = "Corpse",
       tags = {"interactable", "physical", "animated"},

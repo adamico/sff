@@ -6,17 +6,21 @@ local BaseViewManager = Class("BaseViewManager")
 function BaseViewManager:pickOrPlace(slotInfo)
    local inventory = slotInfo.inventory
    local slotIndex = slotInfo.slotIndex
-   local slotType = slotInfo.slotType
    local slot = slotInfo.slot
 
    if not slot then return false end
 
-   -- If holding an item, try to place/swap/stack
+   -- Check access mode for insert operations
    if self.heldStack then
-      return self:placeItemInSlot(slotIndex, slotType, inventory)
-      -- If slot has an item, pick it up
+      if not InventoryHelper.canInsert(inventory) then
+         return false
+      end
+      return self:placeItemInSlot(slotIndex, inventory)
    elseif slot.itemId then
-      return self:pickItemFromSlot(slotIndex, slotType, inventory, slot.quantity)
+      if not InventoryHelper.canRemove(inventory) then
+         return false
+      end
+      return self:pickItemFromSlot(slotIndex, inventory, slot.quantity)
    end
 
    return false
@@ -24,11 +28,11 @@ end
 
 --- Pick up an item from a slot (internal method - assumes heldStack is nil)
 --- @param slotIndex number The slot index to pick from
---- @param slotType string|nil The slot type (nil defaults to "default")
 --- @param inventory table The inventory to pick from
+--- @param quantity number The quantity to pick
 --- @return boolean Success
-function BaseViewManager:pickItemFromSlot(slotIndex, slotType, inventory, quantity)
-   local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+function BaseViewManager:pickItemFromSlot(slotIndex, inventory, quantity)
+   local slot = InventoryHelper.getSlot(inventory, slotIndex)
    if not slot or not slot.itemId then return false end
 
    local pickedQuantity = quantity
@@ -39,7 +43,6 @@ function BaseViewManager:pickItemFromSlot(slotIndex, slotType, inventory, quanti
       quantity = pickedQuantity,
       sourceInventory = inventory,
       sourceSlot = slotIndex,
-      sourceSlotType = slotType,
    }
 
    -- Create held stack view
@@ -65,12 +68,11 @@ local function clearHeldStack(self)
 end
 
 --- Update held stack with new data
-local function updateHeldStack(self, itemId, quantity, inventory, slotIndex, slotType)
+local function updateHeldStack(self, itemId, quantity, inventory, slotIndex)
    self.heldStack.itemId = itemId
    self.heldStack.quantity = quantity
    self.heldStack.sourceInventory = inventory
    self.heldStack.sourceSlot = slotIndex
-   self.heldStack.sourceSlotType = slotType
 
    if self.heldStackView then
       self.heldStackView:updateStack(self.heldStack)
@@ -79,15 +81,14 @@ end
 
 --- Place the held item into a slot (handles empty slots, stacking, and swapping)
 --- @param slotIndex number The slot index to place into
---- @param slotType string|nil The slot type (nil defaults to "default")
 --- @param inventory table The inventory to place into
 --- @return boolean Success
-function BaseViewManager:placeItemInSlot(slotIndex, slotType, inventory)
-   local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+function BaseViewManager:placeItemInSlot(slotIndex, inventory)
+   local slot = InventoryHelper.getSlot(inventory, slotIndex)
    if not slot then return false end
 
-   -- Check if the held item can be placed in this slot type (category constraints)
-   if not InventoryHelper.canPlaceItem(inventory, self.heldStack.itemId, slotType) then
+   -- Check if the held item can be placed in this inventory (category constraints)
+   if not InventoryHelper.canPlaceItem(inventory, self.heldStack.itemId) then
       return false
    end
 
@@ -106,7 +107,6 @@ function BaseViewManager:placeItemInSlot(slotIndex, slotType, inventory)
             self.heldStack.quantity = remaining
             self.heldStack.sourceInventory = inventory
             self.heldStack.sourceSlot = slotIndex
-            self.heldStack.sourceSlotType = slotType
          end
          return true
       end
@@ -119,8 +119,8 @@ function BaseViewManager:placeItemInSlot(slotIndex, slotType, inventory)
    local tempQuantity = slot.quantity
 
    -- Check if the slot item can go back to where the held item came from
-   if self.heldStack.sourceInventory and self.heldStack.sourceSlotType then
-      if not InventoryHelper.canPlaceItem(self.heldStack.sourceInventory, tempItem, self.heldStack.sourceSlotType) then
+   if self.heldStack.sourceInventory then
+      if not InventoryHelper.canPlaceItem(self.heldStack.sourceInventory, tempItem) then
          return false
       end
    end
@@ -128,15 +128,14 @@ function BaseViewManager:placeItemInSlot(slotIndex, slotType, inventory)
    slot.itemId = self.heldStack.itemId
    slot.quantity = self.heldStack.quantity
 
-   updateHeldStack(self, tempItem, tempQuantity, inventory, slotIndex, slotType)
+   updateHeldStack(self, tempItem, tempQuantity, inventory, slotIndex)
    return true
 end
 
 function BaseViewManager:returnHeldStack()
    local heldStack = self.heldStack
    if heldStack and heldStack.sourceInventory then
-      local slotType = heldStack.sourceSlotType
-      local slot = InventoryHelper.getSlot(heldStack.sourceInventory, heldStack.sourceSlot, slotType)
+      local slot = InventoryHelper.getSlot(heldStack.sourceInventory, heldStack.sourceSlot)
       if slot then
          slot.itemId = heldStack.itemId
          slot.quantity = heldStack.quantity
@@ -147,15 +146,17 @@ end
 function BaseViewManager:pickHalf(slotInfo)
    local slot = slotInfo.slot
    if not slot or not slot.itemId then return false end
+   if not InventoryHelper.canRemove(slotInfo.inventory) then return false end
 
    local slotQuantity = slot.quantity
    if slotQuantity <= 1 then return false end
    local quantity = math.floor(slotQuantity / 2)
-   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.slotType, slotInfo.inventory, quantity)
+   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.inventory, quantity)
 end
 
 function BaseViewManager:pickOne(slotInfo)
-   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.slotType, slotInfo.inventory, 1)
+   if not InventoryHelper.canRemove(slotInfo.inventory) then return false end
+   self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.inventory, 1)
 end
 
 --- Get the source identifier for transfer routing
@@ -169,8 +170,8 @@ local function getTransferSourceId(slotInfo)
       if string.find(viewId, "^equipment") then
          return "equipment"
       elseif string.find(viewId, "^machine") then
-         local sourceId = "machine:"..(slotInfo.slotType or "input")
-         return sourceId
+         local inventoryType = slotInfo.inventoryType or "input"
+         return "machine:"..inventoryType
       end
 
       return viewId
@@ -179,25 +180,25 @@ local function getTransferSourceId(slotInfo)
    return "unknown"
 end
 
---- Transfer target resolvers - each returns {inventory, slotType} or nil
+--- Transfer target resolvers - each returns {inventory} or nil
 local TransferTargets = {
    --- Player's main inventory
    player_inventory = function(self)
       local inv = Evolved.get(ENTITIES.Player, FRAGMENTS.Inventory)
-      return inv and {inventory = inv, slotType = "default"} or nil
+      return inv and {inventory = inv} or nil
    end,
 
    --- Player's toolbar
    toolbar = function(self)
       local inv = Evolved.get(ENTITIES.Player, FRAGMENTS.Toolbar)
-      return inv and {inventory = inv, slotType = "default"} or nil
+      return inv and {inventory = inv} or nil
    end,
 
    --- Machine input slots (if machine screen is open)
    machine = function(self)
       local view = self:findViewById("machine")
-      if view and view.inventory then
-         return {inventory = view.inventory, slotType = "input"}
+      if view and view.inputInventory then
+         return {inventory = view.inputInventory}
       end
       return nil
    end,
@@ -206,7 +207,7 @@ local TransferTargets = {
    target_inventory = function(self)
       local view = self:findViewById("target_inventory")
       if view and view.inventory then
-         return {inventory = view.inventory, slotType = "default"}
+         return {inventory = view.inventory}
       end
       return nil
    end,
@@ -226,6 +227,11 @@ function BaseViewManager:quickTransfer(slotInfo)
    local slot = slotInfo.slot
    if not slot or not slot.itemId then return false end
 
+   -- Check if we can remove from source
+   if not InventoryHelper.canRemove(slotInfo.inventory) then
+      return false
+   end
+
    -- Determine source and look up transfer rules
    local sourceId = getTransferSourceId(slotInfo)
    local targetKeys = TransferRules[sourceId]
@@ -235,17 +241,15 @@ function BaseViewManager:quickTransfer(slotInfo)
       return false
    end
 
-   -- Find first available target
+   -- Find first available target that allows insert
    local targetInventory = nil
-   local targetSlotType = nil
 
    for _, targetKey in ipairs(targetKeys) do
       local resolver = TransferTargets[targetKey]
       if resolver then
          local result = resolver(self)
-         if result then
+         if result and InventoryHelper.canInsert(result.inventory) then
             targetInventory = result.inventory
-            targetSlotType = result.slotType
             break
          end
       end
@@ -257,7 +261,7 @@ function BaseViewManager:quickTransfer(slotInfo)
    end
 
    -- Try to add the item to the target inventory (supports partial transfers)
-   local amountAdded = InventoryHelper.addItem(targetInventory, slot.itemId, slot.quantity, targetSlotType)
+   local amountAdded = InventoryHelper.addItem(targetInventory, slot.itemId, slot.quantity)
 
    if amountAdded > 0 then
       -- Subtract transferred amount from source slot

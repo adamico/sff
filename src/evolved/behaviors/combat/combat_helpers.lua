@@ -52,9 +52,9 @@ end
 --- @return boolean success True if equipment is valid
 --- @return string|nil error Error message if validation failed
 function CombatHelpers.validateEquipment(attackerId, requiredCategory)
-   local equipment = get(attackerId, FRAGMENTS.Equipment)
-   if not equipment then
-      return false, string.format("Entity %d has no equipment component", attackerId)
+   local weaponSlot = get(attackerId, FRAGMENTS.WeaponSlot)
+   if not weaponSlot then
+      return false, string.format("Entity %d has no weapon slot component", attackerId)
    end
 
    if not EntityHelper.isEquippedWith(attackerId, requiredCategory) then

@@ -6,20 +6,16 @@ local EntityHelper = {}
 --- @param entityId number Entity ID to check equipment
 --- @return table|nil The item data with combatBehavior, or nil if none equipped
 function EntityHelper.getEquippedWeapon(entityId)
-   local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
-   if not equipment then return nil end
+   local weaponSlot = Evolved.get(entityId, FRAGMENTS.WeaponSlot)
+   if not weaponSlot then return nil end
 
-   -- Check all slot types in the equipment inventory
-   local slotTypes = InventoryHelper.getSlotTypes(equipment)
-   for _, slotType in ipairs(slotTypes) do
-      local slots = InventoryHelper.getSlots(equipment, slotType)
-      if slots then
-         for _, slot in ipairs(slots) do
-            if slot.itemId then
-               local item = ItemQuery.getItem(slot.itemId)
-               if item and item.combatBehavior then
-                  return item
-               end
+   local slots = InventoryHelper.getSlots(weaponSlot)
+   if slots then
+      for _, slot in ipairs(slots) do
+         if slot.itemId then
+            local item = ItemQuery.getItem(slot.itemId)
+            if item and item.combatBehavior then
+               return item
             end
          end
       end
@@ -29,13 +25,26 @@ function EntityHelper.getEquippedWeapon(entityId)
 end
 
 function EntityHelper.isEquippedWith(entityId, equipmentCategory)
-   local equipment = Evolved.get(entityId, FRAGMENTS.Equipment)
-   if not equipment then return false end
+   -- Check weapon slot
+   local weaponSlot = Evolved.get(entityId, FRAGMENTS.WeaponSlot)
+   if weaponSlot then
+      local slots = InventoryHelper.getSlots(weaponSlot)
+      if slots then
+         for _, slot in ipairs(slots) do
+            if slot.itemId then
+               local item = ItemQuery.getItem(slot.itemId)
+               if item and item.category == equipmentCategory then
+                  return true
+               end
+            end
+         end
+      end
+   end
 
-   -- Check all slot types in the equipment inventory
-   local slotTypes = InventoryHelper.getSlotTypes(equipment)
-   for _, slotType in ipairs(slotTypes) do
-      local slots = InventoryHelper.getSlots(equipment, slotType)
+   -- Check armor slot
+   local armorSlot = Evolved.get(entityId, FRAGMENTS.ArmorSlot)
+   if armorSlot then
+      local slots = InventoryHelper.getSlots(armorSlot)
       if slots then
          for _, slot in ipairs(slots) do
             if slot.itemId then

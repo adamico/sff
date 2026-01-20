@@ -3,7 +3,6 @@
 -- ============================================================================
 -- Utility functions for managing ingredients, mana, and outputs in Assemblers
 
-local Recipe = require("src.evolved.fragments.recipe")
 local InventoryHelper = require("src.helpers.inventory_helper")
 
 local helpers = {}
@@ -15,12 +14,12 @@ helpers.MANA_RESUME_THRESHOLD_SECONDS = 1.0
 -- Ingredient Helpers
 -- ============================================================================
 
---- Count available ingredients in input slots
---- @param inventory table The machine inventory
+--- Count available ingredients in input inventory
+--- @param inputInventory table The machine's input inventory
 --- @return table ingredientCounts Map of itemId to quantity
-function helpers.countIngredients(inventory)
+function helpers.countIngredients(inputInventory)
    local counts = {}
-   local slots = InventoryHelper.getSlots(inventory, "input")
+   local slots = InventoryHelper.getSlots(inputInventory)
    if not slots then return counts end
 
    for _, slot in ipairs(slots) do
@@ -31,14 +30,14 @@ function helpers.countIngredients(inventory)
    return counts
 end
 
---- Check if inventory has required ingredients for recipe
+--- Check if input inventory has required ingredients for recipe
 --- @param recipe table The current recipe
---- @param inventory table The machine inventory
+--- @param inputInventory table The machine's input inventory
 --- @return boolean hasIngredients
-function helpers.hasRequiredIngredients(recipe, inventory)
+function helpers.hasRequiredIngredients(recipe, inputInventory)
    if not recipe or not recipe.inputs then return true end
 
-   local available = helpers.countIngredients(inventory)
+   local available = helpers.countIngredients(inputInventory)
    for ingredient, requiredAmount in pairs(recipe.inputs) do
       if (available[ingredient] or 0) < requiredAmount then
          return false
@@ -47,16 +46,16 @@ function helpers.hasRequiredIngredients(recipe, inventory)
    return true
 end
 
---- Consume ingredients from input slots
+--- Consume ingredients from input inventory
 --- @param recipe table The current recipe
---- @param inventory table The machine inventory
+--- @param inputInventory table The machine's input inventory
 --- @return boolean success
-function helpers.consumeIngredients(recipe, inventory)
+function helpers.consumeIngredients(recipe, inputInventory)
    if not recipe or not recipe.inputs then return true end
 
    for ingredient, amount in pairs(recipe.inputs) do
       local remaining = amount
-      local slots = InventoryHelper.getSlots(inventory, "input")
+      local slots = InventoryHelper.getSlots(inputInventory)
       for _, slot in ipairs(slots or {}) do
          if slot.itemId == ingredient and remaining > 0 then
             local toRemove = math.min(remaining, slot.quantity or 0)
@@ -130,12 +129,12 @@ end
 -- Output Helpers
 -- ============================================================================
 
---- Check if output slots have space for recipe outputs
+--- Check if output inventory has space for recipe outputs
 --- @param recipe table The current recipe
---- @param inventory table The machine inventory
+--- @param outputInventory table The machine's output inventory
 --- @return boolean hasSpace
-function helpers.hasOutputSpace(recipe, inventory)
-   local slots = InventoryHelper.getSlots(inventory, "output")
+function helpers.hasOutputSpace(recipe, outputInventory)
+   local slots = InventoryHelper.getSlots(outputInventory)
    if not slots then return true end
    if #slots == 0 then return true end
 
@@ -161,16 +160,16 @@ function helpers.hasOutputSpace(recipe, inventory)
    return false
 end
 
---- Produce output items in the output slots with stacking support
+--- Produce output items in the output inventory with stacking support
 --- @param recipe table The current recipe
---- @param inventory table The machine inventory
+--- @param outputInventory table The machine's output inventory
 --- @return boolean success
-function helpers.produceOutputs(recipe, inventory)
+function helpers.produceOutputs(recipe, outputInventory)
    if not recipe or not recipe.outputs then return true end
 
    -- Add each output item using the canonical addItem function
    for outputId, amount in pairs(recipe.outputs) do
-      local amountAdded = InventoryHelper.addItem(inventory, outputId, amount, "output")
+      local amountAdded = InventoryHelper.addItem(outputInventory, outputId, amount)
 
       -- If we couldn't place all outputs, fail
       if amountAdded < amount then
@@ -183,7 +182,7 @@ function helpers.produceOutputs(recipe, inventory)
       for outputId, chance in pairs(recipe.output_chances) do
          if math.random() < chance then
             -- Try to add 1 bonus item, silently skip if no space
-            InventoryHelper.addItem(inventory, outputId, 1, "output")
+            InventoryHelper.addItem(outputInventory, outputId, 1)
          end
       end
    end

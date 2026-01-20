@@ -69,12 +69,11 @@ function InventoryViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view
       local slotIndex = userdata.slotIndex
-      local slotType = userdata.slotType or view:getSlotType()
 
       local inventory = view:getInventory()
       if not inventory then return end
 
-      local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+      local slot = InventoryHelper.getSlot(inventory, slotIndex)
       if not slot then return end
 
       slotInfo = {
@@ -82,7 +81,6 @@ function InventoryViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
          inventory = inventory,
          slotIndex = slotIndex,
          slot = slot,
-         slotType = slotType,
       }
    else
       slotInfo = self:getSlotUnderMouse(mouseX, mouseY)

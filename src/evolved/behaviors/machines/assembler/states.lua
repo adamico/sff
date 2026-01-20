@@ -46,7 +46,7 @@ end
 --- Handle IDLE state (recipe set, waiting for ingredients)
 --- @param context table The update context
 function states.idle(context)
-   if helpers.hasRequiredIngredients(context.recipe, context.inventory) then
+   if helpers.hasRequiredIngredients(context.recipe, context.inputInventory) then
       context.fsm:prepare()
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." has ingredients -> ready")
@@ -64,7 +64,7 @@ function states.ready(context)
    if not context.recipe then return end
 
    -- Check if ingredients were removed
-   if not helpers.hasRequiredIngredients(context.recipe, context.inventory) then
+   if not helpers.hasRequiredIngredients(context.recipe, context.inputInventory) then
       context.fsm:removeIngredients()
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." ingredients removed -> idle")
@@ -93,7 +93,7 @@ function states.working(context)
    end
 
    -- Check ingredients still present (consumed on complete)
-   if context.recipe.inputs and not helpers.hasRequiredIngredients(context.recipe, context.inventory) then
+   if context.recipe.inputs and not helpers.hasRequiredIngredients(context.recipe, context.inputInventory) then
       timer.current = 0
       if context.fsm:can("stop_ritual") then
          context.fsm:stop_ritual()
@@ -124,15 +124,15 @@ function states.working(context)
    -- Check completion
    if timer.current <= 0 then
       -- Consume ingredients on complete
-      if not helpers.consumeIngredients(context.recipe, context.inventory) then
+      if not helpers.consumeIngredients(context.recipe, context.inputInventory) then
          context.fsm:stop()
 
          return
       end
 
       -- Check output space and produce
-      if helpers.hasOutputSpace(context.recipe, context.inventory) then
-         local success = helpers.produceOutputs(context.recipe, context.inventory)
+      if helpers.hasOutputSpace(context.recipe, context.outputInventory) then
+         local success = helpers.produceOutputs(context.recipe, context.outputInventory)
 
          if success then
             if DEBUG then
@@ -162,7 +162,7 @@ end
 --- Handle BLOCKED state (output slots full)
 --- @param context table The update context
 function states.blocked(context)
-   if helpers.hasOutputSpace(context.recipe, context.inventory) then
+   if helpers.hasOutputSpace(context.recipe, context.outputInventory) then
       context.fsm:unblock()
       if DEBUG then
          Log.info("Assembler: "..context.machineName.." output space available -> idle")

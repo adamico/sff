@@ -14,19 +14,13 @@ return {
          height = 64,
       },
       inputQueue = InputQueue.new(),
-      inventory = Inventory.new({
-         slotGroups = {
-            input = {
-               maxSlots = 2,
-               displayOrder = 1,
-               initialItems = {},
-            },
-            output = {
-               maxSlots = 1,
-               displayOrder = 2,
-               initialItems = {},
-            },
-         }
+      inputInventory = Inventory.new({
+         maxSlots = 2,
+         accessMode = "io",
+      }),
+      outputInventory = Inventory.new({
+         maxSlots = 1,
+         accessMode = "output",
       }),
       interaction = {type = "machine"},
       machineClass = "Assembler",
@@ -65,12 +59,8 @@ return {
          height = 12,
       },
       inventory = Inventory.new({
-         slotGroups = {
-            default = {
-               initialItems = {},
-               maxSlots = 32,
-            },
-         },
+         maxSlots = 32,
+         accessMode = "io",
       }),
       interaction = {type = "storage"},
       name = "Chest",

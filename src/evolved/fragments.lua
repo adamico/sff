@@ -70,12 +70,6 @@ evolvedConfig.FRAGMENTS = {
    -- Inventory & Storage Components
    -- =========================================================================
 
-   Equipment = builder()
-      :name("FRAGMENTS.Equipment")
-      :default(nil)
-      :duplicate(Inventory.duplicate)
-      :build(),
-
    Inventory = builder()
       :name("FRAGMENTS.Inventory")
       :default(nil)
@@ -90,6 +84,32 @@ evolvedConfig.FRAGMENTS = {
 
    Toolbar = builder()
       :name("FRAGMENTS.Toolbar")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
+   -- Machine inventory fragments
+   InputInventory = builder()
+      :name("FRAGMENTS.InputInventory")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
+   OutputInventory = builder()
+      :name("FRAGMENTS.OutputInventory")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
+   -- Equipment slot fragments
+   WeaponSlot = builder()
+      :name("FRAGMENTS.WeaponSlot")
+      :default(nil)
+      :duplicate(Inventory.duplicate)
+      :build(),
+
+   ArmorSlot = builder()
+      :name("FRAGMENTS.ArmorSlot")
       :default(nil)
       :duplicate(Inventory.duplicate)
       :build(),

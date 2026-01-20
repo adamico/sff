@@ -71,12 +71,19 @@ function MachineViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view
       local slotIndex = userdata.slotIndex
-      local slotType = userdata.slotType or view:getSlotType()
+      local inventoryType = userdata.inventoryType
 
-      local inventory = view:getInventory()
+      -- For machine views, use getInventory with inventoryType
+      local inventory
+      if inventoryType and view.getInventory then
+         inventory = view:getInventory(inventoryType)
+      else
+         inventory = view:getInventory()
+      end
+
       if not inventory then return end
 
-      local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+      local slot = InventoryHelper.getSlot(inventory, slotIndex)
       if not slot then return end
 
       slotInfo = {
@@ -84,7 +91,7 @@ function MachineViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
          inventory = inventory,
          slotIndex = slotIndex,
          slot = slot,
-         slotType = slotType,
+         inventoryType = inventoryType,
       }
    else
       slotInfo = self:getSlotUnderMouse(mouseX, mouseY)

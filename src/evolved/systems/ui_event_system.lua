@@ -19,8 +19,8 @@ observe(Events.MACHINE_INTERACTED, function(entityId)
    UICoordinator.openMachineView(entityId)
 end)
 
-observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, playerEquipment)
-   UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
+observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, weaponSlot, armorSlot)
+   UICoordinator.openPlayerInventory(playerInventory, playerToolbar, weaponSlot, armorSlot)
 end)
 
 observe(Events.UI_MODAL_CLOSED, function()

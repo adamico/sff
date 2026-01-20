@@ -30,9 +30,9 @@ end
 -------------------------------------------------------------------------------
 
 --- Handle actions when in "exploring" state (normal gameplay)
-local function handleExploringActions(mx, my, playerInventory, playerToolbar, playerEquipment)
+local function handleExploringActions(mx, my, playerInventory, playerToolbar, weaponSlot, armorSlot)
    if actionDetector:pressed(A.OPEN_INVENTORY) then
-      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar, playerEquipment)
+      trigger(Events.INPUT_INVENTORY_OPENED, playerInventory, playerToolbar, weaponSlot, armorSlot)
    end
 
    if actionDetector:pressed(A.INTERACT) then
@@ -113,7 +113,7 @@ end
 -------------------------------------------------------------------------------
 -- ACTION DETECTION (main entry point)
 -------------------------------------------------------------------------------
-local function actionDetection(playerInventory, playerToolbar, playerEquipment)
+local function actionDetection(playerInventory, playerToolbar, weaponSlot, armorSlot)
    local _, screenX, screenY = shove.mouseToViewport()
    local mx, my = CameraHelper.screenToWorld(screenX, screenY)
    actionDetector = getActionDetector()
@@ -121,7 +121,7 @@ local function actionDetection(playerInventory, playerToolbar, playerEquipment)
    -- Dispatch to current state handler
    local handler = stateHandlers[ui_state.current]
    if handler then
-      handler(mx, my, playerInventory, playerToolbar, playerEquipment)
+      handler(mx, my, playerInventory, playerToolbar, weaponSlot, armorSlot)
    end
 
    -- Always-available actions
@@ -139,9 +139,9 @@ builder()
       movementDetection(chunk, entityCount)
       local playerInventories = chunk:components(FRAGMENTS.Inventory)
       local playerToolbars = chunk:components(FRAGMENTS.Toolbar)
-      local playerEquipments = chunk:components(FRAGMENTS.Equipment)
+      local weaponSlots, armorSlots = chunk:components(FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
       for i = 1, entityCount do
-         actionDetection(playerInventories[i], playerToolbars[i], playerEquipments[i])
+         actionDetection(playerInventories[i], playerToolbars[i], weaponSlots[i], armorSlots[i])
       end
    end):build()
 

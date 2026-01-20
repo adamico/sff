@@ -18,7 +18,6 @@ local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 --- @field width number
 --- @field height number
 --- @field inventory table
---- @field slotType string|nil The slot type to display (nil defaults to "default")
 --- @field containerElement table FlexLove Element
 --- @field slotElements table
 
@@ -28,7 +27,6 @@ function InventoryView:initialize(inventory, options)
    self.inventory = inventory
    options = options or {}
    self.id = options.id
-   self.slotType = options.slotType or "default"
    self.x = math.floor(options.x or 0)
    self.y = math.floor(options.y or 0)
    self.columns = options.columns or UI.COLUMNS
@@ -73,7 +71,7 @@ function InventoryView:buildUI()
    })
 
    local slotsWidth = self.columns * self.slotSize
-   local slotsHeight = self.rows * self.slotSize -- Explicit height for proper centering
+   local slotsHeight = self.rows * self.slotSize
    self.slotsContainer = Flexlove.new({
       id = self.id.."_slots_container",
       width = slotsWidth,
@@ -89,7 +87,7 @@ function InventoryView:buildUI()
 end
 
 function InventoryView:createSlots()
-   local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
+   local slots = InventoryHelper.getSlots(self.inventory)
    if not slots then return end
 
    for slotIndex = 1, #slots do
@@ -107,7 +105,6 @@ function InventoryView:createSlots()
          textAlign = "center",
          userdata = {
             slotIndex = slotIndex,
-            slotType = self.slotType,
             view = self
          },
          onEvent = function(element, event)
@@ -141,7 +138,6 @@ function InventoryView:handleSlotClick(element, event)
       trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
          action = action,
          slotIndex = slotIndex,
-         slotType = self.slotType,
          view = self
       })
    end
@@ -151,16 +147,12 @@ function InventoryView:getInventory()
    return self.inventory
 end
 
-function InventoryView:getSlotType()
-   return self.slotType
-end
-
 function InventoryView:draw()
    self:updateSlots()
 end
 
 function InventoryView:updateSlots()
-   local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
+   local slots = InventoryHelper.getSlots(self.inventory)
    if not slots then return end
 
    for _, slotData in ipairs(self.slotElements) do
@@ -210,19 +202,17 @@ function InventoryView:isPointInSlot(mx, my, slotX, slotY)
 end
 
 function InventoryView:getSlotUnderMouse(mx, my)
-   -- Use FlexLove's built-in hit detection
    local element = Flexlove.getElementAtPosition(mx, my)
 
    if element and element.userdata and element.userdata.view == self then
       local slotIndex = element.userdata.slotIndex
 
       if slotIndex then
-         local slots = InventoryHelper.getSlots(self.inventory, self.slotType)
+         local slots = InventoryHelper.getSlots(self.inventory)
          if slots and slots[slotIndex] then
             return {
                view = self,
                slotIndex = slotIndex,
-               slotType = self.slotType,
                slot = slots[slotIndex],
             }
          end

@@ -7,24 +7,20 @@ return {
          min = 10,
          max = 10,
       },
-      equipment = Inventory.new({
-         slotGroups = {
-            weapon = {
-               maxSlots = 1,
-               displayOrder = 2,
-               acceptedCategories = {"weapon", "harvester"},
-               initialItems = {
-                  {itemId = "daggerBasic", quantity = 1},
-               },
-            },
-            armor = {
-               maxSlots = 1,
-               displayOrder = 1,
-               acceptedCategories = {"armor"},
-               initialItems = {
-                  {itemId = "armorBasic", quantity = 1},
-               },
-            },
+      weaponSlot = Inventory.new({
+         maxSlots = 1,
+         acceptedCategories = {"weapon", "harvester"},
+         accessMode = "io",
+         initialItems = {
+            {itemId = "daggerBasic", quantity = 1},
+         },
+      }),
+      armorSlot = Inventory.new({
+         maxSlots = 1,
+         acceptedCategories = {"armor"},
+         accessMode = "io",
+         initialItems = {
+            {itemId = "armorBasic", quantity = 1},
          },
       }),
       hitbox = {
@@ -35,15 +31,12 @@ return {
       },
       interactionRange = 128,
       inventory = Inventory.new({
-         slotGroups = {
-            default = {
-               maxSlots = 40,
-               initialItems = {
-                  {itemId = "bone",          quantity = 32},
-                  {itemId = "unlifeEssence", quantity = 63},
-               },
-            },
-         }
+         maxSlots = 40,
+         accessMode = "io",
+         initialItems = {
+            {itemId = "bone",          quantity = 32},
+            {itemId = "unlifeEssence", quantity = 63},
+         },
       }),
       mana = {
          current = 95,
@@ -55,16 +48,13 @@ return {
       name = "Player",
       tags = {"controllable", "physical", "player", "animated"},
       toolbar = Inventory.new({
-         slotGroups = {
-            default = {
-               maxSlots = 10,
-               initialItems = {
-                  {itemId = "skeletonAssembler", quantity = 1},
-                  {itemId = "chest",             quantity = 1},
-                  {itemId = "skeleton",          quantity = 1},
-                  {itemId = "harvesterBasic",    quantity = 1},
-               },
-            },
+         maxSlots = 10,
+         accessMode = "io",
+         initialItems = {
+            {itemId = "skeletonAssembler", quantity = 1},
+            {itemId = "chest",             quantity = 1},
+            {itemId = "skeleton",          quantity = 1},
+            {itemId = "harvesterBasic",    quantity = 1},
          },
       }),
       animation = Animation.new({

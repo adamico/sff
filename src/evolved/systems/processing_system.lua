@@ -9,7 +9,8 @@ builder()
       local inputQueues = chunk:components(FRAGMENTS.InputQueue)
       local stateMachines = chunk:components(FRAGMENTS.StateMachine)
       local recipes = chunk:components(FRAGMENTS.CurrentRecipe)
-      local inventories = chunk:components(FRAGMENTS.Inventory)
+      local inputInventories, outputInventories = chunk:components(
+         FRAGMENTS.InputInventory, FRAGMENTS.OutputInventory)
       local machineClasses = chunk:components(FRAGMENTS.MachineClass)
       local manas = chunk:components(FRAGMENTS.Mana)
       local processingTimers = chunk:components(FRAGMENTS.ProcessingTimer)
@@ -27,7 +28,8 @@ builder()
                machineName = (names[i] or "Machine")..entityIds[i],
                fsm = stateMachines[i],
                recipe = recipes[i],
-               inventory = inventories[i],
+               inputInventory = inputInventories[i],
+               outputInventory = outputInventories[i],
                inputQueue = inputQueues[i],
                mana = manas[i],
                processingTimer = processingTimers[i],

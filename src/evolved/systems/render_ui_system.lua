@@ -12,15 +12,15 @@ builder()
    :name("SYSTEMS.RenderUI")
    :group(STAGES.OnRenderEntities)
    :include(FRAGMENTS.Toolbar)
-   :include(FRAGMENTS.Equipment)
+   :include(FRAGMENTS.WeaponSlot) -- Use WeaponSlot as indicator of player entity
    :execute(function(chunk, _, entityCount)
       -- Render persistent UI (toolbar, equipment) for each entity
       local toolbars = chunk:components(FRAGMENTS.Toolbar)
-      local equipments = chunk:components(FRAGMENTS.Equipment)
+      local weaponSlots, armorSlots = chunk:components(FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
 
       for i = 1, entityCount do
          local toolbarView = UICoordinator.getToolbarView(toolbars[i])
-         local equipmentViews = UICoordinator.getEquipmentViews(equipments[i])
+         local equipmentViews = UICoordinator.getEquipmentViews(weaponSlots[i], armorSlots[i])
 
          if toolbarView then toolbarView:draw() end
          for _, equipmentView in ipairs(equipmentViews) do

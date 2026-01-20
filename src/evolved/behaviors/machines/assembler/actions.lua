@@ -25,7 +25,7 @@ local function handleStartRitual(context)
       return false
    end
 
-   if not helpers.hasRequiredIngredients(context.recipe, context.inventory) then
+   if not helpers.hasRequiredIngredients(context.recipe, context.inputInventory) then
       if DEBUG then
          Log.warn("Assembler: "..context.machineName.." missing ingredients")
       end

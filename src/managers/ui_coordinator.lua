@@ -28,7 +28,8 @@ local PLAYER_INV_Y = TOOLBAR_Y - UI.GAP - UI.INV_HEIGHT
 -- ============================================================================
 
 local toolbarView = nil
-local equipmentViews = {} -- Table of views keyed by slotType
+local weaponSlotView = nil
+local armorSlotView = nil
 
 local function getOrCreateToolbarView(toolbar)
    if not toolbar then return nil end
@@ -46,41 +47,45 @@ local function getOrCreateToolbarView(toolbar)
    return toolbarView
 end
 
---- Creates equipment views for all slot groups in the equipment inventory.
---- Each slot group (weapon, armor, etc.) gets its own view positioned vertically.
---- @param equipment table The equipment inventory
---- @return table Array of InventoryView instances for all slot groups
-local function getOrCreateEquipmentViews(equipment)
-   if not equipment then return {} end
-
-   local slotTypes = InventoryHelper.getSlotTypes(equipment)
+--- Creates equipment views for weapon and armor slots.
+--- @param weaponSlot table The weapon slot inventory
+--- @param armorSlot table The armor slot inventory
+--- @return table Array of InventoryView instances for equipment
+local function getOrCreateEquipmentViews(weaponSlot, armorSlot)
    local views = {}
    local currentY = TOOLBAR_Y
    local viewX = EQUIPMENT_X
+   local viewHeight = UI.SLOT_SIZE + UI.PADDING * 2
 
-   for _, slotType in ipairs(slotTypes) do
-      if not equipmentViews[slotType] then
-         local group = InventoryHelper.getSlotGroup(equipment, slotType)
-         if group then
-            local maxSlots = group.maxSlots or 1
-            local viewHeight = UI.SLOT_SIZE + UI.PADDING * 2
-
-            equipmentViews[slotType] = InventoryView:new(equipment, {
-               id = "equipment_"..slotType,
-               slotType = slotType,
-               columns = maxSlots,
-               rows = 1,
-               x = viewX,
-               y = currentY
-            })
-
-            currentY = currentY - viewHeight - 4 -- Stack views vertically upward
-         end
+   -- Armor slot view (displayed above weapon)
+   if armorSlot then
+      if not armorSlotView then
+         local maxSlots = armorSlot.maxSlots or 1
+         armorSlotView = InventoryView:new(armorSlot, {
+            id = "equipment_armor",
+            columns = maxSlots,
+            rows = 1,
+            x = viewX,
+            y = currentY
+         })
       end
+      table.insert(views, armorSlotView)
+      currentY = currentY - viewHeight - 4
+   end
 
-      if equipmentViews[slotType] then
-         table.insert(views, equipmentViews[slotType])
+   -- Weapon slot view
+   if weaponSlot then
+      if not weaponSlotView then
+         local maxSlots = weaponSlot.maxSlots or 1
+         weaponSlotView = InventoryView:new(weaponSlot, {
+            id = "equipment_weapon",
+            columns = maxSlots,
+            rows = 1,
+            x = viewX,
+            y = currentY
+         })
       end
+      table.insert(views, weaponSlotView)
    end
 
    return views
@@ -121,11 +126,11 @@ local function getOrCreateTargetInventoryView(targetInventory, entityId)
    })
 end
 
-local function getOrCreateMachineViewView(inventory, entityId)
+local function getOrCreateMachineView(entityId)
    local machineX = UI.VIEWPORT_WIDTH / 2 - UI.MACHINE_WIDTH / 2
    local machineY = PLAYER_INV_Y - UI.GAP - UI.MACHINE_HEIGHT
 
-   return MachineView:new(inventory, {
+   return MachineView:new({
       id = "machine",
       entityId = entityId,
       x = machineX,
@@ -141,7 +146,7 @@ end
 
 local UICoordinator = {}
 
-function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
+function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, weaponSlot, armorSlot)
    if not playerInventory then return end
 
    -- Transition input state
@@ -153,7 +158,7 @@ function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playe
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
@@ -168,8 +173,8 @@ function UICoordinator.openTargetInventory(entityId)
    InputState.fsm:openInventory()
 
    local targetInventory = get(entityId, FRAGMENTS.Inventory)
-   local playerInventory, playerToolbar, playerEquipment = get(playerId,
-      FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.Equipment)
+   local playerInventory, playerToolbar, weaponSlot, armorSlot = get(playerId,
+      FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
 
    local views = {
       getOrCreateToolbarView(playerToolbar),
@@ -178,7 +183,7 @@ function UICoordinator.openTargetInventory(entityId)
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
@@ -192,17 +197,17 @@ function UICoordinator.openMachineView(entityId)
    -- Transition input state
    InputState.fsm:openInventory()
 
-   local playerInventory, playerToolbar, playerEquipment = get(playerId,
-      FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.Equipment)
+   local playerInventory, playerToolbar, weaponSlot, armorSlot = get(playerId,
+      FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
 
    local views = {
       getOrCreateToolbarView(playerToolbar),
       getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateMachineViewView(get(entityId, FRAGMENTS.Inventory), entityId),
+      getOrCreateMachineView(entityId),
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
+   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
@@ -213,8 +218,8 @@ function UICoordinator.getToolbarView(toolbar)
    return getOrCreateToolbarView(toolbar)
 end
 
-function UICoordinator.getEquipmentViews(equipment)
-   return getOrCreateEquipmentViews(equipment)
+function UICoordinator.getEquipmentViews(weaponSlot, armorSlot)
+   return getOrCreateEquipmentViews(weaponSlot, armorSlot)
 end
 
 -- ============================================================================

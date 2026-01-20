@@ -17,15 +17,12 @@ return {
       },
       interaction = {type = "creature", action = "inspect"},
       loot = Inventory.new({
-         slotGroups = {
-            default = {
-               maxSlots = 2,
-               initialItems = {
-                  {itemId = "bone",          quantity = 1},
-                  {itemId = "unlifeEssence", quantity = 1},
-               },
-            }
-         }
+         maxSlots = 2,
+         accessMode = "io",
+         initialItems = {
+            {itemId = "bone",          quantity = 1},
+            {itemId = "unlifeEssence", quantity = 1},
+         },
       }),
       mana = {
          current = 25,
