@@ -1,9 +1,122 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
+local InventoryHandlers = require("src.config.inventory_action_handlers").Handlers
 local HeldStackView = require("src.ui.held_stack_view")
 
-local BaseViewManager = Class("BaseViewManager")
+local SlotViewManager = Class("SlotViewManager")
 
-function BaseViewManager:pickOrPlace(slotInfo)
+-- ============================================================================
+-- Initialization
+-- ============================================================================
+
+function SlotViewManager:initialize()
+   self.isOpen = false
+   self.views = {}
+   self.heldStack = nil
+   self.heldStackView = nil
+end
+
+--- Open views (inventory, machine, or any mix)
+--- @param views table Array of view instances
+function SlotViewManager:open(views)
+   self.isOpen = true
+   self.views = views or {}
+end
+
+function SlotViewManager:close()
+   if self.heldStack then
+      self:returnHeldStack()
+      love.mouse.setVisible(true)
+   end
+
+   -- Destroy held stack view
+   if self.heldStackView then
+      self.heldStackView:destroy()
+      self.heldStackView = nil
+   end
+
+   -- Destroy view elements (except persistent views like toolbar and equipment)
+   for _, view in ipairs(self.views) do
+      if view and view.destroy then
+         local isToolbar = view.id == "toolbar"
+         local isEquipment = view.id and string.find(view.id, "^equipment")
+         if not isToolbar and not isEquipment then
+            view:destroy()
+         end
+      end
+   end
+
+   self.heldStack = nil
+   self.isOpen = false
+   self.views = {}
+end
+
+-- ============================================================================
+-- Action Handling
+-- ============================================================================
+
+--- Handle a click on any slot (main entry point for click logic)
+--- @param mouseX number The x position of the mouse
+--- @param mouseY number The y position of the mouse
+--- @param userdata table Userdata from clicked element
+--- @return boolean Success
+function SlotViewManager:handleAction(mouseX, mouseY, userdata)
+   local slotInfo = self:resolveSlotInfo(mouseX, mouseY, userdata)
+   if not slotInfo then return false end
+
+   local action = userdata and userdata.action
+   local handler = InventoryHandlers[action]
+   if handler then
+      return handler(self, slotInfo, userdata)
+   end
+
+   return false
+end
+
+--- Resolve slot info from userdata or mouse position
+--- @param mouseX number
+--- @param mouseY number
+--- @param userdata table|nil
+--- @return table|nil slotInfo
+function SlotViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
+   local slotInfo
+
+   if userdata and userdata.slotIndex and userdata.view then
+      local view = userdata.view
+      local slotIndex = userdata.slotIndex
+      local inventoryType = userdata.inventoryType
+
+      -- Get inventory - handles both InventoryView and MachineView
+      local inventory
+      if inventoryType and view.getInventory then
+         inventory = view:getInventory(inventoryType)
+      else
+         inventory = view:getInventory()
+      end
+
+      if not inventory then return end
+
+      local slot = InventoryHelper.getSlot(inventory, slotIndex)
+      if not slot then return end
+
+      slotInfo = {
+         view = view,
+         inventory = inventory,
+         inventoryType = inventoryType,
+         slotIndex = slotIndex,
+         slot = slot,
+      }
+   else
+      slotInfo = self:getSlotUnderMouse(mouseX, mouseY)
+   end
+
+   return slotInfo
+end
+
+-- ============================================================================
+-- Pick/Place Operations
+-- ============================================================================
+
+function SlotViewManager:pickOrPlace(slotInfo)
    local inventory = slotInfo.inventory
    local slotIndex = slotInfo.slotIndex
    local slot = slotInfo.slot
@@ -26,18 +139,18 @@ function BaseViewManager:pickOrPlace(slotInfo)
    return false
 end
 
---- Pick up an item from a slot (internal method - assumes heldStack is nil)
+--- Pick up an item from a slot
 --- @param slotIndex number The slot index to pick from
 --- @param inventory table The inventory to pick from
 --- @param quantity number The quantity to pick
 --- @return boolean Success
-function BaseViewManager:pickItemFromSlot(slotIndex, inventory, quantity)
+function SlotViewManager:pickItemFromSlot(slotIndex, inventory, quantity)
    local slot = InventoryHelper.getSlot(inventory, slotIndex)
    if not slot or not slot.itemId then return false end
 
    local pickedQuantity = quantity
    local remainingQuantity = slot.quantity - pickedQuantity
-   -- Pick up the entire stack
+   -- Pick up the stack
    self.heldStack = {
       itemId = slot.itemId,
       quantity = pickedQuantity,
@@ -83,7 +196,7 @@ end
 --- @param slotIndex number The slot index to place into
 --- @param inventory table The inventory to place into
 --- @return boolean Success
-function BaseViewManager:placeItemInSlot(slotIndex, inventory)
+function SlotViewManager:placeItemInSlot(slotIndex, inventory)
    local slot = InventoryHelper.getSlot(inventory, slotIndex)
    if not slot then return false end
 
@@ -92,7 +205,7 @@ function BaseViewManager:placeItemInSlot(slotIndex, inventory)
       return false
    end
 
-   -- Empty slot or same item - try to stack using the canonical helper
+   -- Empty slot or same item - try to stack
    if not slot.itemId or slot.itemId == self.heldStack.itemId then
       local amountAdded = InventoryHelper.stackIntoSlot(slot, self.heldStack.itemId, self.heldStack.quantity)
 
@@ -114,7 +227,6 @@ function BaseViewManager:placeItemInSlot(slotIndex, inventory)
    end
 
    -- Slot has different item - swap them
-   -- First check if the swap is valid in both directions
    local tempItem = slot.itemId
    local tempQuantity = slot.quantity
 
@@ -132,7 +244,7 @@ function BaseViewManager:placeItemInSlot(slotIndex, inventory)
    return true
 end
 
-function BaseViewManager:returnHeldStack()
+function SlotViewManager:returnHeldStack()
    local heldStack = self.heldStack
    if heldStack and heldStack.sourceInventory then
       local slot = InventoryHelper.getSlot(heldStack.sourceInventory, heldStack.sourceSlot)
@@ -143,7 +255,7 @@ function BaseViewManager:returnHeldStack()
    end
 end
 
-function BaseViewManager:pickHalf(slotInfo)
+function SlotViewManager:pickHalf(slotInfo)
    local slot = slotInfo.slot
    if not slot or not slot.itemId then return false end
    if not InventoryHelper.canRemove(slotInfo.inventory) then return false end
@@ -154,16 +266,19 @@ function BaseViewManager:pickHalf(slotInfo)
    self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.inventory, quantity)
 end
 
-function BaseViewManager:pickOne(slotInfo)
+function SlotViewManager:pickOne(slotInfo)
    if not InventoryHelper.canRemove(slotInfo.inventory) then return false end
    self:pickItemFromSlot(slotInfo.slotIndex, slotInfo.inventory, 1)
 end
+
+-- ============================================================================
+-- Quick Transfer
+-- ============================================================================
 
 --- Get the source identifier for transfer routing
 --- @param slotInfo table The slot info containing view
 --- @return string sourceId Identifier like "player_inventory", "machine:input", etc.
 local function getTransferSourceId(slotInfo)
-   -- View-based slots use the view ID
    if slotInfo.view then
       local viewId = slotInfo.view.id or ""
       -- Normalize equipment views to a single category
@@ -182,19 +297,16 @@ end
 
 --- Transfer target resolvers - each returns {inventory} or nil
 local TransferTargets = {
-   --- Player's main inventory
    player_inventory = function(self)
       local inv = Evolved.get(ENTITIES.Player, FRAGMENTS.Inventory)
       return inv and {inventory = inv} or nil
    end,
 
-   --- Player's toolbar
    toolbar = function(self)
       local inv = Evolved.get(ENTITIES.Player, FRAGMENTS.Toolbar)
       return inv and {inventory = inv} or nil
    end,
 
-   --- Machine input slots (if machine screen is open)
    machine = function(self)
       local view = self:findViewById("machine")
       if view and view.inputInventory then
@@ -203,7 +315,6 @@ local TransferTargets = {
       return nil
    end,
 
-   --- Target inventory view (storage/chest if open)
    target_inventory = function(self)
       local view = self:findViewById("target_inventory")
       if view and view.inventory then
@@ -213,7 +324,7 @@ local TransferTargets = {
    end,
 }
 
---- Transfer rules: source → ordered list of target resolvers (first available wins)
+--- Transfer rules: source → ordered list of target resolvers
 local TransferRules = {
    ["player_inventory"] = {"machine", "target_inventory", "toolbar"},
    ["toolbar"]          = {"player_inventory"},
@@ -223,7 +334,7 @@ local TransferRules = {
    ["machine:output"]   = {"player_inventory"},
 }
 
-function BaseViewManager:quickTransfer(slotInfo)
+function SlotViewManager:quickTransfer(slotInfo)
    local slot = slotInfo.slot
    if not slot or not slot.itemId then return false end
 
@@ -260,7 +371,7 @@ function BaseViewManager:quickTransfer(slotInfo)
       return false
    end
 
-   -- Try to add the item to the target inventory (supports partial transfers)
+   -- Try to add the item to the target inventory
    local amountAdded = InventoryHelper.addItem(targetInventory, slot.itemId, slot.quantity)
 
    if amountAdded > 0 then
@@ -279,10 +390,14 @@ function BaseViewManager:quickTransfer(slotInfo)
    return false
 end
 
---- Find a view by its ID in the currently open views
+-- ============================================================================
+-- View Utilities
+-- ============================================================================
+
+--- Find a view by its ID
 --- @param viewId string The view ID to find
---- @return table|nil The view if found, nil otherwise
-function BaseViewManager:findViewById(viewId)
+--- @return table|nil The view if found
+function SlotViewManager:findViewById(viewId)
    if not self.views then return nil end
 
    for _, view in ipairs(self.views) do
@@ -294,7 +409,7 @@ function BaseViewManager:findViewById(viewId)
    return nil
 end
 
-function BaseViewManager:getSlotUnderMouse(mouseX, mouseY)
+function SlotViewManager:getSlotUnderMouse(mouseX, mouseY)
    for _, view in ipairs(self.views) do
       local slotInfo = view:getSlotUnderMouse(mouseX, mouseY)
       if slotInfo then
@@ -305,4 +420,28 @@ function BaseViewManager:getSlotUnderMouse(mouseX, mouseY)
    return nil
 end
 
-return BaseViewManager
+-- ============================================================================
+-- Rendering
+-- ============================================================================
+
+function SlotViewManager:draw()
+   for _, view in ipairs(self.views) do
+      if view then
+         view:draw()
+      end
+   end
+end
+
+function SlotViewManager:drawHeldStack()
+   if self.heldStackView then
+      self.heldStackView:draw()
+   end
+end
+
+function SlotViewManager:update(dt)
+   if self.heldStackView then
+      self.heldStackView:update(dt)
+   end
+end
+
+return SlotViewManager:new()

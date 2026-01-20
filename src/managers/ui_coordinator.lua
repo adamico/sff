@@ -7,8 +7,7 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryView = require("src.ui.inventory_view")
 local MachineView = require("src.ui.machine_view")
-local InventoryViewManager = require("src.managers.inventory_view_manager")
-local MachineViewManager = require("src.managers.machine_view_manager")
+local SlotViewManager = require("src.managers.slot_view_manager")
 local InputState = require("src.states.input_state")
 local get = Evolved.get
 
@@ -31,7 +30,7 @@ local toolbarView = nil
 local weaponSlotView = nil
 local armorSlotView = nil
 
-local function getOrCreateToolbarView(toolbar)
+local function createToolbarView(toolbar)
    if not toolbar then return nil end
 
    if not toolbarView then
@@ -51,7 +50,7 @@ end
 --- @param weaponSlot table The weapon slot inventory
 --- @param armorSlot table The armor slot inventory
 --- @return table Array of InventoryView instances for equipment
-local function getOrCreateEquipmentViews(weaponSlot, armorSlot)
+local function createEquipmentViews(weaponSlot, armorSlot)
    local views = {}
    local currentY = TOOLBAR_Y
    local viewX = EQUIPMENT_X
@@ -91,8 +90,9 @@ local function getOrCreateEquipmentViews(weaponSlot, armorSlot)
    return views
 end
 
-local function getOrCreatePlayerInventoryView(playerInventory)
+local function createPlayerInventoryView(playerInventory)
    if not playerInventory then return nil end
+
    return InventoryView:new(playerInventory, {
       id = "player_inventory",
       columns = UI.COLUMNS,
@@ -102,11 +102,12 @@ local function getOrCreatePlayerInventoryView(playerInventory)
    })
 end
 
-local function getOrCreateTargetInventoryView(targetInventory, entityId)
+local function createTargetInventoryView(targetInventory, entityId)
    if not targetInventory then return nil end
 
    local slots = InventoryHelper.getSlots(targetInventory)
    if not slots then return nil end
+
    local slotCount = #slots
    local targetColumns = math.min(slotCount, UI.COLUMNS)
    local targetRows = math.ceil(slotCount / targetColumns)
@@ -126,7 +127,7 @@ local function getOrCreateTargetInventoryView(targetInventory, entityId)
    })
 end
 
-local function getOrCreateMachineView(entityId)
+local function createMachineView(entityId)
    local machineX = UI.VIEWPORT_WIDTH / 2 - UI.MACHINE_WIDTH / 2
    local machineY = PLAYER_INV_Y - UI.GAP - UI.MACHINE_HEIGHT
 
@@ -153,16 +154,16 @@ function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, weapo
    InputState.fsm:openInventory()
 
    local views = {
-      getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateToolbarView(playerToolbar),
+      createPlayerInventoryView(playerInventory),
+      createToolbarView(playerToolbar),
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
+   for _, equipView in ipairs(createEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
-   InventoryViewManager:open(views)
+   SlotViewManager:open(views)
 end
 
 function UICoordinator.openTargetInventory(entityId)
@@ -177,17 +178,17 @@ function UICoordinator.openTargetInventory(entityId)
       FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
 
    local views = {
-      getOrCreateToolbarView(playerToolbar),
-      getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateTargetInventoryView(targetInventory, entityId),
+      createToolbarView(playerToolbar),
+      createPlayerInventoryView(playerInventory),
+      createTargetInventoryView(targetInventory, entityId),
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
+   for _, equipView in ipairs(createEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
-   InventoryViewManager:open(views)
+   SlotViewManager:open(views)
 end
 
 function UICoordinator.openMachineView(entityId)
@@ -201,25 +202,25 @@ function UICoordinator.openMachineView(entityId)
       FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.WeaponSlot, FRAGMENTS.ArmorSlot)
 
    local views = {
-      getOrCreateToolbarView(playerToolbar),
-      getOrCreatePlayerInventoryView(playerInventory),
-      getOrCreateMachineView(entityId),
+      createToolbarView(playerToolbar),
+      createPlayerInventoryView(playerInventory),
+      createMachineView(entityId),
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(getOrCreateEquipmentViews(weaponSlot, armorSlot)) do
+   for _, equipView in ipairs(createEquipmentViews(weaponSlot, armorSlot)) do
       table.insert(views, equipView)
    end
 
-   MachineViewManager:open(views)
+   SlotViewManager:open(views)
 end
 
 function UICoordinator.getToolbarView(toolbar)
-   return getOrCreateToolbarView(toolbar)
+   return createToolbarView(toolbar)
 end
 
 function UICoordinator.getEquipmentViews(weaponSlot, armorSlot)
-   return getOrCreateEquipmentViews(weaponSlot, armorSlot)
+   return createEquipmentViews(weaponSlot, armorSlot)
 end
 
 -- ============================================================================
@@ -236,11 +237,8 @@ end
 
 function UICoordinator.closeModal()
    InputState.fsm:closeModal()
-   if InventoryViewManager.isOpen then
-      InventoryViewManager:close()
-   end
-   if MachineViewManager.isOpen then
-      MachineViewManager:close()
+   if SlotViewManager.isOpen then
+      SlotViewManager:close()
    end
 end
 

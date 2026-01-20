@@ -1,7 +1,6 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryInputHandler = require("src.ui.inventory_input_handler")
-local InventoryViewManager = require("src.managers.inventory_view_manager")
-local MachineViewManager = require("src.managers.machine_view_manager")
+local SlotViewManager = require("src.managers.slot_view_manager")
 local UI = require("src.config.ui_constants")
 
 local trigger = Beholder.trigger
@@ -27,6 +26,9 @@ function InventoryView:initialize(inventory, options)
    self.inventory = inventory
    options = options or {}
    self.id = options.id
+   self.inventoryType = options.inventoryType
+   self.parentView = options.parentView
+   self.parentElement = options.parentElement -- FlexLove element to parent to
    self.x = math.floor(options.x or 0)
    self.y = math.floor(options.y or 0)
    self.columns = options.columns or UI.COLUMNS
@@ -67,7 +69,8 @@ function InventoryView:buildUI()
          left = self.padding
       },
       positioning = "flex",
-      userdata = {view = self}
+      userdata = {view = self},
+      parent = self.parentElement -- Will be nil for standalone views
    })
 
    local slotsWidth = self.columns * self.slotSize
@@ -127,8 +130,7 @@ function InventoryView:handleSlotClick(element, event)
    local button = event.button or 1
    local slotIndex = element.userdata.slotIndex
 
-   if self.id == "toolbar" and not InventoryViewManager.isOpen
-      and not MachineViewManager.isOpen then
+   if self.id == "toolbar" and not SlotViewManager.isOpen then
       trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
       local modifiers = InventoryInputHandler.getModifiers()
@@ -138,6 +140,7 @@ function InventoryView:handleSlotClick(element, event)
       trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
          action = action,
          slotIndex = slotIndex,
+         inventoryType = self.inventoryType,
          view = self
       })
    end
@@ -188,19 +191,6 @@ function InventoryView:calculateBoxDimensions()
    return self.columns * self.slotSize + self.padding * 2, self.rows * self.slotSize + self.padding * 2
 end
 
-function InventoryView:getSlotPosition(slotIndex)
-   local col = (slotIndex - 1) % self.columns
-   local row = math.floor((slotIndex - 1) / self.columns)
-   local x = math.floor(self.x + self.padding + col * self.slotSize)
-   local y = math.floor(self.y + self.padding + row * self.slotSize)
-   return x, y
-end
-
-function InventoryView:isPointInSlot(mx, my, slotX, slotY)
-   return mx >= slotX and mx <= slotX + self.slotSize
-      and my >= slotY and my <= slotY + self.slotSize
-end
-
 function InventoryView:getSlotUnderMouse(mx, my)
    local element = Flexlove.getElementAtPosition(mx, my)
 
@@ -214,6 +204,7 @@ function InventoryView:getSlotUnderMouse(mx, my)
                view = self,
                slotIndex = slotIndex,
                slot = slots[slotIndex],
+               inventoryType = self.inventoryType,
             }
          end
       end

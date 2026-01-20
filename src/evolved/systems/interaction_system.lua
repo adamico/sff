@@ -1,6 +1,5 @@
 local EntityHelper = require("src.helpers.entity_helper")
-local InventoryViewManager = require("src.managers.inventory_view_manager")
-local MachineViewManager = require("src.managers.machine_view_manager")
+local SlotViewManager = require("src.managers.slot_view_manager")
 local Behaviors = require("src.evolved.behaviors")
 local CombatSystem = require("src.evolved.systems.combat_system")
 
@@ -84,7 +83,7 @@ end
 -- Register observer for input interaction events
 observe(Events.INPUT_INTERACTION_CLICKED, function(mouseX, mouseY)
    -- Don't process mouse interactions when inventory or machine view is open
-   if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
+   if not SlotViewManager.isOpen then
       tryMouseInteract(mouseX, mouseY)
    end
 end)
@@ -92,7 +91,7 @@ end)
 -- Register observer for weapon activation events
 observe(Events.WEAPON_ACTIVATED, function(mouseX, mouseY)
    -- Don't process weapon activations when inventory or machine view is open
-   if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
+   if not SlotViewManager.isOpen then
       tryWeaponActivate(mouseX, mouseY)
    end
 end)

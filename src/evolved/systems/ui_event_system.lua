@@ -4,8 +4,7 @@
 -- Handles all UI-related events and coordinates with state managers
 -- Separates event handling from rendering logic
 
-local InventoryViewManager = require("src.managers.inventory_view_manager")
-local MachineViewManager = require("src.managers.machine_view_manager")
+local SlotViewManager = require("src.managers.slot_view_manager")
 local UICoordinator = require("src.managers.ui_coordinator")
 local observe = Beholder.observe
 
@@ -28,12 +27,8 @@ observe(Events.UI_MODAL_CLOSED, function()
 end)
 
 observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
-   local manager = InventoryViewManager.isOpen and InventoryViewManager
-      or MachineViewManager.isOpen and MachineViewManager
-      or nil
-
-   if manager then
-      manager:handleAction(mouseX, mouseY, userdata)
+   if SlotViewManager.isOpen then
+      SlotViewManager:handleAction(mouseX, mouseY, userdata)
    end
 end)
 

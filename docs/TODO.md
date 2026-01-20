@@ -76,3 +76,4 @@
 - Consider more complex machine visuals like Minecraft mod UIs
 - <https://github.com/BlackMATov/evolved.lua/tree/main?tab=readme-ov-file#singletons>
 - the huge dungeon map uses 16-24Mb, maybe load map chunks? or is this very low for a 2d game? maybe only freeze far entities?
+- persistent views should be flagged as such to avoid defining a hardcoded list of views to destroy

@@ -1,5 +1,4 @@
-local InventoryHelper = require("src.helpers.inventory_helper")
-local InventoryInputHandler = require("src.ui.inventory_input_handler")
+local InventoryView = require("src.ui.inventory_view")
 local UI = require("src.config.ui_constants")
 
 local MachineView = Class("MachineView")
@@ -19,7 +18,6 @@ local RITUAL_BUTTON_LABEL = "Start Ritual"
 local SLOT_SIZE = UI.SLOT_SIZE
 local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 local TEXT_SIZE = UI.TEXT_SIZE
-local QUANTITY_OFFSET = UI.QUANTITY_OFFSET
 
 --- @class MachineView
 --- @field entityId number
@@ -46,8 +44,6 @@ function MachineView:initialize(options)
    -- FlexLove element references
    self.containerElement = nil
    self.footerContainer = nil
-   self.inputSlotElements = {}
-   self.outputSlotElements = {}
    self.manaBarFill = nil
    self.manaLabel = nil
    self.nameLabel = nil
@@ -89,8 +85,24 @@ function MachineView:buildUI()
       positioning = "flex",
    })
 
-   self:createInputSlots()
-   self:createOutputSlots()
+   self.inputView = InventoryView:new(self.inputInventory, {
+      id = self.id.."_input",
+      inventoryType = "input",
+      parentView = self,
+      parentElement = self.slotsContainer,
+      columns = #self.inputInventory.slots,
+      rows = 1,
+   })
+
+   self.outputView = InventoryView:new(self.outputInventory, {
+      id = self.id.."_output",
+      inventoryType = "output",
+      parentView = self,
+      parentElement = self.slotsContainer,
+      columns = #self.outputInventory.slots,
+      rows = 1,
+   })
+
    self:createManaBar()
    self:createProgressBar()
    self:createFooter()
@@ -132,114 +144,6 @@ function MachineView:createNameLabel(parent)
          textSize = HEADER_TEXT_SIZE,
       })
    end
-end
-
-function MachineView:createInputSlots()
-   local inventory = self.inputInventory
-   if not inventory then return end
-
-   local slots = InventoryHelper.getSlots(inventory)
-   if not slots then return end
-
-   local inputContainer = Flexlove.new({
-      id = self.id.."_input_container",
-      flexDirection = "horizontal",
-      parent = self.slotsContainer,
-      positioning = "flex",
-   })
-
-   for slotIndex, slot in ipairs(slots) do
-      local slotElement = Flexlove.new({
-         id = self.id.."_input_slot_"..slotIndex,
-         width = self.slotSize,
-         height = self.slotSize,
-         backgroundColor = BACKGROUND_COLOR,
-         border = self.borderWidth,
-         borderColor = BORDER_COLOR,
-         text = slot.itemId and string.sub(slot.itemId, 1, 1) or "",
-         textColor = TEXT_COLOR,
-         textSize = HEADER_TEXT_SIZE,
-         textAlign = "center",
-         userdata = {
-            slotIndex = slotIndex,
-            inventoryType = "input",
-            slotPosition = Vector(slotElement and slotElement.x or 0, slotElement and slotElement.y or 0),
-            view = self
-         },
-         onEvent = function(element, event)
-            self:handleSlotClick(element, event)
-         end,
-         parent = inputContainer
-      })
-
-      table.insert(self.inputSlotElements, {
-         element = slotElement,
-         slotIndex = slotIndex,
-      })
-   end
-end
-
-function MachineView:createOutputSlots()
-   local inventory = self.outputInventory
-   if not inventory then return end
-
-   local slots = InventoryHelper.getSlots(inventory)
-   if not slots then return end
-
-   local outputContainer = Flexlove.new({
-      id = self.id.."_output_container",
-      flexDirection = "horizontal",
-      parent = self.slotsContainer,
-      positioning = "flex",
-   })
-
-   for slotIndex, slot in ipairs(slots) do
-      local slotElement = Flexlove.new({
-         id = self.id.."_output_slot_"..slotIndex,
-         width = self.slotSize,
-         height = self.slotSize,
-         backgroundColor = BACKGROUND_COLOR,
-         border = self.borderWidth,
-         borderColor = BORDER_COLOR,
-         text = slot.itemId and string.sub(slot.itemId, 1, 1) or "",
-         textColor = TEXT_COLOR,
-         textSize = HEADER_TEXT_SIZE,
-         textAlign = "center",
-         userdata = {
-            slotIndex = slotIndex,
-            inventoryType = "output",
-            view = self
-         },
-         onEvent = function(element, event)
-            self:handleSlotClick(element, event)
-         end,
-         parent = outputContainer
-      })
-
-      table.insert(self.outputSlotElements, {
-         element = slotElement,
-         slotIndex = slotIndex,
-      })
-   end
-end
-
-function MachineView:handleSlotClick(element, event)
-   if event.type ~= "click" and event.type ~= "rightclick" then return end
-
-   local mx, my = love.mouse.getPosition()
-   local button = event.button or 1
-   local slotIndex = element.userdata.slotIndex
-   local inventoryType = element.userdata.inventoryType
-   local modifiers = InventoryInputHandler.getModifiers()
-   local action = InventoryInputHandler.getAction(button, modifiers)
-   if not action then return end
-
-   trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
-      action = action,
-      slotIndex = slotIndex,
-      inventoryType = inventoryType,
-      view = self
-   })
 end
 
 function MachineView:createManaBar()
@@ -369,14 +273,13 @@ function MachineView:getInventory(inventoryType)
    elseif inventoryType == "output" then
       return self.outputInventory
    end
-   return nil
 end
 
 function MachineView:draw()
    self:updateMachineName()
    self:updateMachineState()
-   self:updateInputSlots()
-   self:updateOutputSlots()
+   self.inputView:draw()
+   self.outputView:draw()
    self:updateManaBar()
    self:updateProgressBar()
    self:updateStartButton()
@@ -406,72 +309,6 @@ function MachineView:updateStartButton()
    local state = self:getCurrentState()
    local shouldDisable = state == "working" or state == "noMana" or state == "blocked"
    self.startButton.disabled = shouldDisable
-end
-
-function MachineView:updateInputSlots()
-   local inventory = self.inputInventory
-   if not inventory then return end
-
-   local slots = InventoryHelper.getSlots(inventory)
-   if not slots then return end
-
-   for _, slotData in ipairs(self.inputSlotElements) do
-      local slotIndex = slotData.slotIndex
-      local element = slotData.element
-      local slot = slots[slotIndex]
-
-      if slot then
-         local itemText = slot.itemId and string.sub(slot.itemId, 1, 1) or ""
-         element:setText(itemText)
-         element:clearChildren()
-
-         if slot.quantity and slot.quantity > 1 then
-            Flexlove.new({
-               id = "machine_input_qty_"..slotIndex.."_update",
-               x = QUANTITY_OFFSET,
-               y = QUANTITY_OFFSET,
-               text = tostring(slot.quantity),
-               textColor = TEXT_COLOR,
-               textSize = TEXT_SIZE,
-               positioning = "absolute",
-               parent = element
-            })
-         end
-      end
-   end
-end
-
-function MachineView:updateOutputSlots()
-   local inventory = self.outputInventory
-   if not inventory then return end
-
-   local slots = InventoryHelper.getSlots(inventory)
-   if not slots then return end
-
-   for _, slotData in ipairs(self.outputSlotElements) do
-      local slotIndex = slotData.slotIndex
-      local element = slotData.element
-      local slot = slots[slotIndex]
-
-      if slot then
-         local itemText = slot.itemId and string.sub(slot.itemId, 1, 1) or ""
-         element:setText(itemText)
-         element:clearChildren()
-
-         if slot.quantity and slot.quantity > 1 then
-            Flexlove.new({
-               id = "machine_output_qty_"..slotIndex.."_update",
-               x = QUANTITY_OFFSET,
-               y = QUANTITY_OFFSET,
-               text = tostring(slot.quantity),
-               textColor = TEXT_COLOR,
-               textSize = TEXT_SIZE,
-               positioning = "absolute",
-               parent = element
-            })
-         end
-      end
-   end
 end
 
 function MachineView:updateManaBar()
@@ -515,33 +352,13 @@ function MachineView:getCurrentState()
    return nil
 end
 
-function MachineView:isPointInSlot(mouseX, mouseY, slotX, slotY)
-   return mouseX >= slotX and mouseX <= slotX + self.slotSize
-      and mouseY >= slotY and mouseY <= slotY + self.slotSize
-end
-
 function MachineView:getSlotUnderMouse(mouseX, mouseY)
-   local element = Flexlove.getElementAtPosition(mouseX, mouseY)
+   -- Delegate to child inventory views
+   local inputSlot = self.inputView:getSlotUnderMouse(mouseX, mouseY)
+   if inputSlot then return inputSlot end
 
-   if element and element.userdata and element.userdata.view == self then
-      local slotIndex = element.userdata.slotIndex
-      local inventoryType = element.userdata.inventoryType
-
-      if slotIndex and inventoryType then
-         local inventory = self:getInventory(inventoryType)
-         if inventory then
-            local slots = InventoryHelper.getSlots(inventory)
-            if slots and slots[slotIndex] then
-               return {
-                  view = self,
-                  slotIndex = slotIndex,
-                  slot = slots[slotIndex],
-                  inventoryType = inventoryType
-               }
-            end
-         end
-      end
-   end
+   local outputSlot = self.outputView:getSlotUnderMouse(mouseX, mouseY)
+   if outputSlot then return outputSlot end
 
    return nil
 end
