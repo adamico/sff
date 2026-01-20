@@ -2,9 +2,9 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryHandlers = require("src.config.inventory_action_handlers").Handlers
 
 local BaseViewManager = require("src.managers.base_view_manager")
-local MachineStateManager = Class("MachineStateManager", BaseViewManager)
+local MachineViewManager = Class("MachineViewManager", BaseViewManager)
 
-function MachineStateManager:initialize()
+function MachineViewManager:initialize()
    BaseViewManager.initialize(self)
    self.isOpen = false
    self.screen = nil -- MachineScreen instance
@@ -16,13 +16,13 @@ end
 --- Open the machine screen along with inventory views
 --- @param screen table The MachineScreen instance
 --- @param views table Array of InventoryView instances (player inventory, toolbar)
-function MachineStateManager:open(screen, views)
+function MachineViewManager:open(screen, views)
    self.isOpen = true
    self.screen = screen
    self.views = views or {}
 end
 
-function MachineStateManager:close()
+function MachineViewManager:close()
    if self.heldStack then
       self:returnHeldStack()
       love.mouse.setVisible(true)
@@ -62,7 +62,7 @@ end
 --- @param mouseY number The y position of the mouse
 --- @param userdata table Userdata from clicked element
 --- @return boolean Success
-function MachineStateManager:handleAction(mouseX, mouseY, userdata)
+function MachineViewManager:handleAction(mouseX, mouseY, userdata)
    local slotInfo = self:resolveSlotInfo(mouseX, mouseY, userdata)
    if not slotInfo then return false end
 
@@ -76,7 +76,7 @@ function MachineStateManager:handleAction(mouseX, mouseY, userdata)
    return false
 end
 
-function MachineStateManager:resolveSlotInfo(mouseX, mouseY, userdata)
+function MachineViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
    local slotInfo
    if userdata and userdata.slotIndex then
       if userdata.view then
@@ -118,7 +118,7 @@ function MachineStateManager:resolveSlotInfo(mouseX, mouseY, userdata)
    return slotInfo
 end
 
-function MachineStateManager:draw()
+function MachineViewManager:draw()
    -- Draw inventory views first (they appear below machine screen)
    for _, view in ipairs(self.views) do
       if view then
@@ -133,17 +133,17 @@ function MachineStateManager:draw()
 end
 
 --- Draw the held stack (should be called AFTER FlexLove.draw())
-function MachineStateManager:drawHeldStack()
+function MachineViewManager:drawHeldStack()
    if self.heldStackView then
       self.heldStackView:draw()
    end
 end
 
-function MachineStateManager:update(dt)
+function MachineViewManager:update(dt)
    -- Update held stack view position to follow cursor
    if self.heldStackView then
       self.heldStackView:update(dt)
    end
 end
 
-return MachineStateManager:new()
+return MachineViewManager:new()

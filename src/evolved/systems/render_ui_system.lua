@@ -1,6 +1,6 @@
 local EntityPlacementManager = require("src.managers.entity_placement_manager")
-local InventoryStateManager = require("src.managers.inventory_state_manager")
-local MachineStateManager = require("src.managers.machine_state_manager")
+local InventoryViewManager = require("src.managers.inventory_view_manager")
+local MachineViewManager = require("src.managers.machine_view_manager")
 local UICoordinator = require("src.managers.ui_coordinator")
 
 require("src.managers.toolbar_activation_manager") -- Registers TOOLBAR_SLOT_ACTIVATED observer
@@ -31,13 +31,13 @@ builder()
    :epilogue(function()
       local dt = UNIFORMS.getDeltaTime()
 
-      if InventoryStateManager.isOpen then
-         InventoryStateManager:update(dt)
-         InventoryStateManager:draw()
+      if InventoryViewManager.isOpen then
+         InventoryViewManager:update(dt)
+         InventoryViewManager:draw()
       end
-      if MachineStateManager.isOpen then
-         MachineStateManager:update(dt)
-         MachineStateManager:draw()
+      if MachineViewManager.isOpen then
+         MachineViewManager:update(dt)
+         MachineViewManager:draw()
       end
 
       EntityPlacementManager:update(dt)

@@ -2,9 +2,9 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryHandlers = require("src.config.inventory_action_handlers").Handlers
 
 local BaseViewManager = require("src.managers.base_view_manager")
-local InventoryStateManager = Class("InventoryStateManager", BaseViewManager)
+local InventoryViewManager = Class("InventoryViewManager", BaseViewManager)
 
-function InventoryStateManager:initialize()
+function InventoryViewManager:initialize()
    BaseViewManager.initialize(self)
    self.isOpen = false
    self.views = {}
@@ -12,12 +12,12 @@ function InventoryStateManager:initialize()
    self.heldStackView = nil
 end
 
-function InventoryStateManager:open(views)
+function InventoryViewManager:open(views)
    self.isOpen = true
    self.views = views or {}
 end
 
-function InventoryStateManager:close()
+function InventoryViewManager:close()
    if self.heldStack then
       self:returnHeldStack()
       love.mouse.setVisible(true)
@@ -51,7 +51,7 @@ end
 --- @param mouseY number The y position of the mouse
 --- @param userdata table Userdata from clicked element
 --- @return boolean Success
-function InventoryStateManager:handleAction(mouseX, mouseY, userdata)
+function InventoryViewManager:handleAction(mouseX, mouseY, userdata)
    local slotInfo = self:resolveSlotInfo(mouseX, mouseY, userdata)
    if not slotInfo then return false end
 
@@ -64,7 +64,7 @@ function InventoryStateManager:handleAction(mouseX, mouseY, userdata)
    return false
 end
 
-function InventoryStateManager:resolveSlotInfo(mouseX, mouseY, userdata)
+function InventoryViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
    local slotInfo
    if userdata and userdata.slotIndex and userdata.view then
       local view = userdata.view
@@ -87,7 +87,7 @@ function InventoryStateManager:resolveSlotInfo(mouseX, mouseY, userdata)
    return slotInfo
 end
 
-function InventoryStateManager:draw()
+function InventoryViewManager:draw()
    for i = 1, #self.views do
       local view = self.views[i]
       if view then
@@ -97,17 +97,17 @@ function InventoryStateManager:draw()
 end
 
 --- Draw the held stack (should be called AFTER FlexLove.draw())
-function InventoryStateManager:drawHeldStack()
+function InventoryViewManager:drawHeldStack()
    if self.heldStackView then
       self.heldStackView:draw()
    end
 end
 
-function InventoryStateManager:update(dt)
+function InventoryViewManager:update(dt)
    -- Update held stack view position to follow cursor
    if self.heldStackView then
       self.heldStackView:update(dt)
    end
 end
 
-return InventoryStateManager:new()
+return InventoryViewManager:new()

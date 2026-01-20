@@ -4,8 +4,8 @@
 -- Handles all UI-related events and coordinates with state managers
 -- Separates event handling from rendering logic
 
-local InventoryStateManager = require("src.managers.inventory_state_manager")
-local MachineStateManager = require("src.managers.machine_state_manager")
+local InventoryViewManager = require("src.managers.inventory_view_manager")
+local MachineViewManager = require("src.managers.machine_view_manager")
 local UICoordinator = require("src.managers.ui_coordinator")
 local observe = Beholder.observe
 
@@ -24,18 +24,12 @@ observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, 
 end)
 
 observe(Events.UI_MODAL_CLOSED, function()
-   -- Close whichever screen is open
-   if InventoryStateManager.isOpen then
-      InventoryStateManager:close()
-   end
-   if MachineStateManager.isOpen then
-      MachineStateManager:close()
-   end
+   UICoordinator.closeModal()
 end)
 
 observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
-   local manager = InventoryStateManager.isOpen and InventoryStateManager
-      or MachineStateManager.isOpen and MachineStateManager
+   local manager = InventoryViewManager.isOpen and InventoryViewManager
+      or MachineViewManager.isOpen and MachineViewManager
       or nil
 
    if manager then

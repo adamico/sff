@@ -235,7 +235,7 @@ onEvent = function(element, event)
       local mx, my = love.mouse.getPosition()
       
       -- Check if this is the toolbar and inventory is closed
-      if self.id == "toolbar" and not InventoryStateManager.isOpen then
+      if self.id == "toolbar" and not InventoryViewManager.isOpen then
          Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
       else
          Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, element.userdata)
@@ -252,14 +252,14 @@ Add keyboard shortcuts for toolbar:
 -- In actionDetection()
 for i = 1, 9 do
    if actionDetector:pressed(A["TOOLBAR_" .. i]) then
-      if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+      if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
          trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
       end
    end
 end
 -- Slot 10 with key "0"
 if actionDetector:pressed(A.TOOLBAR_10) then
-   if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
+   if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
       trigger(Events.TOOLBAR_SLOT_ACTIVATED, 10)
    end
 end

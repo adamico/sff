@@ -8,8 +8,9 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 local Inventory = require("src.evolved.fragments.inventory")
 local InventoryView = require("src.ui.inventory_view")
 local MachineScreen = require("src.ui.machine_screen")
-local InventoryStateManager = require("src.managers.inventory_state_manager")
-local MachineStateManager = require("src.managers.machine_state_manager")
+local InventoryViewManager = require("src.managers.inventory_view_manager")
+local MachineViewManager = require("src.managers.machine_view_manager")
+local InputState = require("src.states.input_state")
 local get = Evolved.get
 
 -- ============================================================================
@@ -143,6 +144,9 @@ local UICoordinator = {}
 function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playerEquipment)
    if not playerInventory then return end
 
+   -- Transition input state
+   InputState.fsm:openInventory()
+
    local views = {
       getOrCreatePlayerInventoryView(playerInventory),
       getOrCreateToolbarView(playerToolbar),
@@ -153,12 +157,15 @@ function UICoordinator.openPlayerInventory(playerInventory, playerToolbar, playe
       table.insert(views, equipView)
    end
 
-   InventoryStateManager:open(views)
+   InventoryViewManager:open(views)
 end
 
 function UICoordinator.openTargetInventory(entityId)
    local playerId = ENTITIES.Player
    if not entityId or not playerId then return end
+
+   -- Transition input state
+   InputState.fsm:openInventory()
 
    local targetInventory = get(entityId, FRAGMENTS.Inventory)
    local playerInventory, playerToolbar, playerEquipment = get(playerId,
@@ -175,12 +182,15 @@ function UICoordinator.openTargetInventory(entityId)
       table.insert(views, equipView)
    end
 
-   InventoryStateManager:open(views)
+   InventoryViewManager:open(views)
 end
 
 function UICoordinator.openMachineScreen(entityId)
    local playerId = ENTITIES.Player
    if not entityId or not playerId then return end
+
+   -- Transition input state
+   InputState.fsm:openInventory()
 
    local playerInventory, playerToolbar, playerEquipment = get(playerId,
       FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.Equipment)
@@ -197,7 +207,7 @@ function UICoordinator.openMachineScreen(entityId)
       table.insert(views, equipView)
    end
 
-   MachineStateManager:open(machineScreen, views)
+   MachineViewManager:open(machineScreen, views)
 end
 
 function UICoordinator.getToolbarView(toolbar)
@@ -206,6 +216,32 @@ end
 
 function UICoordinator.getEquipmentViews(equipment)
    return getOrCreateEquipmentViews(equipment)
+end
+
+-- ============================================================================
+-- Input State Management
+-- ============================================================================
+
+function UICoordinator.enterPlacementMode()
+   InputState.fsm:startPlacing()
+end
+
+function UICoordinator.exitPlacementMode()
+   InputState.fsm:cancelPlacing()
+end
+
+function UICoordinator.closeModal()
+   InputState.fsm:closeModal()
+   if InventoryViewManager.isOpen then
+      InventoryViewManager:close()
+   end
+   if MachineViewManager.isOpen then
+      MachineViewManager:close()
+   end
+end
+
+function UICoordinator.getInputState()
+   return InputState.fsm
 end
 
 return UICoordinator

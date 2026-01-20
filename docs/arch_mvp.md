@@ -61,10 +61,10 @@ src/
 ├── helpers/             # Utilities
 ├── registries/          # Data lookup APIs
 └── ui/                  # UI components
-    ├── inventory_state_manager.lua
+    ├── inventoryview_manager.lua
     ├── inventory_view.lua
     ├── machine_screen.lua
-    └── machine_state_manager.lua
+    └── machine_view_manager.lua
 ```
 
 ---

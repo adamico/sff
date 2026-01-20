@@ -1,7 +1,7 @@
 local InputHelper = require("src.helpers.input_helper")
 local CameraHelper = require("src.helpers.camera_helper")
-local UIStateHelper = require("src.helpers.ui_state_helper")
-local UIStateMachine = UIStateHelper.fsm
+local UICoordinator = require("src.managers.ui_coordinator")
+local ui_state = UICoordinator.getInputState()
 
 local builder = Evolved.builder
 local execute = Evolved.execute
@@ -85,7 +85,7 @@ local function movementDetection(chunk, entityCount)
    local vector = Vector()
 
    -- Allow movement in exploring and placing state
-   if UIStateMachine:is("exploring") or UIStateMachine:is("placing") then
+   if ui_state:is("exploring") or ui_state:is("placing") then
       if InputHelper.isActionPressed(A.MOVE_UP) then
          vector.y = -1
       elseif InputHelper.isActionPressed(A.MOVE_DOWN) then
@@ -119,7 +119,7 @@ local function actionDetection(playerInventory, playerToolbar, playerEquipment)
    actionDetector = getActionDetector()
 
    -- Dispatch to current state handler
-   local handler = stateHandlers[UIStateMachine.current]
+   local handler = stateHandlers[ui_state.current]
    if handler then
       handler(mx, my, playerInventory, playerToolbar, playerEquipment)
    end

@@ -46,8 +46,8 @@ local CameraHelper = require("src.helpers.camera_helper")
 -- ============================================================================
 -- Managers
 -- ============================================================================
-local MachineStateManager = require("src.managers.machine_state_manager")
-local InventoryStateManager = require("src.managers.inventory_state_manager")
+local MachineViewManager = require("src.managers.machine_view_manager")
+local InventoryViewManager = require("src.managers.inventory_view_manager")
 
 -- ============================================================================
 -- Local References
@@ -114,10 +114,10 @@ function love.draw()
 
    -- UI: rendered at native window resolution (no transform)
    Flexlove.draw(nil, function()
-      if InventoryStateManager.isOpen then
-         InventoryStateManager:drawHeldStack()
-      elseif MachineStateManager.isOpen then
-         MachineStateManager:drawHeldStack()
+      if InventoryViewManager.isOpen then
+         InventoryViewManager:drawHeldStack()
+      elseif MachineViewManager.isOpen then
+         MachineViewManager:drawHeldStack()
       end
    end)
 

@@ -9,18 +9,10 @@ local trigger = Beholder.trigger
 local function spawnCorpse(entityId)
    local position = get(entityId, FRAGMENTS.Position)
    local loot = get(entityId, FRAGMENTS.Loot)
+   if not position then return end
+   if not loot then return end
+
    local name = get(entityId, Evolved.NAME)
-
-   if not position then
-      Log.warn("LootSystem: Entity", entityId, "has no position, cannot spawn corpse")
-      return
-   end
-
-   if not loot then
-      Log.debug("LootSystem: Entity", entityId, "has no loot component, skipping corpse")
-      return
-   end
-
    -- Request corpse spawn at creature's position
    trigger(Events.ENTITY_SPAWN_REQUESTED, {
       entityId = "corpse",
@@ -31,8 +23,6 @@ local function spawnCorpse(entityId)
          inventory = Inventory.duplicate(loot),
       },
    })
-
-   Log.debug("LootSystem: Spawned corpse for", name or entityId, "at", position.x, position.y)
 end
 
 -- Listen for entity death events
@@ -43,5 +33,3 @@ observe(Events.ENTITY_DIED, function(entityId)
       spawnCorpse(entityId)
    end
 end)
-
-Log.info("LootSystem: Registered ENTITY_DIED observer")

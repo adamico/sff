@@ -1,7 +1,7 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryInputHandler = require("src.ui.inventory_input_handler")
-local InventoryStateManager = require("src.managers.inventory_state_manager")
-local MachineStateManager = require("src.managers.machine_state_manager")
+local InventoryViewManager = require("src.managers.inventory_view_manager")
+local MachineViewManager = require("src.managers.machine_view_manager")
 local UI = require("src.config.ui_constants")
 
 local InventoryView = Class("InventoryView")
@@ -128,8 +128,8 @@ function InventoryView:handleSlotClick(element, event)
    local button = event.button or 1
    local slotIndex = element.userdata.slotIndex
 
-   if self.id == "toolbar" and not InventoryStateManager.isOpen
-      and not MachineStateManager.isOpen then
+   if self.id == "toolbar" and not InventoryViewManager.isOpen
+      and not MachineViewManager.isOpen then
       Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
       local modifiers = InventoryInputHandler.getModifiers()

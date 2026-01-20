@@ -10,10 +10,10 @@ Handles clicking inventory slots to pick up and move items between slots and inv
 
 | Component | File | Purpose |
 |:----------|:-----|:--------|
-| InventoryStateManager | `src/ui/inventory_state_manager.lua` | Click detection, held item state, pick/place logic |
+| InventoryViewManager | `src/ui/inventoryview_manager.lua` | Click detection, held item state, pick/place logic |
 | InventoryView | `src/ui/inventory_view.lua` | Slot positioning, hit detection, drawing |
 | MachineScreen | `src/ui/machine_screen.lua` | Machine UI with typed slots |
-| MachineStateManager | `src/ui/machine_state_manager.lua` | Machine-specific click handling |
+| MachineViewManager | `src/ui/machine_view_manager.lua` | Machine-specific click handling |
 | InputSystem | `src/evolved/systems/input_system.lua` | Mouse/keyboard input detection |
 | RenderUISystem | `src/evolved/systems/render_ui_system.lua` | Event observers, view management |
 
