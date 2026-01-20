@@ -1,5 +1,5 @@
 local InventoryHelper = require("src.helpers.inventory_helper")
-local InventoryInputHandler = require("src.ui.inventory_input_handler")
+local InventoryActions = require("src.config.inventory_action_handlers")
 local SlotViewManager = require("src.managers.slot_view_manager")
 local UI = require("src.config.ui_constants")
 
@@ -133,8 +133,8 @@ function InventoryView:handleSlotClick(element, event)
    if self.id == "toolbar" and not SlotViewManager.isOpen then
       trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
-      local modifiers = InventoryInputHandler.getModifiers()
-      local action = InventoryInputHandler.getAction(button, modifiers)
+      local modifiers = InventoryActions.getModifiers()
+      local action = InventoryActions.getAction(button, modifiers)
       if not action then return end
 
       trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {

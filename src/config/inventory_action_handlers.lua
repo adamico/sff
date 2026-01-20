@@ -1,26 +1,86 @@
-local InventoryActions = {
+-- ============================================================================
+-- Inventory Actions
+-- ============================================================================
+-- Defines action names, input-to-action mapping, and action handlers
+
+local MOUSE_BUTTON_LEFT = 1
+local MOUSE_BUTTON_RIGHT = 2
+
+-- ============================================================================
+-- Action Names
+-- ============================================================================
+
+local Actions = {
    QUICK_TRANSFER = "quick_transfer",
    PICK_OR_PLACE  = "pick_or_place",
    PICK_ONE       = "pick_one",
    PICK_HALF      = "pick_half",
 }
 
-local ActionHandlers = {
-   [InventoryActions.PICK_OR_PLACE] = function(self, slotInfo)
+-- ============================================================================
+-- Input Mapping
+-- ============================================================================
+
+--- Get the current state of shift and ctrl keys
+--- @return table
+local function getModifiers()
+   return {
+      shift = love.keyboard.isDown("lshift", "rshift"),
+      ctrl = love.keyboard.isDown("lctrl", "rctrl"),
+   }
+end
+
+--- Determine the action based on mouse button and modifiers
+--- @param mouseButton number
+--- @param modifiers table
+--- @return string|nil
+local function getAction(mouseButton, modifiers)
+   local shift = modifiers.shift
+   local ctrl = modifiers.ctrl
+
+   if mouseButton == MOUSE_BUTTON_LEFT then
+      if shift then
+         return Actions.QUICK_TRANSFER
+      else
+         return Actions.PICK_OR_PLACE
+      end
+   elseif mouseButton == MOUSE_BUTTON_RIGHT then
+      if ctrl then
+         return Actions.PICK_ONE
+      else
+         return Actions.PICK_HALF
+      end
+   end
+
+   return nil
+end
+
+-- ============================================================================
+-- Action Handlers
+-- ============================================================================
+
+local Handlers = {
+   [Actions.PICK_OR_PLACE] = function(self, slotInfo)
       return self:pickOrPlace(slotInfo)
    end,
-   [InventoryActions.PICK_HALF] = function(self, slotInfo)
+   [Actions.PICK_HALF] = function(self, slotInfo)
       return self:pickHalf(slotInfo)
    end,
-   [InventoryActions.PICK_ONE] = function(self, slotInfo)
+   [Actions.PICK_ONE] = function(self, slotInfo)
       return self:pickOne(slotInfo)
    end,
-   [InventoryActions.QUICK_TRANSFER] = function(self, slotInfo)
+   [Actions.QUICK_TRANSFER] = function(self, slotInfo)
       return self:quickTransfer(slotInfo)
    end,
 }
 
+-- ============================================================================
+-- Module Export
+-- ============================================================================
+
 return {
-   Actions = InventoryActions,
-   Handlers = ActionHandlers,
+   Actions = Actions,
+   Handlers = Handlers,
+   getAction = getAction,
+   getModifiers = getModifiers,
 }

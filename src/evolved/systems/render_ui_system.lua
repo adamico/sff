@@ -2,8 +2,6 @@ local EntityPlacementManager = require("src.managers.entity_placement_manager")
 local SlotViewManager = require("src.managers.slot_view_manager")
 local UICoordinator = require("src.managers.ui_coordinator")
 
-require("src.managers.toolbar_activation_manager") -- Registers TOOLBAR_SLOT_ACTIVATED observer
-
 local builder = Evolved.builder
 
 -- Register the render system (runs every frame)
