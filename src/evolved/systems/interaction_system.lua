@@ -82,7 +82,7 @@ local function tryMouseInteract(mouseX, mouseY)
 end
 
 -- Register observer for input interaction events
-observe(Events.INPUT_INTERACTED, function(mouseX, mouseY)
+observe(Events.INPUT_INTERACTION_CLICKED, function(mouseX, mouseY)
    -- Don't process mouse interactions when inventory or machine screen is open
    if not InventoryStateManager.isOpen and not MachineStateManager.isOpen then
       tryMouseInteract(mouseX, mouseY)

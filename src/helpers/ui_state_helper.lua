@@ -4,7 +4,9 @@
 local machine = require("lib.statemachine")
 local observe = Beholder.observe
 
-local UIState = machine.create({
+local UIState = {}
+
+UIState.fsm = machine.create({
    initial = "exploring",
    events = {
       {name = "openInventory", from = {"exploring", "placing"}, to = "inventoryOpen"},
@@ -16,27 +18,27 @@ local UIState = machine.create({
 
 -- Bind state transitions to game events
 observe(Events.INPUT_INVENTORY_OPENED, function()
-   UIState:openInventory()
+   UIState.fsm:openInventory()
 end)
 
-observe(Events.INPUT_INTERACTED, function()
-   UIState:openInventory()
+observe(Events.INPUT_INTERACTION_CLICKED, function()
+   UIState.fsm:openInventory()
 end)
 
 observe(Events.MACHINE_INTERACTED, function()
-   UIState:openInventory()
+   UIState.fsm:openInventory()
 end)
 
 observe(Events.PLACEMENT_MODE_ENTERED, function()
-   UIState:startPlacing()
+   UIState.fsm:startPlacing()
 end)
 
 observe(Events.PLACEMENT_MODE_EXITED, function()
-   UIState:cancelPlacing()
+   UIState.fsm:cancelPlacing()
 end)
 
 observe(Events.UI_MODAL_CLOSED, function()
-   UIState:closeModal()
+   UIState.fsm:closeModal()
 end)
 
 return UIState
