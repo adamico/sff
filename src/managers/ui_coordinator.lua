@@ -1,13 +1,12 @@
 -- ============================================================================
 -- UI Coordinator
 -- ============================================================================
--- Central coordinator for all UI screens and state
+-- Central coordinator for all UI views and state
 -- Manages view creation, positioning, and lifecycle
 
 local InventoryHelper = require("src.helpers.inventory_helper")
-local Inventory = require("src.evolved.fragments.inventory")
 local InventoryView = require("src.ui.inventory_view")
-local MachineScreen = require("src.ui.machine_screen")
+local MachineView = require("src.ui.machine_view")
 local InventoryViewManager = require("src.managers.inventory_view_manager")
 local MachineViewManager = require("src.managers.machine_view_manager")
 local InputState = require("src.states.input_state")
@@ -61,7 +60,7 @@ local function getOrCreateEquipmentViews(equipment)
 
    for _, slotType in ipairs(slotTypes) do
       if not equipmentViews[slotType] then
-         local group = Inventory.getSlotGroup(equipment, slotType)
+         local group = InventoryHelper.getSlotGroup(equipment, slotType)
          if group then
             local maxSlots = group.maxSlots or 1
             local viewHeight = UI.SLOT_SIZE + UI.PADDING * 2
@@ -122,11 +121,12 @@ local function getOrCreateTargetInventoryView(targetInventory, entityId)
    })
 end
 
-local function getOrCreateMachineScreenView(entityId)
+local function getOrCreateMachineViewView(inventory, entityId)
    local machineX = UI.VIEWPORT_WIDTH / 2 - UI.MACHINE_WIDTH / 2
    local machineY = PLAYER_INV_Y - UI.GAP - UI.MACHINE_HEIGHT
 
-   return MachineScreen:new({
+   return MachineView:new(inventory, {
+      id = "machine",
       entityId = entityId,
       x = machineX,
       y = machineY,
@@ -185,7 +185,7 @@ function UICoordinator.openTargetInventory(entityId)
    InventoryViewManager:open(views)
 end
 
-function UICoordinator.openMachineScreen(entityId)
+function UICoordinator.openMachineView(entityId)
    local playerId = ENTITIES.Player
    if not entityId or not playerId then return end
 
@@ -195,19 +195,18 @@ function UICoordinator.openMachineScreen(entityId)
    local playerInventory, playerToolbar, playerEquipment = get(playerId,
       FRAGMENTS.Inventory, FRAGMENTS.Toolbar, FRAGMENTS.Equipment)
 
-   local machineScreen = getOrCreateMachineScreenView(entityId)
-
    local views = {
       getOrCreateToolbarView(playerToolbar),
       getOrCreatePlayerInventoryView(playerInventory),
+      getOrCreateMachineViewView(get(entityId, FRAGMENTS.Inventory), entityId),
    }
 
    -- Add all equipment views
-   for _, equipView in ipairs(equipmentViews) do
+   for _, equipView in ipairs(getOrCreateEquipmentViews(playerEquipment)) do
       table.insert(views, equipView)
    end
 
-   MachineViewManager:open(machineScreen, views)
+   MachineViewManager:open(views)
 end
 
 function UICoordinator.getToolbarView(toolbar)

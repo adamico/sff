@@ -1,6 +1,6 @@
 local trigger = Beholder.trigger
 
---- Machine interaction handler - opens machine screen UI
+--- Machine interaction handler - opens machine view UI
 --- @param playerId number The player entity ID
 --- @param entityId number The target entity ID
 --- @param interaction table The interaction data

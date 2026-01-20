@@ -159,21 +159,20 @@ function BaseViewManager:pickOne(slotInfo)
 end
 
 --- Get the source identifier for transfer routing
---- @param slotInfo table The slot info containing view or screen
+--- @param slotInfo table The slot info containing view
 --- @return string sourceId Identifier like "player_inventory", "machine:input", etc.
 local function getTransferSourceId(slotInfo)
-   -- Machine screen slots use "machine:<slotType>" format
-   if slotInfo.screen then
-      return "machine:"..(slotInfo.slotType or "input")
-   end
-
    -- View-based slots use the view ID
    if slotInfo.view then
       local viewId = slotInfo.view.id or ""
       -- Normalize equipment views to a single category
       if string.find(viewId, "^equipment") then
          return "equipment"
+      elseif string.find(viewId, "^machine") then
+         local sourceId = "machine:"..(slotInfo.slotType or "input")
+         return sourceId
       end
+
       return viewId
    end
 
@@ -195,10 +194,10 @@ local TransferTargets = {
    end,
 
    --- Machine input slots (if machine screen is open)
-   machine_input = function(self)
-      if self.screen then
-         local inv = self.screen:getInventory()
-         return inv and {inventory = inv, slotType = "input"} or nil
+   machine = function(self)
+      local view = self:findViewById("machine")
+      if view and view.inventory then
+         return {inventory = view.inventory, slotType = "input"}
       end
       return nil
    end,
@@ -215,7 +214,7 @@ local TransferTargets = {
 
 --- Transfer rules: source → ordered list of target resolvers (first available wins)
 local TransferRules = {
-   ["player_inventory"] = {"machine_input", "target_inventory", "toolbar"},
+   ["player_inventory"] = {"machine", "target_inventory", "toolbar"},
    ["toolbar"]          = {"player_inventory"},
    ["target_inventory"] = {"player_inventory"},
    ["equipment"]        = {"player_inventory"},
@@ -252,7 +251,10 @@ function BaseViewManager:quickTransfer(slotInfo)
       end
    end
 
-   if not targetInventory then return false end
+   if not targetInventory then
+      Log.debug("No target inventory found")
+      return false
+   end
 
    -- Try to add the item to the target inventory (supports partial transfers)
    local amountAdded = InventoryHelper.addItem(targetInventory, slot.itemId, slot.quantity, targetSlotType)
@@ -289,15 +291,6 @@ function BaseViewManager:findViewById(viewId)
 end
 
 function BaseViewManager:getSlotUnderMouse(mouseX, mouseY)
-   -- Check machine screen first
-   if self.screen then
-      local slotInfo = self.screen:getSlotUnderMouse(mouseX, mouseY)
-      if slotInfo then
-         slotInfo.inventory = self.screen:getInventory()
-         return slotInfo
-      end
-   end
-
    for _, view in ipairs(self.views) do
       local slotInfo = view:getSlotUnderMouse(mouseX, mouseY)
       if slotInfo then

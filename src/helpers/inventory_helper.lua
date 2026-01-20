@@ -19,6 +19,10 @@ function InventoryHelper.getSlots(inventory, slotType)
    return Inventory.getSlots(inventory, slotType)
 end
 
+function InventoryHelper.getSlotGroup(inventory, slotType)
+   return Inventory.getSlotGroup(inventory, slotType)
+end
+
 --- Get a single slot from an inventory.
 --- Delegates to the Inventory fragment's getSlot function.
 --- @param inventory table The inventory component

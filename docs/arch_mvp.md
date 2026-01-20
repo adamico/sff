@@ -63,7 +63,7 @@ src/
 └── ui/                  # UI components
     ├── inventoryview_manager.lua
     ├── inventory_view.lua
-    ├── machine_screen.lua
+    ├── machine_view.lua
     └── machine_view_manager.lua
 ```
 

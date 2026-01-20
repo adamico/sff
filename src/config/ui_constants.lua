@@ -55,7 +55,7 @@ UIConstants.INV_WIDTH = UIConstants.COLUMNS * UIConstants.SLOT_SIZE + UIConstant
 UIConstants.INV_HEIGHT = UIConstants.INV_ROWS * UIConstants.SLOT_SIZE + UIConstants.PADDING * 2
 UIConstants.TOOLBAR_HEIGHT = UIConstants.TOOLBAR_ROWS * UIConstants.SLOT_SIZE + UIConstants.PADDING * 2
 
--- Machine screen defaults
+-- Machine view defaults
 UIConstants.MACHINE_WIDTH = 160
 UIConstants.MACHINE_HEIGHT = 120
 

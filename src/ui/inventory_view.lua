@@ -4,6 +4,8 @@ local InventoryViewManager = require("src.managers.inventory_view_manager")
 local MachineViewManager = require("src.managers.machine_view_manager")
 local UI = require("src.config.ui_constants")
 
+local trigger = Beholder.trigger
+
 local InventoryView = Class("InventoryView")
 
 local BACKGROUND_COLOR = Color.new(unpack(UI.BACKGROUND_COLOR))
@@ -25,7 +27,7 @@ local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 function InventoryView:initialize(inventory, options)
    self.inventory = inventory
    options = options or {}
-   self.id = options.id or "inventory_view"
+   self.id = options.id
    self.slotType = options.slotType or "default"
    self.x = math.floor(options.x or 0)
    self.y = math.floor(options.y or 0)
@@ -130,19 +132,18 @@ function InventoryView:handleSlotClick(element, event)
 
    if self.id == "toolbar" and not InventoryViewManager.isOpen
       and not MachineViewManager.isOpen then
-      Beholder.trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
+      trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
       local modifiers = InventoryInputHandler.getModifiers()
       local action = InventoryInputHandler.getAction(button, modifiers)
+      if not action then return end
 
-      if action then
-         Beholder.trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
-            action = action,
-            slotIndex = slotIndex,
-            slotType = self.slotType,
-            view = self
-         })
-      end
+      trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
+         action = action,
+         slotIndex = slotIndex,
+         slotType = self.slotType,
+         view = self
+      })
    end
 end
 

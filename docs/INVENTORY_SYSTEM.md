@@ -22,6 +22,7 @@ All inventories use the same underlying structure:
 ```
 
 This unified approach supports:
+
 - **Simple Inventories** - Player inventory, toolbar, storage (`default` slot group)
 - **Machine Inventories** - Input/output separation (`input` and `output` slot groups)
 - **Equipment Inventories** - Typed equipment slots (`weapon`, `armor`, etc.)
@@ -277,9 +278,9 @@ InventoryView:new(equipment, {
 
 Equipment inventories with multiple slot groups are rendered as separate views, one per slot type. The `UICoordinator` handles creating and positioning these views.
 
-### MachineScreen
+### MachineView
 
-The `MachineScreen` automatically iterates over all slot types in a machine inventory and creates appropriate UI elements for each.
+The `MachineView` automatically iterates over all slot types in a machine inventory and creates appropriate UI elements for each.
 
 ---
 

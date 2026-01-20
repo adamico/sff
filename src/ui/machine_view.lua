@@ -2,7 +2,7 @@ local InventoryHelper = require("src.helpers.inventory_helper")
 local InventoryInputHandler = require("src.ui.inventory_input_handler")
 local UI = require("src.config.ui_constants")
 
-local MachineScreen = Class("MachineScreen")
+local MachineView = Class("MachineView")
 local get = Evolved.get
 local trigger = Beholder.trigger
 
@@ -21,7 +21,7 @@ local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 local TEXT_SIZE = UI.TEXT_SIZE
 local QUANTITY_OFFSET = UI.QUANTITY_OFFSET
 
---- @class MachineScreen
+--- @class MachineView
 --- @field borderWidth number
 --- @field containerElement table FlexLove Element
 --- @field entityId number
@@ -39,10 +39,12 @@ local QUANTITY_OFFSET = UI.QUANTITY_OFFSET
 --- @field y number
 
 --- @param options table
-function MachineScreen:initialize(options)
+function MachineView:initialize(inventory, options)
    options = options or {}
+   self.id = options.id
    self.borderWidth = BORDER_WIDTH
    self.entityId = options.entityId or nil
+   self.inventory = inventory
    self.padding = options.padding or 8
    self.slotSize = options.slotSize or SLOT_SIZE
    self.width = options.width or WIDTH
@@ -64,9 +66,9 @@ function MachineScreen:initialize(options)
    self:buildUI()
 end
 
-function MachineScreen:buildUI()
+function MachineView:buildUI()
    self.containerElement = Flexlove.new({
-      id = "machine_screen_container",
+      id = self.id.."_container",
       x = self.x,
       y = self.y,
       width = self.width,
@@ -82,17 +84,25 @@ function MachineScreen:buildUI()
       },
       gap = 10,
       positioning = "flex",
-      userdata = {screen = self}
+      userdata = {view = self}
    })
 
    self:createHeader()
+
+   self.slotsContainer = Flexlove.new({
+      flexDirection = "horizontal",
+      justifyContent = "space-between",
+      parent = self.containerElement,
+      positioning = "flex",
+   })
+
    self:createSlots()
    self:createManaBar()
    self:createProgressBar()
    self:createFooter()
 end
 
-function MachineScreen:createHeader()
+function MachineView:createHeader()
    local header = Flexlove.new({
       flexDirection = "horizontal",
       parent = self.containerElement,
@@ -104,7 +114,7 @@ function MachineScreen:createHeader()
    self:createRecipeLabel(header)
 end
 
-function MachineScreen:createRecipeLabel(parent)
+function MachineView:createRecipeLabel(parent)
    local recipe = self:getRecipe()
    if recipe then
       self.recipeLabel = Flexlove.new({
@@ -117,7 +127,7 @@ function MachineScreen:createRecipeLabel(parent)
    end
 end
 
-function MachineScreen:createNameLabel(parent)
+function MachineView:createNameLabel(parent)
    local name = self:getName()
    if name then
       self.nameLabel = Flexlove.new({
@@ -130,16 +140,9 @@ function MachineScreen:createNameLabel(parent)
    end
 end
 
-function MachineScreen:createSlots()
+function MachineView:createSlots()
    local inventory = self:getInventory()
    if not inventory then return end
-
-   self.slotsContainer = Flexlove.new({
-      flexDirection = "horizontal",
-      justifyContent = "space-between",
-      parent = self.containerElement,
-      positioning = "flex",
-   })
 
    local slotTypes = InventoryHelper.getSlotTypes(inventory)
    local definedSlots = {}
@@ -160,7 +163,7 @@ function MachineScreen:createSlots()
 
       for slotIndex, slot in ipairs(typeSlotPair.slots) do
          local slotElement = Flexlove.new({
-            id = "machine_slot_"..slotType.."_"..slotIndex,
+            id = self.id.."_slot_"..slotType.."_"..slotIndex,
             width = self.slotSize,
             height = self.slotSize,
             backgroundColor = BACKGROUND_COLOR,
@@ -172,18 +175,7 @@ function MachineScreen:createSlots()
             textAlign = "center",
             userdata = {},
             onEvent = function(element, event)
-               -- FlexLove uses "click" for left button, "rightclick" for right button
-               if event.type == "click" or event.type == "rightclick" then
-                  local modifiers = InventoryInputHandler.getModifiers()
-                  local action = InventoryInputHandler.getAction(event.button or 1, modifiers)
-                  local mx, my = love.mouse.getPosition()
-                  trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
-                     action = action,
-                     slotIndex = slotIndex,
-                     slotType = slotType,
-                     screen = self
-                  })
-               end
+               self:handleSlotClick(element, event)
             end,
             parent = slotTypeContainer
          })
@@ -191,13 +183,32 @@ function MachineScreen:createSlots()
             slotIndex = slotIndex,
             slotType = slotType,
             slotPosition = Vector(slotElement.x, slotElement.y),
-            screen = self
+            view = self
          }
       end
    end
 end
 
-function MachineScreen:createManaBar()
+function MachineView:handleSlotClick(element, event)
+   if event.type ~= "click" and event.type ~= "rightclick" then return end
+
+   local mx, my = love.mouse.getPosition()
+   local button = event.button or 1
+   local slotIndex = element.userdata.slotIndex
+   local slotType = element.userdata.slotType
+   local modifiers = InventoryInputHandler.getModifiers()
+   local action = InventoryInputHandler.getAction(button, modifiers)
+   if not action then return end
+
+   trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
+      action = action,
+      slotIndex = slotIndex,
+      slotType = slotType,
+      view = self
+   })
+end
+
+function MachineView:createManaBar()
    if not self.entityId then return end
 
    local mana = get(self.entityId, FRAGMENTS.Mana)
@@ -229,13 +240,13 @@ function MachineScreen:createManaBar()
    self:setManaBarFill(mana)
 end
 
-function MachineScreen:setManaBarFill(mana)
+function MachineView:setManaBarFill(mana)
    local fillRatio = mana.current / mana.max
    self.manaBarFill.width = self.manaBarContainer.width * fillRatio
    self.manaBarFill._borderBoxWidth = nil
 end
 
-function MachineScreen:createProgressBar()
+function MachineView:createProgressBar()
    if not self.entityId then return end
 
    local processingTimer = get(self.entityId, FRAGMENTS.ProcessingTimer)
@@ -262,13 +273,13 @@ function MachineScreen:createProgressBar()
    self:setProgressBarFill(recipe, processingTimer)
 end
 
-function MachineScreen:setProgressBarFill(recipe, processingTimer)
+function MachineView:setProgressBarFill(recipe, processingTimer)
    local fillRatio = (recipe.processingTime - processingTimer.current) / recipe.processingTime
    self.progressBarFill.width = self.progressBarContainer.width * fillRatio
    self.progressBarFill._borderBoxWidth = nil
 end
 
-function MachineScreen:createFooter()
+function MachineView:createFooter()
    self.footerContainer = Flexlove.new({
       id = "button_container",
       width = "100%",
@@ -318,13 +329,13 @@ function MachineScreen:createFooter()
    })
 end
 
-function MachineScreen:getInventory()
+function MachineView:getInventory()
    if not self.entityId then return nil end
 
    return get(self.entityId, FRAGMENTS.Inventory)
 end
 
-function MachineScreen:draw()
+function MachineView:draw()
    self:updateMachineName()
    self:updateMachineState()
    self:updateSlots()
@@ -333,7 +344,7 @@ function MachineScreen:draw()
    self:updateStartButton()
 end
 
-function MachineScreen:updateMachineName()
+function MachineView:updateMachineName()
    if self.nameLabel then
       local name = self:getName()
       if name then
@@ -342,7 +353,7 @@ function MachineScreen:updateMachineName()
    end
 end
 
-function MachineScreen:updateMachineState()
+function MachineView:updateMachineState()
    if self.stateLabel then
       local state = self:getCurrentState()
       if state then
@@ -351,7 +362,7 @@ function MachineScreen:updateMachineState()
    end
 end
 
-function MachineScreen:updateStartButton()
+function MachineView:updateStartButton()
    if not self.startButton or not self.entityId then return end
 
    local state = self:getCurrentState()
@@ -360,7 +371,7 @@ function MachineScreen:updateStartButton()
    self.startButton.disabled = shouldDisable
 end
 
-function MachineScreen:updateSlots()
+function MachineView:updateSlots()
    local inventory = self:getInventory()
    if not inventory then return end
 
@@ -397,7 +408,7 @@ function MachineScreen:updateSlots()
    end
 end
 
-function MachineScreen:updateManaBar()
+function MachineView:updateManaBar()
    if not self.entityId or not self.manaBarFill or not self.manaLabel then return end
 
    local mana = get(self.entityId, FRAGMENTS.Mana)
@@ -407,7 +418,7 @@ function MachineScreen:updateManaBar()
    self.manaLabel:setText(string.format("Mana: %d/%d", mana.current, mana.max))
 end
 
-function MachineScreen:updateProgressBar()
+function MachineView:updateProgressBar()
    if not self.entityId or not self.progressBarFill then return end
 
    local processingTimer = get(self.entityId, FRAGMENTS.ProcessingTimer)
@@ -419,15 +430,15 @@ function MachineScreen:updateProgressBar()
    self:setProgressBarFill(recipe, processingTimer)
 end
 
-function MachineScreen:getName()
+function MachineView:getName()
    return self.entityId and get(self.entityId, Evolved.NAME) or nil
 end
 
-function MachineScreen:getRecipe()
+function MachineView:getRecipe()
    return self.entityId and get(self.entityId, FRAGMENTS.CurrentRecipe) or nil
 end
 
-function MachineScreen:getCurrentState()
+function MachineView:getCurrentState()
    if not self.entityId then return nil end
 
    local stateMachine = get(self.entityId, FRAGMENTS.StateMachine)
@@ -438,15 +449,15 @@ function MachineScreen:getCurrentState()
    return nil
 end
 
-function MachineScreen:isPointInSlot(mouseX, mouseY, slotX, slotY)
+function MachineView:isPointInSlot(mouseX, mouseY, slotX, slotY)
    return mouseX >= slotX and mouseX <= slotX + self.slotSize
       and mouseY >= slotY and mouseY <= slotY + self.slotSize
 end
 
-function MachineScreen:getSlotUnderMouse(mouseX, mouseY)
+function MachineView:getSlotUnderMouse(mouseX, mouseY)
    local element = Flexlove.getElementAtPosition(mouseX, mouseY)
 
-   if element and element.userdata and element.userdata.screen == self then
+   if element and element.userdata and element.userdata.view == self then
       local slotIndex = element.userdata.slotIndex
       local slotType = element.userdata.slotType
 
@@ -456,7 +467,7 @@ function MachineScreen:getSlotUnderMouse(mouseX, mouseY)
             local slots = inventory[slotType.."Slots"]
             if slots and slots[slotIndex] then
                return {
-                  screen = self,
+                  view = self,
                   slotIndex = slotIndex,
                   slotPosition = element.userdata.slotPosition,
                   slot = slots[slotIndex],
@@ -470,10 +481,10 @@ function MachineScreen:getSlotUnderMouse(mouseX, mouseY)
    return nil
 end
 
-function MachineScreen:destroy()
+function MachineView:destroy()
    if self.containerElement then
       self.containerElement:destroy()
    end
 end
 
-return MachineScreen
+return MachineView

@@ -83,7 +83,7 @@ end
 
 -- Register observer for input interaction events
 observe(Events.INPUT_INTERACTION_CLICKED, function(mouseX, mouseY)
-   -- Don't process mouse interactions when inventory or machine screen is open
+   -- Don't process mouse interactions when inventory or machine view is open
    if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
       tryMouseInteract(mouseX, mouseY)
    end
@@ -91,7 +91,7 @@ end)
 
 -- Register observer for weapon activation events
 observe(Events.WEAPON_ACTIVATED, function(mouseX, mouseY)
-   -- Don't process weapon activations when inventory or machine screen is open
+   -- Don't process weapon activations when inventory or machine view is open
    if not InventoryViewManager.isOpen and not MachineViewManager.isOpen then
       tryWeaponActivate(mouseX, mouseY)
    end

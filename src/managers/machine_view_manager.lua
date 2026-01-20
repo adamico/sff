@@ -7,18 +7,15 @@ local MachineViewManager = Class("MachineViewManager", BaseViewManager)
 function MachineViewManager:initialize()
    BaseViewManager.initialize(self)
    self.isOpen = false
-   self.screen = nil -- MachineScreen instance
-   self.views = {}   -- Inventory views (player inventory, toolbar)
+   self.views = {} -- Inventory views (player inventory, toolbar)
    self.heldStack = nil
    self.heldStackView = nil
 end
 
---- Open the machine screen along with inventory views
---- @param screen table The MachineScreen instance
+--- Open the machine view along with inventory views
 --- @param views table Array of InventoryView instances (player inventory, toolbar)
-function MachineViewManager:open(screen, views)
+function MachineViewManager:open(views)
    self.isOpen = true
-   self.screen = screen
    self.views = views or {}
 end
 
@@ -32,11 +29,6 @@ function MachineViewManager:close()
    if self.heldStackView then
       self.heldStackView:destroy()
       self.heldStackView = nil
-   end
-
-   -- Destroy machine screen
-   if self.screen and self.screen.destroy then
-      self.screen:destroy()
    end
 
    -- Destroy view elements (except toolbar and equipment views which are always visible)
@@ -53,7 +45,6 @@ function MachineViewManager:close()
 
    self.heldStack = nil
    self.isOpen = false
-   self.screen = nil
    self.views = {}
 end
 
@@ -67,7 +58,6 @@ function MachineViewManager:handleAction(mouseX, mouseY, userdata)
    if not slotInfo then return false end
 
    local action = userdata and userdata.action
-
    local handler = InventoryHandlers[action]
    if handler then
       return handler(self, slotInfo)
@@ -78,39 +68,24 @@ end
 
 function MachineViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
    local slotInfo
-   if userdata and userdata.slotIndex then
-      if userdata.view then
-         local view = userdata.view
-         local slotIndex = userdata.slotIndex
-         local slotType = userdata.slotType or view:getSlotType()
-         local slot = InventoryHelper.getSlot(view.inventory, slotIndex, slotType)
-         if slot then
-            slotInfo = {
-               view = view,
-               inventory = view.inventory,
-               slotIndex = slotIndex,
-               slot = slot,
-               slotType = slotType,
-            }
-         end
-      elseif userdata.screen then
-         local screen = userdata.screen
-         local slotIndex = userdata.slotIndex
-         local slotType = userdata.slotType
-         local inventory = screen:getInventory()
-         if inventory then
-            local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
-            if slot then
-               slotInfo = {
-                  screen = screen,
-                  inventory = inventory,
-                  slotIndex = slotIndex,
-                  slot = slot,
-                  slotType = slotType
-               }
-            end
-         end
-      end
+   if userdata and userdata.slotIndex and userdata.view then
+      local view = userdata.view
+      local slotIndex = userdata.slotIndex
+      local slotType = userdata.slotType or view:getSlotType()
+
+      local inventory = view:getInventory()
+      if not inventory then return end
+
+      local slot = InventoryHelper.getSlot(inventory, slotIndex, slotType)
+      if not slot then return end
+
+      slotInfo = {
+         view = view,
+         inventory = inventory,
+         slotIndex = slotIndex,
+         slot = slot,
+         slotType = slotType,
+      }
    else
       slotInfo = self:getSlotUnderMouse(mouseX, mouseY)
    end
@@ -119,16 +94,10 @@ function MachineViewManager:resolveSlotInfo(mouseX, mouseY, userdata)
 end
 
 function MachineViewManager:draw()
-   -- Draw inventory views first (they appear below machine screen)
    for _, view in ipairs(self.views) do
       if view then
          view:draw()
       end
-   end
-
-   -- Draw machine screen on top
-   if self.screen then
-      self.screen:draw()
    end
 end
 

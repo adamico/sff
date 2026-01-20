@@ -14,9 +14,9 @@ observe(Events.ENTITY_INTERACTED, function(entityId)
    UICoordinator.openTargetInventory(entityId)
 end)
 
--- Register event observers for machine interaction (machine screen)
+-- Register event observers for machine interaction (machine view)
 observe(Events.MACHINE_INTERACTED, function(entityId)
-   UICoordinator.openMachineScreen(entityId)
+   UICoordinator.openMachineView(entityId)
 end)
 
 observe(Events.INPUT_INVENTORY_OPENED, function(playerInventory, playerToolbar, playerEquipment)
