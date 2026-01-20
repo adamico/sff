@@ -59,14 +59,14 @@ evolvedConfig.TAGS = {
    Animated = builder()
       :name("TAGS.Animated")
       :tag()
-      :require(FRAGMENTS.Position, FRAGMENTS.Animation)
+      :require(FRAGMENTS.Position, FRAGMENTS.Animation, FRAGMENTS.ZIndex)
       :build(),
 
    -- Static entities have simple quad-based sprites
    Static = builder()
       :name("TAGS.Static")
       :tag()
-      :require(FRAGMENTS.Position, FRAGMENTS.Sprite)
+      :require(FRAGMENTS.Position, FRAGMENTS.Sprite, FRAGMENTS.ZIndex)
       :build(),
 
    -- Processing entities can process recipes (machines, crafters, etc.)

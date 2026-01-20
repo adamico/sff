@@ -35,12 +35,6 @@ local function isRunning(velocity)
    return speed > RUN_SPEED_THRESHOLD
 end
 
--- Create query for visual entities
-local animatedQuery = builder()
-   :name("QUERIES.Animated")
-   :include(TAGS.Animated)
-   :build()
-
 -- Update system - handles animation state updates
 builder()
    :name("SYSTEMS.UpdateEntityAnimations")
@@ -75,44 +69,56 @@ builder()
       end
    end):build()
 
--- Render animated entities - draws peachy sprites
+-- Render list for collecting entities before sorting
+local renderList = {}
+
+-- Collection system - gathers all renderable entities with ZIndex
 builder()
-   :name("SYSTEMS.RenderAnimatedEntities")
+   :name("SYSTEMS.SortEntities")
    :group(STAGES.OnRenderEntities)
-   :include(TAGS.Animated)
+   :include(FRAGMENTS.ZIndex)
    :execute(function(chunk, entityIds, entityCount)
-      local animations, positions = chunk:components(
+      local positions, zindices, animations, sprites = chunk:components(
+         FRAGMENTS.Position,
+         FRAGMENTS.ZIndex,
          FRAGMENTS.Animation,
-         FRAGMENTS.Position
+         FRAGMENTS.Sprite
       )
 
       for i = 1, entityCount do
-         local animation = animations[i]
          local position = positions[i]
-         if animation and position and animation.spritesheets then
-            Animation.draw(animation, math.ceil(position.x), math.ceil(position.y))
+         if position then
+            renderList[#renderList + 1] = {
+               zindex = zindices[i],
+               position = position,
+               animation = animations and animations[i],
+               sprite = sprites and sprites[i]
+            }
          end
       end
    end):build()
 
--- Render static entities - draws quad-based sprites
+-- Render system - sorts collected entities and draws them in order
 local Sprite = require("src.evolved.fragments.sprite")
 
 builder()
-   :name("SYSTEMS.RenderStaticSprites")
+   :name("SYSTEMS.RenderSortedEntities")
    :group(STAGES.OnRenderEntities)
-   :include(TAGS.Static)
-   :execute(function(chunk, entityIds, entityCount)
-      local sprites, positions = chunk:components(
-         FRAGMENTS.Sprite,
-         FRAGMENTS.Position
-      )
+   :execute(function()
+      -- Sort by ZIndex (lower Y = further back = render first)
+      table.sort(renderList, function(a, b) return a.zindex < b.zindex end)
 
-      for i = 1, entityCount do
-         local sprite = sprites[i]
-         local position = positions[i]
-         if sprite and position then
-            Sprite.draw(sprite, math.ceil(position.x), math.ceil(position.y))
+      -- Draw in sorted order
+      for i = 1, #renderList do
+         local item = renderList[i]
+         local x, y = math.ceil(item.position.x), math.ceil(item.position.y)
+         if item.animation and item.animation.spritesheets then
+            Animation.draw(item.animation, x, y)
+         elseif item.sprite then
+            Sprite.draw(item.sprite, x, y)
          end
       end
+
+      -- Clear for next frame
+      for i = #renderList, 1, -1 do renderList[i] = nil end
    end):build()

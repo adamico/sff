@@ -188,4 +188,13 @@ evolvedConfig.FRAGMENTS = {
       :default(Sprite.new())
       :duplicate(Sprite.duplicate)
       :build(),
+
+   -- =========================================================================
+   -- Rendering Components
+   -- =========================================================================
+
+   ZIndex = builder()
+      :name("FRAGMENTS.ZIndex")
+      :default(0)
+      :build(),
 }

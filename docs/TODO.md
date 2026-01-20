@@ -48,7 +48,7 @@
 - [x] Machine state in inventory view
 - [x] Right-click split stack
 - [x] Shift-click transfer
-- [x] Item tooltips
+- [ ] Item tooltips
 
 ---
 

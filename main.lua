@@ -97,14 +97,12 @@ function love.draw()
 
    shove.beginLayer("background")
    Map:draw(-tx, -ty)
-
    shove.endLayer()
 
    shove.beginLayer("entities")
    lg.push()
    lg.translate(-tx, -ty)
    process(STAGES.OnRenderEntities)
-
    shove.endLayer()
 
    shove.beginLayer("debug")

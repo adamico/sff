@@ -36,8 +36,9 @@ require("src.evolved.systems.processing_system") -- Process recipes in machines
 require("src.evolved.systems.creature_system")   -- Process creature AI behaviors
 
 -- Physics & Movement
-require("src.evolved.systems.physics_system")   -- Update positions and velocities
-require("src.evolved.systems.collision_system") -- Handle collision detection/response
+require("src.evolved.systems.update_zindex_system") -- Update ZIndex for Y-sorting
+require("src.evolved.systems.physics_system")       -- Update positions and velocities
+require("src.evolved.systems.collision_system")     -- Handle collision detection/response
 
 -- ============================================================================
 -- Render Stage (STAGES.OnRenderEntities)
