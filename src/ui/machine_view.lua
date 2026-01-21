@@ -61,9 +61,7 @@ function MachineView:buildUI()
       x = self.x,
       y = self.y,
       width = self.width,
-      backgroundColor = BACKGROUND_COLOR,
-      border = self.borderWidth,
-      borderColor = BORDER_COLOR,
+      themeComponent = "framev1",
       flexDirection = "vertical",
       padding = {
          top = self.padding,
@@ -240,7 +238,7 @@ function MachineView:createFooter()
 
    self.startButton = Flexlove.new({
       id = "start_button",
-      backgroundColor = BUTTON_BACKGROUND_COLOR,
+      themeComponent = "buttonv1",
       text = RITUAL_BUTTON_LABEL,
       textColor = TEXT_COLOR,
       textSize = TEXT_SIZE,

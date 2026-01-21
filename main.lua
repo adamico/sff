@@ -65,8 +65,8 @@ function love.load()
 
    Flexlove.init({
       baseScale = {width = 400, height = 300}, -- Design at game resolution
-      immediateMode = false,
-      theme = "metal"
+      theme = "dungeon",
+      immediateMode = false
    })
 
    shove.setResolution(400, 300, {
