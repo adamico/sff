@@ -11,14 +11,15 @@ local CameraHelper = {}
 --- @return number tx X offset
 --- @return number ty Y offset
 function CameraHelper.getOffset()
-   local playerPos = Evolved.get(ENTITIES.Player, FRAGMENTS.Position)
+   local playerPos, playerHitbox = Evolved.get(ENTITIES.Player, FRAGMENTS.Position, FRAGMENTS.Hitbox)
    if not playerPos then return 0, 0 end
 
+   local playerHitboxRadius = playerHitbox.radius
    local viewportW, viewportH = shove.getViewportWidth(), shove.getViewportHeight()
 
    -- Calculate camera position (centered on player)
    local tx = math.floor(playerPos.x - viewportW / 2)
-   local ty = math.floor(playerPos.y - viewportH / 2)
+   local ty = math.floor(playerPos.y - viewportH / 2 - playerHitboxRadius)
 
    -- Clamp camera to map bounds
    local mapPixelW = Map.width * Map.tilewidth

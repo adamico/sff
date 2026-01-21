@@ -40,6 +40,7 @@ UIConstants.QUANTITY_OFFSET = UIConstants.SLOT_SIZE / 2 + 1
 UIConstants.BACKGROUND_COLOR = {0.5, 0.45, 0.5, 1}
 UIConstants.BORDER_COLOR = {1, 1, 1, 1}
 UIConstants.TEXT_COLOR = {1, 1, 1, 1}
+UIConstants.TEXT_COLOR_DARK = {0.2, 0.2, 0.2, 1}
 
 -- Machine-specific colors
 UIConstants.BUTTON_BACKGROUND_COLOR = {0.2, 0.2, 0.2, 1}

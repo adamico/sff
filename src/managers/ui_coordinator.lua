@@ -128,16 +128,12 @@ local function createTargetInventoryView(targetInventory, entityId)
 end
 
 local function createMachineView(entityId)
-   local machineX = UI.VIEWPORT_WIDTH / 2 - UI.MACHINE_WIDTH / 2
-   local machineY = PLAYER_INV_Y - UI.GAP - UI.MACHINE_HEIGHT
-
    return MachineView:new({
       id = "machine",
       entityId = entityId,
-      x = machineX,
-      y = machineY,
-      width = UI.MACHINE_WIDTH,
-      height = UI.MACHINE_HEIGHT
+      x = "25%",
+      y = "25%",
+      width = "50%",
    })
 end
 

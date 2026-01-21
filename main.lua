@@ -34,6 +34,12 @@ ENTITIES = evolvedConfig.ENTITIES
 UNIFORMS = evolvedConfig.UNIFORMS
 STAGES = evolvedConfig.STAGES
 
+local SCREEN_WIDTH = 800
+local SCREEN_HEIGHT = 600
+
+local VIEWPORT_WIDTH = 400
+local VIEWPORT_HEIGHT = 300
+
 -- Load systems (uses FRAGMENTS, TAGS, STAGES, etc.; populates ENTITIES at runtime)
 require("src.evolved.systems")
 
@@ -56,6 +62,16 @@ local sti = require("lib.sti")
 local lg = love.graphics
 
 -- ============================================================================
+-- Debug Helpers)
+-- ============================================================================
+local function drawDebugLines()
+   love.graphics.setColor(1, 0, 0)
+   love.graphics.line(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT)
+   love.graphics.line(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2)
+end
+
+
+-- ============================================================================
 -- Love2D Callbacks
 -- ============================================================================
 
@@ -64,16 +80,16 @@ function love.load()
    Map = sti("src/data/maps/dungeon_big.lua")
 
    Flexlove.init({
-      baseScale = {width = 400, height = 300}, -- Design at game resolution
+      baseScale = {width = VIEWPORT_WIDTH, height = VIEWPORT_HEIGHT}, -- Design at game resolution
       theme = "dungeon",
       immediateMode = false
    })
 
-   shove.setResolution(400, 300, {
+   shove.setResolution(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, {
       fitMethod = "pixel",
       renderMode = "layer"
    })
-   shove.setWindowMode(800, 600, {resizable = true})
+   shove.setWindowMode(SCREEN_WIDTH, SCREEN_HEIGHT, {resizable = true})
 
    shove.createLayer("background", {zIndex = 10})
    shove.createLayer("entities", {zIndex = 20})
@@ -91,37 +107,39 @@ end
 
 function love.draw()
    local tx, ty = CameraHelper.getOffset()
+   Flexlove.draw(function()
+      shove.beginDraw()
 
-   shove.beginDraw()
+      shove.beginLayer("background")
+      Map:draw(-tx, -ty)
+      shove.endLayer()
 
-   shove.beginLayer("background")
-   Map:draw(-tx, -ty)
-   shove.endLayer()
+      shove.beginLayer("entities")
+      lg.push()
+      lg.translate(-tx, -ty)
+      process(STAGES.OnRenderEntities)
+      shove.endLayer()
 
-   shove.beginLayer("entities")
-   lg.push()
-   lg.translate(-tx, -ty)
-   process(STAGES.OnRenderEntities)
-   shove.endLayer()
+      shove.beginLayer("debug")
+      process(STAGES.OnRenderDebug)
+      lg.pop()
+      shove.endLayer()
 
-   shove.beginLayer("debug")
-   process(STAGES.OnRenderDebug)
-   lg.pop()
-   shove.endLayer()
+      shove.endDraw()
 
-   shove.endDraw()
-
-   -- UI: rendered at native window resolution (no transform)
-   Flexlove.draw(nil, function()
+      -- UI: rendered at native window resolution (no transform)
+   end, function()
       if SlotViewManager.isOpen then
          SlotViewManager:drawHeldStack()
       end
-   end)
 
-   local fps = love.timer.getFPS()
-   local mem = collectgarbage("count")
-   lg.print(string.format("FPS: %d", fps), 10, 10)
-   lg.print(string.format("Memory: %d KB", mem), 10, 30)
+      local fps = love.timer.getFPS()
+      local mem = collectgarbage("count")
+      lg.print(string.format("FPS: %d", fps), 10, 10)
+      lg.print(string.format("Memory: %d KB", mem), 10, 30)
+      -- drawDebugLines()
+      lg.setColor(1, 1, 1, 1)
+   end)
 end
 
 function love.resize(w, h)
@@ -136,12 +154,3 @@ end
 function love.wheelmoved(dx, dy)
    Flexlove.wheelmoved(dx, dy)
 end
-
--- ============================================================================
--- Debug Helpers (Unused but kept for reference)
--- ============================================================================
--- local function drawDebugLines()
---    love.graphics.setColor(1, 0, 0)
---    love.graphics.line(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT)
---    love.graphics.line(0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2)
--- end

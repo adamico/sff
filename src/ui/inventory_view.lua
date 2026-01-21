@@ -61,7 +61,7 @@ function InventoryView:buildUI()
       y = self.y,
       width = width,
       height = height,
-      themeComponent = "framev1",
+      themeComponent = "framev5",
       flexDirection = "horizontal",
       justifyContent = "center",
       alignItems = "center",

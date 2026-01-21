@@ -5,10 +5,7 @@ local MachineView = Class("MachineView")
 local get = Evolved.get
 local trigger = Beholder.trigger
 
-local BACKGROUND_COLOR = Color.new(unpack(UI.BACKGROUND_COLOR))
-local BORDER_COLOR = Color.new(unpack(UI.BORDER_COLOR))
 local BORDER_WIDTH = UI.BORDER_WIDTH
-local BUTTON_BACKGROUND_COLOR = Color.new(unpack(UI.BUTTON_BACKGROUND_COLOR))
 local HEADER_TEXT_SIZE = UI.HEADER_TEXT_SIZE
 local MANA_BACKGROUND_COLOR = Color.new(unpack(UI.MANA_BACKGROUND_COLOR))
 local MANA_FILL_COLOR = Color.new(unpack(UI.MANA_FILL_COLOR))
@@ -16,7 +13,8 @@ local PROGRESS_BACKGROUND_COLOR = Color.new(unpack(UI.PROGRESS_BACKGROUND_COLOR)
 local PROGRESS_FILL_COLOR = Color.new(unpack(UI.PROGRESS_FILL_COLOR))
 local RITUAL_BUTTON_LABEL = "Start Ritual"
 local SLOT_SIZE = UI.SLOT_SIZE
-local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
+local TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR_DARK))
+local BUTTON_TEXT_COLOR = Color.new(unpack(UI.TEXT_COLOR))
 local TEXT_SIZE = UI.TEXT_SIZE
 
 --- @class MachineView
@@ -34,8 +32,8 @@ function MachineView:initialize(options)
    self.padding = options.padding or 8
    self.slotSize = options.slotSize or SLOT_SIZE
    self.width = options.width or WIDTH
-   self.x = math.floor(options.x or 0)
-   self.y = math.floor(options.y or 0)
+   self.x = options.x
+   self.y = options.y
 
    -- Fetch inventories from entity
    self.inputInventory = get(self.entityId, FRAGMENTS.InputInventory)
@@ -61,7 +59,8 @@ function MachineView:buildUI()
       x = self.x,
       y = self.y,
       width = self.width,
-      themeComponent = "framev1",
+      height = "40vh",
+      themeComponent = "framev5",
       flexDirection = "vertical",
       padding = {
          top = self.padding,
@@ -109,8 +108,9 @@ end
 function MachineView:createHeader()
    local header = Flexlove.new({
       flexDirection = "horizontal",
-      parent = self.containerElement,
+      height = "4vh",
       justifyContent = "space-between",
+      parent = self.containerElement,
       positioning = "flex",
    })
 
@@ -125,7 +125,7 @@ function MachineView:createRecipeLabel(parent)
          id = "machine_recipe",
          parent = parent,
          text = recipe.name,
-         textColor = TEXT_COLOR,
+         textColor = TEXT_COLOR_DARK,
          textSize = HEADER_TEXT_SIZE,
       })
    end
@@ -138,7 +138,7 @@ function MachineView:createNameLabel(parent)
          id = "machine_name",
          parent = parent,
          text = name,
-         textColor = TEXT_COLOR,
+         textColor = TEXT_COLOR_DARK,
          textSize = HEADER_TEXT_SIZE,
       })
    end
@@ -240,7 +240,7 @@ function MachineView:createFooter()
       id = "start_button",
       themeComponent = "buttonv1",
       text = RITUAL_BUTTON_LABEL,
-      textColor = TEXT_COLOR,
+      textColor = BUTTON_TEXT_COLOR,
       textSize = TEXT_SIZE,
       textAlign = "center",
       padding = 4,

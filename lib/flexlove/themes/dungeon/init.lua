@@ -4,6 +4,21 @@ return {
       framev1 = {
          atlas = "themes/dungeon/frame/frame1.9.png",
       },
+      framev2 = {
+         atlas = "themes/dungeon/frame/frame2.9.png",
+      },
+      framev3 = {
+         atlas = "themes/dungeon/frame/frame3.9.png",
+      },
+      framev4 = {
+         atlas = "themes/dungeon/frame/frame4.9.png",
+      },
+      framev5 = {
+         atlas = "themes/dungeon/frame/frame5.9.png",
+      },
+      framev6 = {
+         atlas = "themes/dungeon/frame/frame6.9.png",
+      },
       buttonv1 = {
          atlas = "themes/dungeon/button/button1.9.png",
          states = {
