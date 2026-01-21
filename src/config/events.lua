@@ -20,6 +20,7 @@ local Events = {
    PLACEMENT_MODE_EXITED = "placement_mode:exited",
    RITUAL_STARTED = "ritual:started",
    TOOLBAR_SLOT_ACTIVATED = "toolbar:slot_activated",
+   TOOLBAR_MOVED_TO_SLOT = "toolbar:moved_to_slot",
    WEAPON_ACTIVATED = "weapon:activated",
 }
 

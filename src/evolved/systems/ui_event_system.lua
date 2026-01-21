@@ -30,9 +30,15 @@ observe(Events.UI_MODAL_CLOSED, function()
    UICoordinator.closeModal()
 end)
 
-observe(Events.INPUT_INVENTORY_CLICKED, function(mouseX, mouseY, userdata)
+observe(Events.INPUT_INVENTORY_CLICKED, function(userdata)
    if SlotViewManager.isOpen then
-      SlotViewManager:handleAction(mouseX, mouseY, userdata)
+      SlotViewManager:handleAction(userdata)
+   end
+end)
+
+observe(Events.TOOLBAR_MOVED_TO_SLOT, function(slotIndex)
+   if SlotViewManager.isOpen then
+      SlotViewManager:handleToolbarMove(slotIndex)
    end
 end)
 

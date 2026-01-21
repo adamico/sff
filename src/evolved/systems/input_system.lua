@@ -70,11 +70,20 @@ local function handleGlobalActions(mx, my)
    end
 end
 
+local function handleInventoryActions()
+   for i = 0, TOOLBAR_KEYS_MAX do
+      if actionDetector:pressed(A["TOOLBAR_USE_"..i]) then
+         trigger(Events.TOOLBAR_MOVED_TO_SLOT, i)
+      end
+   end
+end
+
 -------------------------------------------------------------------------------
 -- STATE DISPATCH TABLE
 -------------------------------------------------------------------------------
 local stateHandlers = {
    exploring = handleExploringActions,
+   inventoryOpen = handleInventoryActions,
    placing = handlePlacingActions,
 }
 

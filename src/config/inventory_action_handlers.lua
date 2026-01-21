@@ -11,10 +11,10 @@ local MOUSE_BUTTON_RIGHT = 2
 -- ============================================================================
 
 local Actions = {
-   QUICK_TRANSFER = "quick_transfer",
-   PICK_OR_PLACE  = "pick_or_place",
-   PICK_ONE       = "pick_one",
    PICK_HALF      = "pick_half",
+   PICK_ONE       = "pick_one",
+   PICK_OR_PLACE  = "pick_or_place",
+   QUICK_TRANSFER = "quick_transfer",
 }
 
 -- ============================================================================
@@ -34,7 +34,7 @@ end
 --- @param mouseButton number
 --- @param modifiers table
 --- @return string|nil
-local function getAction(mouseButton, modifiers)
+local function getMouseAction(mouseButton, modifiers)
    local shift = modifiers.shift
    local ctrl = modifiers.ctrl
 
@@ -60,14 +60,14 @@ end
 -- ============================================================================
 
 local Handlers = {
-   [Actions.PICK_OR_PLACE] = function(self, slotInfo)
-      return self:pickOrPlace(slotInfo)
-   end,
    [Actions.PICK_HALF] = function(self, slotInfo)
       return self:pickHalf(slotInfo)
    end,
    [Actions.PICK_ONE] = function(self, slotInfo)
       return self:pickOne(slotInfo)
+   end,
+   [Actions.PICK_OR_PLACE] = function(self, slotInfo)
+      return self:pickOrPlace(slotInfo)
    end,
    [Actions.QUICK_TRANSFER] = function(self, slotInfo)
       return self:quickTransfer(slotInfo)
@@ -81,6 +81,6 @@ local Handlers = {
 return {
    Actions = Actions,
    Handlers = Handlers,
-   getAction = getAction,
+   getMouseAction = getMouseAction,
    getModifiers = getModifiers,
 }

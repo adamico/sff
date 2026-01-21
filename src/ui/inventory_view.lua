@@ -112,6 +112,7 @@ function InventoryView:createSlots()
          },
          onEvent = function(element, event)
             self:handleSlotClick(element, event)
+            self:handleSlotHover(element, event)
          end,
          parent = self.slotsContainer
       })
@@ -126,7 +127,6 @@ end
 function InventoryView:handleSlotClick(element, event)
    if event.type ~= "click" and event.type ~= "rightclick" then return end
 
-   local mx, my = love.mouse.getPosition()
    local button = event.button or 1
    local slotIndex = element.userdata.slotIndex
 
@@ -134,16 +134,23 @@ function InventoryView:handleSlotClick(element, event)
       trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
       local modifiers = InventoryActions.getModifiers()
-      local action = InventoryActions.getAction(button, modifiers)
+      local action = InventoryActions.getMouseAction(button, modifiers)
       if not action then return end
 
-      trigger(Events.INPUT_INVENTORY_CLICKED, mx, my, {
-         action = action,
-         slotIndex = slotIndex,
-         inventoryType = self.inventoryType,
-         view = self
-      })
+      local userdata = element.userdata
+      userdata.action = action
+      userdata.inventoryType = self.inventoryType
+
+      trigger(Events.INPUT_INVENTORY_CLICKED, userdata)
    end
+end
+
+function InventoryView:handleSlotHover(element, event)
+   if event.type ~= "hover" then return end
+
+   local userdata = element.userdata
+   userdata.inventoryType = self.inventoryType
+   SlotViewManager.hoveredSlotUserData = userdata
 end
 
 function InventoryView:getInventory()
