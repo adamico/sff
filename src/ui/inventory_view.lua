@@ -38,6 +38,11 @@ function InventoryView:initialize(inventory, options)
    self.borderWidth = UI.BORDER_WIDTH
    self.entityId = options.entityId or nil
 
+   -- Double-click detection state
+   self.lastClickTime = 0
+   self.lastClickSlot = nil
+   self.DOUBLE_CLICK_THRESHOLD = 0.3 -- seconds
+
    -- FlexLove elements
    self.containerElement = nil
    self.slotsContainer = nil
@@ -134,6 +139,17 @@ function InventoryView:handleSlotClick(element, event)
       trigger(Events.TOOLBAR_SLOT_ACTIVATED, slotIndex)
    else
       local modifiers = InventoryActions.getModifiers()
+
+      -- Detect double-click (left button only)
+      local currentTime = love.timer.getTime()
+      if button == 1 then
+         local timeSinceLastClick = currentTime - self.lastClickTime
+         local sameSlot = self.lastClickSlot == slotIndex
+         modifiers.isDoubleClick = sameSlot and timeSinceLastClick < self.DOUBLE_CLICK_THRESHOLD
+         self.lastClickTime = currentTime
+         self.lastClickSlot = slotIndex
+      end
+
       local action = InventoryActions.getMouseAction(button, modifiers)
       if not action then return end
 

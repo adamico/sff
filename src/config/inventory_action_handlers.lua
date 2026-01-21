@@ -15,6 +15,7 @@ local Actions = {
    PICK_ONE       = "pick_one",
    PICK_OR_PLACE  = "pick_or_place",
    QUICK_TRANSFER = "quick_transfer",
+   COLLECT_STACK  = "collect_stack",
 }
 
 -- ============================================================================
@@ -30,16 +31,19 @@ local function getModifiers()
    }
 end
 
---- Determine the action based on mouse button and modifiers
+--- Determine the action based on mouse button, modifiers, and double-click state
 --- @param mouseButton number
 --- @param modifiers table
 --- @return string|nil
 local function getMouseAction(mouseButton, modifiers)
    local shift = modifiers.shift
    local ctrl = modifiers.ctrl
+   local isDoubleClick = modifiers.isDoubleClick
 
    if mouseButton == MOUSE_BUTTON_LEFT then
-      if shift then
+      if isDoubleClick then
+         return Actions.COLLECT_STACK
+      elseif shift then
          return Actions.QUICK_TRANSFER
       else
          return Actions.PICK_OR_PLACE
@@ -71,6 +75,9 @@ local Handlers = {
    end,
    [Actions.QUICK_TRANSFER] = function(self, slotInfo)
       return self:quickTransfer(slotInfo)
+   end,
+   [Actions.COLLECT_STACK] = function(self, slotInfo)
+      return self:collectStack(slotInfo)
    end,
 }
 

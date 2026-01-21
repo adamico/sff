@@ -455,6 +455,59 @@ function SlotViewManager:quickTransfer(slotInfo)
 end
 
 -- ============================================================================
+-- Collect Stack (Double Click)
+-- ============================================================================
+
+--- Collect items of the same type from other slots in the inventory.
+--- This is triggered by double-clicking a slot (Minecraft-style stacking).
+--- Works in two modes:
+--- 1. Not holding: collect matching items into the clicked slot
+--- 2. Holding: collect matching items into the held stack
+--- @param slotInfo table The slot info for the clicked slot
+--- @return boolean True if any items were collected
+function SlotViewManager:collectStack(slotInfo)
+   -- Check if we can modify this inventory
+   if not InventoryHelper.canRemove(slotInfo.inventory) then
+      return false
+   end
+
+   local slots = InventoryHelper.getSlots(slotInfo.inventory)
+   if not slots then return false end
+
+   -- Determine target slot and skip index based on mode
+   local targetSlot, skipIndex
+   if self.heldStack then
+      targetSlot = self.heldStack
+      skipIndex = nil -- Don't skip any slot when collecting into held stack
+   else
+      targetSlot = slotInfo.slot
+      skipIndex = slotInfo.slotIndex -- Skip the target slot itself
+   end
+
+   if not targetSlot or not targetSlot.itemId then return false end
+
+   local targetItemId = targetSlot.itemId
+   local collected = false
+
+   -- Iterate through all slots and transfer matching items to target
+   for i, srcSlot in ipairs(slots) do
+      if i ~= skipIndex and srcSlot.itemId == targetItemId then
+         local transferred = transfer(srcSlot, targetSlot)
+         if transferred > 0 then
+            collected = true
+         end
+      end
+   end
+
+   -- Update held stack view if we collected into it
+   if collected and self.heldStack and self.heldStackView then
+      self.heldStackView:updateStack(self.heldStack)
+   end
+
+   return collected
+end
+
+-- ============================================================================
 -- View Utilities
 -- ============================================================================
 
