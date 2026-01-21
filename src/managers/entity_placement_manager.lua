@@ -19,7 +19,6 @@ local EntityPlacementManager = {
    isValidPlacement = true,
 }
 
-
 observe(Events.PLACEMENT_CLICKED, function(button)
    EntityPlacementManager:handleClick(button)
 end)
@@ -41,16 +40,12 @@ observe(Events.INPUT_INVENTORY_OPENED, function()
    end
 end)
 
-
-
 function EntityPlacementManager:update(dt)
    if not self.isPlacing then return end
 
    local _, mx, my = shove.mouseToViewport()
    local worldX, worldY = CameraHelper.screenToWorld(mx, my)
    self.ghostPosition = Vector(worldX, worldY)
-
-   -- Validate placement using helper
    self.isValidPlacement = PlacementValidationHelper.validatePlacement(self.item, self.ghostPosition)
 end
 
@@ -61,9 +56,7 @@ function EntityPlacementManager:draw()
    if not ghostBounds then return end
 
    local color = self.isValidPlacement and VALID_GHOST_COLOR or INVALID_GHOST_COLOR
-
    EntityDrawHelper.drawHitbox(ghostBounds, color)
-
    love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -93,19 +86,16 @@ function EntityPlacementManager:deployEntity()
    local slot = InventoryHelper.getSlot(toolbar, self.sourceSlotIndex)
    if not slot or not slot.itemId or slot.quantity <= 0 then return false end
 
-   -- Request entity spawn via event (spawner_system handles creation)
    trigger(Events.ENTITY_SPAWN_REQUESTED, {
       entityId = self.item.spawnsEntity,
       position = self.ghostPosition,
       sourceSlotIndex = self.sourceSlotIndex,
    })
 
-   -- Consume 1 item from toolbar slot
    slot.quantity = slot.quantity - 1
    if slot.quantity <= 0 then
       slot.itemId = nil
       slot.quantity = 0
-      -- Exit placement mode if no more items
       self:cancelPlacement()
    end
 
@@ -118,7 +108,7 @@ function EntityPlacementManager:cancelPlacement()
    self.sourceSlotIndex = nil
    self.ghostPosition = nil
 
-   UICoordinator.exitPlacementMode() -- Transition state
+   UICoordinator.exitPlacementMode()
    trigger(Events.PLACEMENT_MODE_EXITED)
    return true
 end

@@ -53,6 +53,12 @@ local function handlePlacingActions()
    elseif actionDetector:pressed(A.INTERACT) then
       trigger(Events.PLACEMENT_CLICKED, 1)
    end
+
+   for i = 0, TOOLBAR_KEYS_MAX do
+      if actionDetector:pressed(A["TOOLBAR_USE_"..i]) then
+         trigger(Events.TOOLBAR_SLOT_ACTIVATED, i)
+      end
+   end
 end
 
 --- Handle actions available in all states
