@@ -216,3 +216,307 @@ This means skeletons are profitable but require the full cycle. You'll want to t
 ```
 
 Does this structure give you enough flexibility for prototyping? The key is keeping it simple enough to hand-edit during balancing passes.
+
+---
+
+# REVISED MVP LOOP (Dungeon Management)
+
+## Core Concept
+
+**Genre**: Dungeon Keeper-style dungeon management game  
+**Theme**: Alchemical creature creation using the four humors system
+
+## The MVP Loop
+
+```
+Procedural Dungeon Generation
+         ↓
+Player Spawns at Center
+         ↓
+Explore Dungeon ←──────────┐
+         ↓                  │
+Encounter Wild Creatures    │
+         ↓                  │
+Kill Creatures ────────────┐│
+         ↓                 ││
+Extract Resources:         ││
+  • Four Humors (Blood,    ││
+    Yellow Bile, Black     ││
+    Bile, Phlegm)          ││
+  • Void Component         ││
+         ↓                 ││
+Process Resources:         ││
+  • Humors → Create        ││
+    Creatures (if recipe   ││
+    discovered)            ││
+  • Void → Mana            ││
+         ↓                 ││
+Deploy Created Creatures   ││
+         ↓                 ││
+Build Structures/Tools ────┘│
+         ↓                  │
+Expand Dungeon Control ────┘
+```
+
+## Essential Systems (Priority Order)
+
+### 1. Procedural Dungeon Generation ⚡ CRITICAL
+
+- Room-based dungeon layout
+- Spawn wild creatures in rooms
+- Player spawns at center room
+- Exploration reveals new rooms
+
+### 2. Resource Extraction System ⚡ CRITICAL
+
+- **Kill wild creatures** → Extract humors + void
+- Each creature drops specific humor ratios (based on creature type)
+- Example: Skeleton drops 80% Black Bile, 20% Yellow Bile, 35% Void
+
+### 3. Humor-Based Creature Creation
+
+- **Recipes discovered** by encountering creatures in dungeon
+- Combine humors to recreate creatures
+- Example: 80 Black Bile + 20 Yellow Bile + 35 Void → Skeleton
+- Created creatures can be deployed to defend/expand dungeon
+
+### 4. Void Processing
+
+- **Void → Mana** conversion system
+- Mana used for:
+  - Powering structures
+  - Crafting tools
+  - Dungeon expansion
+
+### 5. Basic Resource System (Choose One)
+
+**Option A: Separate Basic Resources** (Wood, Stone, etc.)
+
+- Dungeon contains resource nodes
+- Harvest nodes for building materials
+- Build structures: walls, doors, traps, workbenches
+- More traditional dungeon management feel
+
+**Option B: Humor → Basic Resource Conversion**
+
+- Humors can be converted to building materials
+- Example: Black Bile → Stone, Yellow Bile → Fire/Energy
+- Simpler system, more alchemical theme
+- Reduces resource types
+
+**Recommendation**: **Option B** for MVP - keeps focus on humor system
+
+## Minimum Testable Core
+
+**The Central Question**: Does "explore → kill → extract humors → create creatures → expand control" create engaging gameplay?
+
+### What You Need (Minimal)
+
+1. **3-5 room dungeon** (procedurally connected)
+2. **2 wild creature types** (e.g., Skeleton, Ghoul)
+3. **4 humor types + void** as extractable resources
+4. **1 creature recipe** (discovered by killing that creature type)
+5. **Void → Mana** conversion
+6. **1 deployable structure** (e.g., wall or trap) using humor-derived resources
+
+### What You DON'T Need Yet
+
+- Complex dungeon generation (BSP, etc.)
+- Many creature types
+- Advanced AI behaviors
+- Automation systems
+- Multiplayer/invasions
+- Save/load
+
+## Revised Data Architecture
+
+```xml
+<!-- HUMORS (Base Resources) -->
+<humor>
+  <id>blood</id>
+  <name>Blood</name>
+  <element>Air</element>
+  <qualities>Hot, Moist</qualities>
+  <color>#8B0000</color>
+</humor>
+
+<humor>
+  <id>yellowBile</id>
+  <name>Yellow Bile</name>
+  <element>Fire</element>
+  <qualities>Hot, Dry</qualities>
+  <color>#FFD700</color>
+</humor>
+
+<humor>
+  <id>blackBile</id>
+  <name>Black Bile</name>
+  <element>Earth</element>
+  <qualities>Cold, Dry</qualities>
+  <color>#1C1C1C</color>
+</humor>
+
+<humor>
+  <id>phlegm</id>
+  <name>Phlegm</name>
+  <element>Water</element>
+  <qualities>Cold, Moist</qualities>
+  <color>#87CEEB</color>
+</humor>
+
+<humor>
+  <id>void</id>
+  <name>Void</name>
+  <element>Aether</element>
+  <qualities>Supernatural</qualities>
+  <color>#9400D3</color>
+  <convertToMana>true</convertToMana>
+  <manaConversionRate>2</manaConversionRate> <!-- 1 void = 2 mana -->
+</humor>
+
+<!-- WILD CREATURES (Found in Dungeon) -->
+<wildCreature>
+  <id>skeleton</id>
+  <name>Skeleton</name>
+  <tier>basic</tier>
+  <spawnWeight>high</spawnWeight>
+  <loot>
+    <humor id="blackBile" quantity="80"/>
+    <humor id="yellowBile" quantity="20"/>
+    <humor id="void" quantity="35"/>
+  </loot>
+  <health>20</health>
+  <behavior>patrol</behavior>
+</wildCreature>
+
+<wildCreature>
+  <id>ghoul</id>
+  <name>Ghoul</name>
+  <tier>basic</tier>
+  <spawnWeight>medium</spawnWeight>
+  <loot>
+    <humor id="blackBile" quantity="70"/>
+    <humor id="yellowBile" quantity="30"/>
+    <humor id="void" quantity="25"/>
+  </loot>
+  <health>30</health>
+  <behavior>aggressive</behavior>
+</wildCreature>
+
+<!-- CREATURE RECIPES (Discovered on Kill) -->
+<recipe>
+  <id>createSkeleton</id>
+  <name>Summon Skeleton</name>
+  <discoveredBy>killingCreature</discoveredBy> <!-- Unlock recipe by killing skeleton -->
+  <inputs>
+    <humor id="blackBile" quantity="80"/>
+    <humor id="yellowBile" quantity="20"/>
+    <humor id="void" quantity="35"/>
+  </inputs>
+  <output creature="skeleton" quantity="1"/>
+  <processingTime>5</processingTime>
+  <manaCost>10</manaCost>
+</recipe>
+
+<!-- BASIC RESOURCES (Converted from Humors) -->
+<conversion>
+  <id>bileToStone</id>
+  <name>Transmute Stone</name>
+  <input humor="blackBile" quantity="50"/>
+  <output resource="stone" quantity="10"/>
+</conversion>
+
+<conversion>
+  <id>bileToFuel</id>
+  <name>Transmute Fuel</name>
+  <input humor="yellowBile" quantity="50"/>
+  <output resource="fuel" quantity="10"/>
+</conversion>
+
+<!-- STRUCTURES -->
+<structure>
+  <id>stoneWall</id>
+  <name>Stone Wall</name>
+  <buildCost>
+    <resource id="stone" quantity="5"/>
+  </buildCost>
+  <manaCost>5</manaCost>
+</structure>
+```
+
+## The Prototype Test Questions
+
+After 15-30 minutes of play, ask yourself:
+
+1. **Is exploration rewarding?** Does finding new creatures feel exciting?
+2. **Is the humor system intuitive?** Can you understand what humors do?
+3. **Does creature creation feel earned?** Is discovering recipes satisfying?
+4. **Is the void → mana loop clear?** Do you understand the economy?
+5. **Do you want to expand?** Is there a natural desire to control more rooms?
+
+## Success Criteria
+
+The idea is **viable** if:
+
+- Players naturally explore to find new creatures
+- The humor extraction → creature creation loop is satisfying
+- Discovering recipes creates "aha!" moments
+- Resource management creates interesting decisions
+- Players want to expand their controlled territory
+
+The idea **needs rework** if:
+
+- Exploration feels aimless or unrewarding
+- Humor system is confusing
+- Creature creation feels arbitrary
+- Economy is too simple or too complex
+- No clear progression goals emerge
+
+## Implementation Priority
+
+### Phase 1: Core Loop (Week 1)
+
+1. ✅ Basic dungeon generation (3-5 rooms)
+2. ✅ Wild creature spawning (2 types)
+3. ✅ Combat system (kill creatures)
+4. ⚠️ Humor extraction on death
+5. ⚠️ Void → Mana conversion
+6. ⚠️ Recipe discovery system
+
+### Phase 2: Creation Loop (Week 2)
+
+7. ⚠️ Creature assembly using humors
+2. ⚠️ Deploy created creatures
+3. ⚠️ Basic creature AI (defend territory)
+
+### Phase 3: Expansion (Week 3)
+
+10. ⚠️ Humor → Resource conversion
+2. ⚠️ Structure building (walls, traps)
+3. ⚠️ Room claiming mechanics
+
+## Open Design Questions
+
+### Q1: How are recipes discovered?
+
+- **Option A**: Automatic on first kill (simple, clear)
+- **Option B**: Requires "study" action on corpse (more depth)
+- **Option C**: Random chance on kill (RNG element)
+
+### Q2: What do deployed creatures do?
+
+- **Option A**: Passive defense (attack intruders)
+- **Option B**: Active patrol (guard rooms)
+- **Option C**: Resource generation (produce humors over time)
+
+### Q3: Basic resources - separate or converted?
+
+- **Option A**: Separate resource nodes in dungeon (wood, stone)
+- **Option B**: Convert humors to resources (alchemical theme)
+- **Recommendation**: Option B for MVP simplicity
+
+### Q4: What limits expansion?
+
+- **Option A**: Mana cost to claim rooms
+- **Option B**: Need creatures to defend claimed rooms
+- **Option C**: Both (mana + creature requirements)
