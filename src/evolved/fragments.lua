@@ -10,6 +10,7 @@ local StateMachine = require("src.evolved.fragments.state_machine")
 local Recipe = require("src.evolved.fragments.recipe")
 local Animation = require("src.evolved.fragments.animation")
 local Sprite = require("src.evolved.fragments.sprite")
+local Mana = require("src.evolved.fragments.mana")
 local duplication = require("src.evolved.utils.duplication")
 local evolvedConfig = require("src.evolved.evolved_config")
 local builder = Evolved.builder
@@ -168,8 +169,13 @@ evolvedConfig.FRAGMENTS = {
 
    Mana = builder()
       :name("FRAGMENTS.Mana")
-      :default({current = 0, max = 100, regenRate = 0})
-      :duplicate(deepClone)
+      :default(Mana.new({}, 0))
+      :duplicate(Mana.duplicate)
+      :build(),
+
+   Void = builder()
+      :name("FRAGMENTS.Void")
+      :default(0)
       :build(),
 
    -- =========================================================================

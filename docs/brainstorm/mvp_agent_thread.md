@@ -280,10 +280,29 @@ Expand Dungeon Control ────┘
 - Example: 80 Black Bile + 20 Yellow Bile + 35 Void → Skeleton
 - Created creatures can be deployed to defend/expand dungeon
 
-### 4. Void Processing
+### 4. Void Processing (REFINED)
 
-- **Void → Mana** conversion system
-- Mana used for:
+Void is a **metaphysical component** (0-100%) that determines a creature's level of transcendence:
+
+- **Mana Capacity**: `void% × 2` (e.g., 50% void = 100 mana)
+- **Mana Regeneration**: Starting at 50% void, `(void% - 50) / 2` per second (e.g., 95% void = 22.5/s)
+- **Physical Interaction**: Higher void = weaker physical presence
+
+**Example Stats:**
+
+| Entity | Void % | Max Mana | Mana Regen |
+| :--- | :--- | :--- | :--- |
+| Player | 50% | 100 | 0/s |
+| Skeleton | 35% | 70 | 0/s |
+| Ghost | 95% | 190 | 22.5/s |
+
+**Implementation Notes:**
+- Void is stored as a property on entity data
+- Mana is derived from void at spawn time (TypeObject pattern)
+- Void is NOT lootable in the current MVP
+
+**Mana used for:**
+  - Creatures special abilities
   - Powering structures
   - Crafting tools
   - Dungeon expansion
@@ -479,15 +498,15 @@ The idea **needs rework** if:
 1. ✅ Basic dungeon generation (3-5 rooms)
 2. ✅ Wild creature spawning (2 types)
 3. ✅ Combat system (kill creatures)
-4. ⚠️ Humor extraction on death
-5. ⚠️ Void → Mana conversion
+4. ✅ Humor extraction on death (looting creature corpse)
+5. ⚠️ Void → Mana conversion (for MVP with a tool to harvest void from living creatures and convert it to mana at a low rate)
 6. ⚠️ Recipe discovery system
 
 ### Phase 2: Creation Loop (Week 2)
 
 7. ⚠️ Creature assembly using humors
 2. ⚠️ Deploy created creatures
-3. ⚠️ Basic creature AI (defend territory)
+3. ⚠️ Basic creature AI (follow player, attack hostile creatures)
 
 ### Phase 3: Expansion (Week 3)
 

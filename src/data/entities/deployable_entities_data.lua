@@ -1,7 +1,7 @@
 local Inventory = require("src.evolved.fragments.inventory")
 local InputQueue = require("src.evolved.fragments.input_queue")
 local StateMachine = require("src.evolved.fragments.state_machine")
-local Recipes = require("src.data.recipes_data")
+local Recipes = require("src.data.recipes.creature_recipes")
 local Sprite = require("src.evolved.fragments.sprite")
 
 return {

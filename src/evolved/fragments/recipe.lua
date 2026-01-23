@@ -1,4 +1,4 @@
-local RecipesData = require("src.data.recipes_data")
+local RecipesData = require("src.data.recipes.creature_recipes")
 local Recipe = {}
 
 function Recipe.new(name)

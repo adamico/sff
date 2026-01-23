@@ -10,7 +10,8 @@
    - e.g., FRAGMENTS.MaxSpeed → entityData.maxSpeed
 ]]
 
-local EntityRegistry = require("src.data.queries.entity_query")
+local EntityQuery = require("src.data.queries.entity_query")
+local Mana = require("src.evolved.fragments.mana")
 
 local observe = Beholder.observe
 local trigger = Beholder.trigger
@@ -52,6 +53,11 @@ local function buildComponents(entityData, position, overrides)
       end
    end
 
+   -- Derive mana from void at spawn time (TypeObject pattern)
+   if entityData.void and not components[FRAGMENTS.Mana] then
+      components[FRAGMENTS.Mana] = Mana.new({}, entityData.void)
+   end
+
    return components
 end
 
@@ -84,7 +90,7 @@ end
 --- @param overrides table|nil Optional overrides for component values
 --- @return number|nil The spawned entity ID, or nil on failure
 local function spawnEntity(entityId, position, overrides)
-   local entityData = EntityRegistry.getEntity(entityId)
+   local entityData = EntityQuery.findById(entityId)
    if not entityData then
       Log.warn("SpawnerSystem: No entity data found for: "..tostring(entityId))
       return nil

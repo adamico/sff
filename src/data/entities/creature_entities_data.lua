@@ -9,6 +9,7 @@ return {
          current = 20,
          max = 20,
       },
+      void = 35,
       hitbox = {
          shape = "circle",
          offsetX = 0,
@@ -20,14 +21,10 @@ return {
          maxSlots = 2,
          accessMode = "io",
          initialItems = {
-            {itemId = "bone",          quantity = 1},
-            {itemId = "unlifeEssence", quantity = 1},
+            {itemId = "blackBile",  quantity = 80},
+            {itemId = "yellowBile", quantity = 20},
          },
       }),
-      mana = {
-         current = 25,
-         max = 25,
-      },
       maxSpeed = 120,
       name = "Skeleton",
       stateMachine = StateMachine.new({
@@ -48,9 +45,10 @@ return {
    ghost = {
       creatureClass = "DamageDealer",
       health = {
-         current = 20,
-         max = 20,
+         current = 5,
+         max = 5,
       },
+      void = 95,
       hitbox = {
          shape = "circle",
          offsetX = 0,
@@ -62,14 +60,11 @@ return {
          maxSlots = 2,
          accessMode = "io",
          initialItems = {
-            {itemId = "unlifeEssence", quantity = 1},
+            {itemId = "phlegm", quantity = 90},
+            {itemId = "blood",  quantity = 10},
          },
       }),
-      mana = {
-         current = 25,
-         max = 25,
-      },
-      maxSpeed = 120,
+      maxSpeed = 240,
       name = "Ghost",
       stateMachine = StateMachine.new({
          events = {

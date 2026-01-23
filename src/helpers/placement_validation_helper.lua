@@ -1,4 +1,4 @@
-local EntityRegistry = require("src.data.queries.entity_query")
+local EntityQuery = require("src.data.queries.entity_query")
 local CollisionHelper = require("src.helpers.collision_helper")
 local builder = Evolved.builder
 local execute = Evolved.execute
@@ -19,7 +19,7 @@ function PlacementValidationHelper.getGhostBounds(item, position)
    if not item or not item.spawnsEntity then return nil end
    if not position then return nil end
 
-   local entityData = EntityRegistry.getEntity(item.spawnsEntity)
+   local entityData = EntityQuery.findById(item.spawnsEntity)
    if not entityData then return nil end
 
    local hitbox = entityData.hitbox or {shape = "circle", offsetX = 0, offsetY = 0, radius = 16}

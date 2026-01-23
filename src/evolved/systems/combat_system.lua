@@ -8,11 +8,6 @@ local damageableQuery = builder()
    :include(TAGS.Damageable)
    :build()
 
-local harvestableQuery = builder()
-   :name("QUERIES.Harvestable")
-   :include(TAGS.Harvestable)
-   :build()
-
 --- Find the closest damageable entity within range
 --- @param attackerId number The attacking entity ID
 --- @param maxRange number Maximum attack range
