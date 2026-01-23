@@ -5,11 +5,11 @@
    Supports multiple spritesheets (e.g., "sword", "unarmed") with automatic
    animation tag generation based on direction and state.
 
-   Animation tags follow the pattern: {Direction}{Weapon}{State}
-   e.g., "FrontSwordIdle", "BackSwordWalk", "RightSwordAttack"
+   Animation tags follow the Aseprite export pattern: {sprite_name}_{State}_{direction}
+   e.g., "ghost1_Idle_front", "skeleton1_Walk_left", "player_sword_Attack_right"
 
-   Directions: Front, Back, Left, Right
-   States: Death, Hurt, Attack, Idle, Walk, WalkAttack, Run, RunAttack
+   Directions: front, back, left, right (lowercase)
+   States: Death, Hurt, Attack, Idle, Walk, WalkAttack, Run, RunAttack (capitalized)
 ]]
 
 local peachy = require("lib.peachy")
@@ -38,12 +38,14 @@ local function getJsonPath(imageFilename)
 end
 
 --- Build an animation tag name from components
+--- @param spriteName string The sprite/sheet name e.g. "ghost1", "skeleton1"
 --- @param direction string "Front" "Back" "Left" or "Right"
---- @param weapon string Weapon/spritesheet type e.g. "Sword"
 --- @param state string Animation state e.g. "Idle" "Walk", "Attack"
---- @return string The animation tag e.g. "FrontSwordIdle"
-local function buildAnimationTag(direction, weapon, state)
-   return direction..capitalize(weapon)..state
+--- @return string The animation tag e.g. "ghost1_Idle_front"
+local function buildAnimationTag(spriteName, direction, state)
+   -- Direction is lowercase in the tag format
+   local lowerDirection = direction:lower()
+   return spriteName.."_"..state.."_"..lowerDirection
 end
 
 --- Create a new Animation component
@@ -73,8 +75,19 @@ function Animation.new(data)
    }
 
    -- Load spritesheets from data
-   local spriteSheets = data.spriteSheets or {}
+   -- Support both singular spriteSheet (string) and plural spriteSheets (table)
+   local spriteSheets = {}
    local firstSheet = nil
+
+   if data.spriteSheet then
+      -- Singular format: spriteSheet = "skeleton_1.png"
+      -- Derive name from filename (e.g., "skeleton_1.png" -> "skeleton_1")
+      local name = data.spriteSheet:gsub("%.png$", "")
+      spriteSheets[name] = data.spriteSheet
+   elseif data.spriteSheets then
+      -- Plural format: spriteSheets = { sword = "player_sword.png", ... }
+      spriteSheets = data.spriteSheets
+   end
 
    for name, imageFilename in pairs(spriteSheets) do
       local imagePath = SPRITESHEETS_PATH..imageFilename
@@ -99,7 +112,7 @@ function Animation.new(data)
    if firstSheet then
       animation.activeSheet = firstSheet
       -- Set initial animation tag
-      local initialTag = buildAnimationTag(animation.direction, firstSheet, animation.state)
+      local initialTag = buildAnimationTag(firstSheet, animation.direction, animation.state)
       animation.spritesheets[firstSheet]:setTag(initialTag)
       animation.spritesheets[firstSheet]:play()
    end
@@ -146,7 +159,7 @@ function Animation.setAnimation(animation, direction, state)
 
    local anim = Animation.getActiveAnimation(animation)
    if anim then
-      local tag = buildAnimationTag(direction, animation.activeSheet, state)
+      local tag = buildAnimationTag(animation.activeSheet, direction, state)
       -- Check if the tag exists before setting
       if anim.frameTags and anim.frameTags[tag] then
          anim:setTag(tag)
@@ -251,7 +264,7 @@ function Animation.duplicate(animation)
 
       -- Restore current animation state
       if name == animation.activeSheet then
-         local tag = buildAnimationTag(animation.direction, name, animation.state)
+         local tag = buildAnimationTag(name, animation.direction, animation.state)
          if newAnim.frameTags and newAnim.frameTags[tag] then
             newAnim:setTag(tag)
             newAnim:play()
@@ -272,7 +285,7 @@ end
 function Animation.hasAnimation(animation, direction, state)
    local anim = Animation.getActiveAnimation(animation)
    if anim and anim.frameTags then
-      local tag = buildAnimationTag(direction, animation.activeSheet, state)
+      local tag = buildAnimationTag(animation.activeSheet, direction, state)
       return anim.frameTags[tag] ~= nil
    end
    return false

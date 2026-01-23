@@ -53,13 +53,14 @@ return {
          initialItems = {
             {itemId = "skeletonAssembler", quantity = 1},
             {itemId = "chest",             quantity = 1},
-            {itemId = "skeleton",          quantity = 1},
+            {itemId = "ghost",             quantity = 1},
             {itemId = "harvesterBasic",    quantity = 1},
          },
       }),
       animation = Animation.new({
          spriteSheets = {
-            sword = "player_sword.png",
+            PlayerUnarmed = "PlayerUnarmed.png",
+            PlayerSword = "PlayerSword.png",
          }
       }),
    },

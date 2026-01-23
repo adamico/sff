@@ -42,9 +42,48 @@ return {
       tags = {"creature", "damageable", "harvestable", "interactable", "physical", "animated"},
       tier = "basic",
       animation = Animation.new({
-         spriteSheets = {
-            sword = "skeleton_sword.png",
+         spriteSheet = "Skeleton1.png",
+      }),
+   },
+   ghost = {
+      creatureClass = "DamageDealer",
+      health = {
+         current = 20,
+         max = 20,
+      },
+      hitbox = {
+         shape = "circle",
+         offsetX = 0,
+         offsetY = -4,
+         radius = 4,
+      },
+      interaction = {type = "creature", action = "inspect"},
+      loot = Inventory.new({
+         maxSlots = 2,
+         accessMode = "io",
+         initialItems = {
+            {itemId = "unlifeEssence", quantity = 1},
+         },
+      }),
+      mana = {
+         current = 25,
+         max = 25,
+      },
+      maxSpeed = 120,
+      name = "Ghost",
+      stateMachine = StateMachine.new({
+         events = {
+            {name = "spawn",  from = "blank",   to = "idle"},
+            {name = "alert",  from = "idle",    to = "alert"},
+            {name = "chase",  from = "alert",   to = "chasing"},
+            {name = "attack", from = "chasing", to = "attacking"},
+            {name = "reset",  from = "*",       to = "idle"},
          }
+      }),
+      tags = {"creature", "damageable", "harvestable", "interactable", "physical", "animated"},
+      tier = "basic",
+      animation = Animation.new({
+         spriteSheet = "Ghost1.png",
       }),
    },
 }
